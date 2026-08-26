@@ -78,8 +78,12 @@ jobs:
           "$RUNNER_TEMP/pip-audit-tool/bin/python" -m pip install --require-hashes -r requirements-pip-audit.lock
           python -m venv "$RUNNER_TEMP/semgrep-tool"
           "$RUNNER_TEMP/semgrep-tool/bin/python" -m pip install --require-hashes -r requirements-semgrep.lock
-          echo "$RUNNER_TEMP/pip-audit-tool/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TEMP/semgrep-tool/bin" >> "$GITHUB_PATH"
+          mkdir -p "$RUNNER_TEMP/k-guard-tool-bin"
+          ln -s "$RUNNER_TEMP/pip-audit-tool/bin/pip-audit" "$RUNNER_TEMP/k-guard-tool-bin/pip-audit"
+          ln -s "$RUNNER_TEMP/semgrep-tool/bin/semgrep" "$RUNNER_TEMP/k-guard-tool-bin/semgrep"
+          echo "$RUNNER_TEMP/k-guard-tool-bin" >> "$GITHUB_PATH"
+          echo "K_GUARD_PIP_AUDIT_EXECUTABLE=$RUNNER_TEMP/pip-audit-tool/bin/pip-audit" >> "$GITHUB_ENV"
+          echo "K_GUARD_SEMGREP_EXECUTABLE=$RUNNER_TEMP/semgrep-tool/bin/semgrep" >> "$GITHUB_ENV"
           go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
       - name: Audit locked Python dependency evidence
         run: python scripts/dependency_audit.py

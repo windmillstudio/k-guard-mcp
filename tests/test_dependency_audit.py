@@ -122,3 +122,65 @@ def test_audit_lock_missing_is_labeled_and_fails_closed(tmp_path: Path) -> None:
     assert result["returncode"] == 2
     assert result["output_valid"] is False
     assert result["pip_audit_stderr"] == "requirements-build.lock missing"
+
+
+def test_audit_lock_uses_resolved_pip_audit_executable(monkeypatch, tmp_path: Path) -> None:
+    requirements = tmp_path / "requirements-build.lock"
+    requirements.write_text("example==1.0\n", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr(dependency_audit, "_pip_audit_command", lambda: ["/tools/pip-audit"])
+
+    def fake_run(args: list[str]) -> dict[str, object]:
+        calls.append(args)
+        return {"returncode": 0, "stdout": '{"dependencies": []}', "stderr": ""}
+
+    monkeypatch.setattr(dependency_audit, "_run", fake_run)
+
+    result = dependency_audit._audit_lock(
+        requirements,
+        label="release_build_lock",
+        requirements_file="requirements-build.lock",
+    )
+
+    assert calls == [
+        [
+            "/tools/pip-audit",
+            "--requirement",
+            str(requirements),
+            "--format",
+            "json",
+        ]
+    ]
+    assert result["returncode"] == 0
+    assert result["output_valid"] is True
+
+
+def test_audit_lock_reports_missing_pip_audit_executable(monkeypatch, tmp_path: Path) -> None:
+    requirements = tmp_path / "requirements-build.lock"
+    requirements.write_text("example==1.0\n", encoding="utf-8")
+    monkeypatch.setattr(dependency_audit, "_pip_audit_command", lambda: None)
+
+    result = dependency_audit._audit_lock(
+        requirements,
+        label="release_build_lock",
+        requirements_file="requirements-build.lock",
+    )
+
+    assert result["returncode"] is None
+    assert result["output_valid"] is False
+    assert result["pip_audit_stderr"] == "pip-audit executable unavailable"
+
+
+def test_pip_audit_command_prefers_explicit_environment(monkeypatch) -> None:
+    monkeypatch.setenv(dependency_audit.PIP_AUDIT_EXECUTABLE_ENV, "/pinned/pip-audit")
+    monkeypatch.setattr(dependency_audit.shutil, "which", lambda _name: "/path/pip-audit")
+
+    assert dependency_audit._pip_audit_command() == ["/pinned/pip-audit"]
+
+
+def test_pip_audit_command_uses_path_without_interpreter_coupling(monkeypatch) -> None:
+    monkeypatch.delenv(dependency_audit.PIP_AUDIT_EXECUTABLE_ENV, raising=False)
+    monkeypatch.setattr(dependency_audit.shutil, "which", lambda name: "/path/pip-audit" if name == "pip-audit" else None)
+
+    assert dependency_audit._pip_audit_command() == ["/path/pip-audit"]

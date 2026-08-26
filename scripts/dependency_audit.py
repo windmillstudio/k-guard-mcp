@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from k_guard_mcp.dependency_evidence import (
@@ -19,6 +20,7 @@ ACTIVE_REQUIREMENTS_LOCKS = (
     ("pip_audit_tool_lock", "requirements-pip-audit.lock"),
     ("release_build_lock", "requirements-build.lock"),
 )
+PIP_AUDIT_EXECUTABLE_ENV = "K_GUARD_PIP_AUDIT_EXECUTABLE"
 
 
 def main() -> int:
@@ -68,11 +70,21 @@ def _audit_lock(requirements_path: Path, *, label: str, requirements_file: str) 
             "pip_audit_stderr": f"{requirements_file} missing",
             "output_valid": False,
         }
+    pip_audit_command = _pip_audit_command()
+    if pip_audit_command is None:
+        return {
+            "label": label,
+            "requirements_file": requirements_file,
+            "skipped": False,
+            "returncode": None,
+            "vulnerability_count": 0,
+            "pip_audit_stdout_json": {"dependencies": []},
+            "pip_audit_stderr": "pip-audit executable unavailable",
+            "output_valid": False,
+        }
     pip_audit_result = _run(
         [
-            sys.executable,
-            "-m",
-            "pip_audit",
+            *pip_audit_command,
             "--requirement",
             str(requirements_path),
             "--format",
@@ -91,6 +103,14 @@ def _audit_lock(requirements_path: Path, *, label: str, requirements_file: str) 
         "vulnerability_count": _count_vulnerabilities(audit_json) if output_valid else 0,
         "output_valid": output_valid,
     }
+
+
+def _pip_audit_command() -> list[str] | None:
+    configured = os.environ.get(PIP_AUDIT_EXECUTABLE_ENV, "").strip()
+    if configured:
+        return [configured]
+    executable = shutil.which("pip-audit")
+    return [executable] if executable else None
 
 
 def _run(args: list[str]) -> dict[str, object]:
