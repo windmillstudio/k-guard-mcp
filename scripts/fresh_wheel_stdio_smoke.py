@@ -20,6 +20,13 @@ from evidence_tree import TREE_HASH_SCHEMA, package_tree_sha256, wheel_package_c
 
 
 PRIMARY_TOOLS = ("check_my_app", "continue_review", "start_review_before_ship")
+REVIEW_POLL_ATTEMPTS = 24
+REVIEW_POLL_WAIT_SECONDS = 4
+# The smoke performs two complete reviews. Keep the outer watchdog longer than
+# both bounded polling windows plus process startup/shutdown overhead.
+STDIO_CONTRACT_TIMEOUT_SECONDS = (
+    2 * REVIEW_POLL_ATTEMPTS * REVIEW_POLL_WAIT_SECONDS + 60
+)
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
 SAFE_ERROR_CODES = {
     "installed wheel package does not match the release source package tree": "installed_package_tree_mismatch",
@@ -69,7 +76,7 @@ async def _run_stdio_contract(workspace: Path) -> dict[str, Any]:
     )
     calls = 0
 
-    with anyio.fail_after(120):
+    with anyio.fail_after(STDIO_CONTRACT_TIMEOUT_SECONDS):
         async with stdio_client(parameters) as (read_stream, write_stream):
             async with ClientSession(read_stream, write_stream) as session:
                 initialized = await session.initialize()
@@ -100,10 +107,10 @@ async def _run_stdio_contract(workspace: Path) -> dict[str, Any]:
 
                 started = await invoke("check_my_app", {"path": ".", "include_flow": True})
                 initial_review_id = str(started["review_job"]["review_id"])
-                for _ in range(24):
+                for _ in range(REVIEW_POLL_ATTEMPTS):
                     initial = await invoke(
                         "continue_review",
-                        {"review_id": initial_review_id, "wait_seconds": 4},
+                        {"review_id": initial_review_id, "wait_seconds": REVIEW_POLL_WAIT_SECONDS},
                     )
                     if initial.get("review_job", {}).get("terminal") is True:
                         break
@@ -128,10 +135,10 @@ async def _run_stdio_contract(workspace: Path) -> dict[str, Any]:
                     },
                 )
                 release_review_id = str(release_started["review_job"]["review_id"])
-                for _ in range(24):
+                for _ in range(REVIEW_POLL_ATTEMPTS):
                     release = await invoke(
                         "continue_review",
-                        {"review_id": release_review_id, "wait_seconds": 4},
+                        {"review_id": release_review_id, "wait_seconds": REVIEW_POLL_WAIT_SECONDS},
                     )
                     if release.get("review_job", {}).get("terminal") is True:
                         break
