@@ -947,7 +947,10 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
             capture_output=True,
             text=True,
             check=False,
-            timeout=30,
+            # Full Windows CI runs can spend more than 30 seconds starting the
+            # ETW/USN guards under shared-runner load.  This is only the outer
+            # test watchdog; the launcher's fail-closed controls are unchanged.
+            timeout=90,
         )
         return completed, json.loads(receipt_path.read_text(encoding="utf-8"))
 
