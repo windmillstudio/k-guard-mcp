@@ -26,7 +26,7 @@ python -m pip install --no-build-isolation --no-deps -e .
 release workflow가 만든 wheel을 설치할 때는 같은 release의 `requirements-evidence.lock`을 hash-locked requirements로 사용하고 `SHA256SUMS`에서 wheel·sdist·lock을 먼저 대조합니다. 이어서 GitHub OIDC/Sigstore SLSA attestation을 검증합니다.
 
 ```powershell
-gh attestation verify .\k_guard_mcp-0.1.0-py3-none-any.whl -R OWNER/REPOSITORY
+gh attestation verify .\k_guard_mcp-0.1.0-py3-none-any.whl -R windmillstudio/k-guard-mcp
 ```
 
 release의 `release-provenance.sigstore.json`과 `release-sbom.sigstore.json`은 offline verification에 사용할 원본 bundle입니다. attestation이 없거나 repository identity와 digest가 맞지 않으면 설치를 중단합니다.

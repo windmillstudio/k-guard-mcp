@@ -40,7 +40,7 @@ K-Guard 자체를 수정하거나 pytest와 `scripts/**`를 실행할 개발자�
 
 ### release wheel 설치
 
-release workflow 산출물에서 정확한 wheel을 받은 경우에는 함께 배포된 `requirements-evidence.lock`을 hash-locked requirements로 사용한다. 파일명과 wheel·sdist·lock의 SHA-256은 같은 release의 `SHA256SUMS`로 확인하고, `gh attestation verify <wheel> -R OWNER/REPOSITORY`로 GitHub OIDC/Sigstore SLSA provenance도 검증한다.
+release workflow 산출물에서 정확한 wheel을 받은 경우에는 함께 배포된 `requirements-evidence.lock`을 hash-locked requirements로 사용한다. 파일명과 wheel·sdist·lock의 SHA-256은 같은 release의 `SHA256SUMS`로 확인하고, `gh attestation verify <wheel> -R windmillstudio/k-guard-mcp`로 GitHub OIDC/Sigstore SLSA provenance도 검증한다.
 
 ```bash
 python -m pip install --require-hashes -r ./requirements-evidence.lock

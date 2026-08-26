@@ -17,6 +17,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from k_guard_mcp import __version__
 from k_guard_mcp.analyzers import SemgrepAnalyzerAdapter
 from k_guard_mcp.benchmarking import run_field_benchmark, write_benchmark_template
 from k_guard_mcp.collector import collect_candidate_files, file_inventory_fingerprint, is_unsafe_link, read_text
@@ -2553,6 +2554,10 @@ def create_mcp_server():
     if _PromptIsolatedFastMCP is None:
         raise RuntimeError("The MCP Python SDK is required to run the MCP server. Install with `pip install k-guard-mcp[mcp]`.")
     mcp = _PromptIsolatedFastMCP("K-Guard MCP", instructions=MCP_SERVER_INSTRUCTIONS)
+    low_level_server = getattr(mcp, "_mcp_server", None)
+    if low_level_server is None or not hasattr(low_level_server, "version"):
+        raise RuntimeError("The installed MCP SDK does not expose the required server identity contract.")
+    low_level_server.version = __version__
     primary_tools = {check_my_app, continue_review, start_review_before_ship}
     for tool in (
         check_my_app,

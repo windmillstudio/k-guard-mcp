@@ -12,7 +12,7 @@ Release cleanup should make the worktree explainable:
 - `pyproject.toml` and `src/k_guard_mcp/__init__.py` must agree on the package version.
 - Package build inputs must be byte-identical to their Git index blobs at the strict boundary, including line endings.
 - Strict or tagged release authorization requires `contest-readiness-report.json` to declare `package_ready=true` with a package-ready status and requires `benchmark-report.json` to be bound to the current source. Honest blocked readiness and explicitly historical benchmark reports remain valid only for non-release hygiene.
-- A release tag must exactly equal `v{project.version}`.
+- A release tag must exactly equal `v{project.version}` and resolve to the checked-out `HEAD` commit.
 - A publish or tag step should use a clean worktree after the intended release commit is created.
 
 ## Local Check

@@ -15,11 +15,11 @@
       },
       {
         "name": "k-guard-mcp:runtime-dependencies",
-        "value": "mcp>=1.0.0, pydantic>=2.7,<3, PyYAML>=6.0.2,<7, PyJWT>=2.13.0, sqlglot>=30.12.0,<31, tree-sitter==0.26.0, tree-sitter-java==0.23.5"
+        "value": "mcp>=1.28.1,<2, httpx>=0.28.1,<1, pydantic>=2.7,<3, PyYAML>=6.0.2,<7, PyJWT>=2.13.0, sqlglot>=30.12.0,<31, tree-sitter==0.26.0, tree-sitter-java==0.23.5"
       },
       {
         "name": "k-guard-mcp:evidence-lock-sha256",
-        "value": "85cacef7fbbdfee5162f1c52f0d9f4d80bacf61c67efda671e94c4aa283e6929"
+        "value": "80d9f64c19a3c9d9184d562b9811498d89f499a015a4642b22a554b979e67ace"
       }
     ]
   },

@@ -76,13 +76,13 @@ K-Guard combines:
 - SARIF/CI output: fail builds on configured severities
 - `korean_senior` Guardian profile: fail-closed four-domain contract for site security, API exposure, data management, and operational risk
 - Primary MCP tools: `check_my_app`, `continue_review`, `start_review_before_ship`; internal canonical engine: Guardian high; guided prompt: `guided_review`
-- Advanced MCP tools: `scan_workspace`, `deep_analyzer_audit`, `validate_multilang_pack`, `software_composition_audit`, `validate_policy_controls`, `validate_streamable_http_runtime`, `scan_text`, `scan_diff`, `scan_mcp_config`, `probe_http`, `build_flow_map`, `observe_mcp_events`, `enforce_mcp_events`, `observe_mcp_event`, `score_fixture_corpus`, `data_release_gate`, `create_field_campaign_template`, `field_campaign_status`, `guardian_audit`, `explain_rule`, `suggest_fix`, `security_gate`
+- Advanced MCP tools: `scan_workspace`, `deep_analyzer_audit`, `validate_multilang_pack`, `software_composition_audit`, `validate_policy_controls`, `validate_streamable_http_runtime`, `scan_text`, `scan_diff`, `scan_mcp_config`, `probe_http`, `build_flow_map`, `observe_mcp_events`, `enforce_mcp_events`, `observe_mcp_event`, `score_fixture_corpus`, `data_release_gate`, `create_field_campaign_template`, `field_campaign_status`, `create_guardian_manifest_template`, `guardian_audit`, `explain_rule`, `suggest_fix`, `security_gate`
 
 ## 설치 경계
 
 release workflow가 만든 정확한 wheel과 함께 배포된 `requirements-evidence.lock`을 받은 사용자는 저장소 없이 아래처럼 감사된 dependency closure를 재현할 수 있습니다. `k-guard`, `k-guard-dashboard`, `k-guard-mcp`, `python -m k_guard_mcp.cli`, `python -m k_guard_mcp.server`는 설치된 wheel의 명령입니다.
 
-release에는 `SHA256SUMS`, GitHub OIDC로 서명된 SLSA provenance bundle, CycloneDX SBOM attestation bundle도 포함됩니다. 온라인에서는 `gh attestation verify ./k_guard_mcp-0.1.0-py3-none-any.whl -R OWNER/REPOSITORY`로 빌드 주체와 digest를 확인한 뒤 설치합니다. checksum만 맞고 attestation이 검증되지 않으면 공식 release artifact로 취급하지 않습니다.
+release에는 `SHA256SUMS`, GitHub OIDC로 서명된 SLSA provenance bundle, CycloneDX SBOM attestation bundle도 포함됩니다. 온라인에서는 `gh attestation verify ./k_guard_mcp-0.1.0-py3-none-any.whl -R windmillstudio/k-guard-mcp`로 빌드 주체와 digest를 확인한 뒤 설치합니다. checksum만 맞고 attestation이 검증되지 않으면 공식 release artifact로 취급하지 않습니다.
 
 ```bash
 python -m pip install --require-hashes -r ./requirements-evidence.lock
@@ -187,7 +187,7 @@ python scripts/build_top_domain_manifest.py --output datasets/tranco-passive-hom
 python scripts/passive_homepage_calibration.py --targets datasets/tranco-passive-homepage-10k.csv --output reports/passive-homepage-10k-summary.json --checkpoint-jsonl reports/passive-homepage-10k-checkpoint.jsonl --max-targets 10000 --delay-ms 500
 ```
 
-Coverage gate의 `90.00%`는 statement와 branch opportunity를 함께 계산한 branch-inclusive combined coverage입니다. branch 자체가 90%라는 뜻이 아니며, `precision=2`와 `fail_under=90`을 사용하므로 `89.90%`는 실패합니다.
+전체 소스 회귀의 Coverage gate `90.00%`는 statement와 branch opportunity를 함께 계산한 branch-inclusive combined coverage입니다. branch 자체가 90%라는 뜻이 아니며, `precision=2`와 `fail_under=90`을 사용하므로 `89.90%`는 실패합니다. 공개 저장소 CI의 `public_source_only` 범위는 별도 배포 증거·native case를 제외하므로 전체 `88%`, `redaction.py` `85%` 문턱을 적용하며 두 수치를 서로 바꿔 주장하지 않습니다.
 
 ## 소스 체크아웃 Release Hygiene
 
@@ -197,7 +197,7 @@ Use the release hygiene check before CTO review or publish prep:
 python scripts/release_hygiene.py --json
 ```
 
-Default mode validates that a dirty release-candidate worktree is classified, free of visible runtime scratch output, and free of unresolved review-required artifacts. Use `--strict-clean` after the intended release commit; strict mode also compares every package build input byte with its Git index blob. Tagged publication additionally requires `--expected-tag v{project.version}`. The release workflow waits for the reusable Windows/macOS/Linux CI matrix, creates attestations, and publishes the tag artifacts as a GitHub Release. Details are in `docs/release-hygiene.md`.
+Default mode validates that a dirty release-candidate worktree is classified, free of visible runtime scratch output, and free of unresolved review-required artifacts. Use `--strict-clean` after the intended release commit; strict mode also compares every package build input byte with its Git index blob. Tagged publication additionally requires `--expected-tag v{project.version}`, and that exact tag must resolve to the checked-out HEAD commit. The release workflow waits for the reusable Windows/macOS/Linux CI matrix, creates attestations, and publishes the tag artifacts as a GitHub Release. Details are in `docs/release-hygiene.md`.
 
 The Guardian Actions template currently installs the exact K-Guard source checkout selected by the workflow commit; it does not assume a PyPI package. Before copying it to another repository, vendor K-Guard at a commit-pinned path and set `K_GUARD_SOURCE_PATH`. After release artifacts exist, consumers should pin either an exact wheel plus its published SHA-256, or a full 40-character Git commit in a direct-reference requirement. Replace the placeholders only with an actual release location:
 

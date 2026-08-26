@@ -12,6 +12,7 @@ from pathlib import Path
 import anyio
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from k_guard_mcp import __version__
 
 
 REQUIRED_PRIMARY_TOOLS = {"check_my_app", "continue_review", "start_review_before_ship"}
@@ -36,7 +37,7 @@ async def _initialize_installed_server() -> dict[str, object]:
         with anyio.fail_after(30):
             async with stdio_client(parameters) as (read_stream, write_stream):
                 async with ClientSession(read_stream, write_stream) as session:
-                    await session.initialize()
+                    initialized = await session.initialize()
                     listed = await session.list_tools()
                     scanned = await session.call_tool(
                         "scan_text",
@@ -46,6 +47,10 @@ async def _initialize_installed_server() -> dict[str, object]:
     missing = sorted(REQUIRED_PRIMARY_TOOLS - names)
     if missing:
         raise RuntimeError(f"installed MCP server is missing primary tools: {missing}")
+    if initialized.serverInfo.version != __version__:
+        raise RuntimeError(
+            "installed MCP server advertised the SDK version instead of the K-Guard package version"
+        )
     if not scanned.content or not hasattr(scanned.content[0], "text"):
         raise RuntimeError("installed MCP scan_text returned no text payload")
     rendered = str(scanned.content[0].text)
@@ -58,6 +63,7 @@ async def _initialize_installed_server() -> dict[str, object]:
         "passed": True,
         "transport": "stdio",
         "initialized": True,
+        "server_version": initialized.serverInfo.version,
         "tool_count": len(names),
         "required_primary_tools": sorted(REQUIRED_PRIMARY_TOOLS),
         "scan_text_called": True,

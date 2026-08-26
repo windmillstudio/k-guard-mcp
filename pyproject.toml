@@ -32,6 +32,11 @@ classifiers = [
   "Topic :: Software Development :: Quality Assurance",
 ]
 
+[project.urls]
+Homepage = "https://github.com/windmillstudio/k-guard-mcp"
+Repository = "https://github.com/windmillstudio/k-guard-mcp"
+Issues = "https://github.com/windmillstudio/k-guard-mcp/issues"
+
 [project.optional-dependencies]
 mcp = [
   "mcp>=1.28.1,<2"

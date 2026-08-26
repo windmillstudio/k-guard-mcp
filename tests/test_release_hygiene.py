@@ -472,9 +472,33 @@ def test_release_hygiene_validates_evidence_hash_manifest(tmp_path, monkeypatch)
     assert status["errors"] == ["digest mismatch: evidence/public/report.json"]
 
 
-def test_release_tag_must_exactly_match_project_version() -> None:
-    assert release_hygiene._release_tag_status("v0.1.0", "0.1.0")["valid"] is True
-    assert release_hygiene._release_tag_status("v9.9.9", "0.1.0")["valid"] is False
+def test_release_tag_must_match_project_version_and_resolve_to_head(tmp_path, monkeypatch) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "K-Guard Test"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=tmp_path, check=True)
+    source = tmp_path / "source.txt"
+    source.write_text("first\n", encoding="utf-8")
+    subprocess.run(["git", "add", "source.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "first"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "tag", "v0.1.0"], cwd=tmp_path, check=True)
+    monkeypatch.setattr(release_hygiene, "ROOT", tmp_path)
+
+    bound = release_hygiene._release_tag_status("v0.1.0", "0.1.0")
+    assert bound["name_matches_version"] is True
+    assert bound["reference_resolved"] is True
+    assert bound["commit_matches_head"] is True
+    assert bound["valid"] is True
+
+    source.write_text("second\n", encoding="utf-8")
+    subprocess.run(["git", "add", "source.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "second"], cwd=tmp_path, check=True)
+    stale = release_hygiene._release_tag_status("v0.1.0", "0.1.0")
+    assert stale["commit_matches_head"] is False
+    assert stale["valid"] is False
+
+    wrong = release_hygiene._release_tag_status("v9.9.9", "0.1.0")
+    assert wrong["name_matches_version"] is False
+    assert wrong["valid"] is False
     assert release_hygiene._release_tag_status(None, "0.1.0")["required"] is False
 
 

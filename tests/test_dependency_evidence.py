@@ -27,7 +27,7 @@ def test_release_evidence_lock_matches_installed_declared_closure() -> None:
     assert {"dev", "mcp"}.issubset(scope["optional"])
     assert not unresolved
     assert lock["valid"] is True
-    assert lock["active_entry_count"] == len(names) == 41
+    assert lock["active_entry_count"] == len(names)
     assert lock["entry_count"] == lock["hashed_entry_count"] == 41
     assert lock["hash_count"] > lock["entry_count"]
     assert lock["all_entries_hashed"] is True

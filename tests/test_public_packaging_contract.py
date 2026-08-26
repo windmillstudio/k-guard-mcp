@@ -6,6 +6,7 @@ import json
 import tomllib
 from pathlib import Path
 
+import anyio
 from packaging.requirements import Requirement
 from packaging.version import Version
 
@@ -41,13 +42,30 @@ def test_runtime_dependency_contract_matches_the_audited_lock() -> None:
     assert Version("1.0.0") not in runtime["httpx"].specifier
     assert str(evidence_pins["mcp"].specifier) == "==1.28.1"
     assert str(evidence_pins["httpx"].specifier) == "==0.28.1"
+    assert project["urls"] == {
+        "Homepage": "https://github.com/windmillstudio/k-guard-mcp",
+        "Repository": "https://github.com/windmillstudio/k-guard-mcp",
+        "Issues": "https://github.com/windmillstudio/k-guard-mcp/issues",
+    }
 
 
 def test_readme_korean_corpus_path_exists_and_the_documented_command_runs(tmp_path: Path) -> None:
+    from k_guard_mcp import server
+
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     documented_path = KOREAN_FIXTURE.as_posix()
     assert documented_path in readme
     assert ".k-guard/korean-fixture-corpus.json" not in readme
+    assert "OWNER/REPOSITORY" not in readme
+    assert "-R windmillstudio/k-guard-mcp" in readme
+
+    async def listed_tool_names() -> set[str]:
+        return {tool.name for tool in await server.create_mcp_server().list_tools()}
+
+    undocumented_tools = sorted(
+        name for name in anyio.run(listed_tool_names) if f"`{name}`" not in readme
+    )
+    assert undocumented_tools == []
     assert (ROOT / KOREAN_FIXTURE).is_file()
 
     output = tmp_path / "fixture-metrics.json"

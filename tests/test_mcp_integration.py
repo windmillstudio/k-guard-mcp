@@ -18,6 +18,14 @@ FIXTURES = Path(__file__).parent / "fixtures"
 ADVERSARIAL_CORPUS = json.loads((FIXTURES / "adversarial_redaction_corpus.json").read_text(encoding="utf-8"))
 
 
+def test_mcp_server_advertises_k_guard_product_identity():
+    from k_guard_mcp import __version__, server
+
+    mcp_server = server.create_mcp_server()
+    assert mcp_server._mcp_server.name == "K-Guard MCP"
+    assert mcp_server._mcp_server.version == __version__
+
+
 def test_primary_read_only_tools_export_standard_annotations():
     from k_guard_mcp import server
 

@@ -226,15 +226,42 @@ def _package_version() -> str | None:
     return match.group(1) if match else None
 
 
+def _resolve_git_commit(revision: str) -> str | None:
+    result = _run_git_bytes(["rev-parse", "--verify", f"{revision}^{{commit}}"])
+    if result.returncode != 0:
+        return None
+    commit = result.stdout.decode("ascii", errors="ignore").strip().lower()
+    return commit if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", commit) else None
+
+
 def _release_tag_status(expected_tag: str | None, project_version: str) -> dict[str, Any]:
     expected = f"v{project_version}"
     if expected_tag is None:
-        return {"required": False, "provided": None, "expected": expected, "valid": True}
+        return {
+            "required": False,
+            "provided": None,
+            "expected": expected,
+            "name_matches_version": None,
+            "reference_resolved": None,
+            "tag_commit": None,
+            "head_commit": None,
+            "commit_matches_head": None,
+            "valid": True,
+        }
+    name_matches = expected_tag == expected
+    tag_commit = _resolve_git_commit(f"refs/tags/{expected_tag}") if name_matches else None
+    head_commit = _resolve_git_commit("HEAD")
+    commit_matches = tag_commit is not None and head_commit is not None and tag_commit == head_commit
     return {
         "required": True,
         "provided": expected_tag,
         "expected": expected,
-        "valid": expected_tag == expected,
+        "name_matches_version": name_matches,
+        "reference_resolved": tag_commit is not None,
+        "tag_commit": tag_commit,
+        "head_commit": head_commit,
+        "commit_matches_head": commit_matches,
+        "valid": name_matches and commit_matches,
     }
 
 
@@ -732,7 +759,7 @@ def build_report(strict_clean: bool = False, expected_tag: str | None = None) ->
             ],
             "blocking_categories": ["review_required_artifact", "unclassified", "generated_noise"],
             "excluded_runtime_prefixes": list(GENERATED_NOISE_PREFIXES),
-            "publish_rule": "Run with --strict-clean after committing the release candidate; strict or tagged release authorization requires package_ready=true with a package-ready status and current-source performance evidence, while historical performance and honestly blocked readiness reports remain valid only for non-release hygiene. Strict mode also requires an empty status and exact worktree/index bytes for package build inputs. Tagged releases require --expected-tag v{project.version}.",
+            "publish_rule": "Run with --strict-clean after committing the release candidate; strict or tagged release authorization requires package_ready=true with a package-ready status and current-source performance evidence, while historical performance and honestly blocked readiness reports remain valid only for non-release hygiene. Strict mode also requires an empty status and exact worktree/index bytes for package build inputs. Tagged releases require --expected-tag v{project.version}, and that exact tag must resolve to the checked-out HEAD commit.",
         },
     }
 

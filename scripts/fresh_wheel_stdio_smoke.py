@@ -25,6 +25,8 @@ SAFE_ERROR_CODES = {
     "installed wheel package does not match the release source package tree": "installed_package_tree_mismatch",
     "wheel package does not match the installed release package tree": "wheel_package_tree_mismatch",
     "wheel distribution identity does not match the installed package": "wheel_distribution_identity_mismatch",
+    "MCP server name does not match the installed package": "server_name_mismatch",
+    "MCP server version does not match the installed package": "server_version_mismatch",
     "primary MCP tools are missing or out of order": "primary_tool_contract_mismatch",
     "internal release helper is exposed as an MCP tool": "internal_tool_exposed",
     "primary output schema permits an incomplete envelope": "primary_output_schema_incomplete",
@@ -70,7 +72,11 @@ async def _run_stdio_contract(workspace: Path) -> dict[str, Any]:
     with anyio.fail_after(120):
         async with stdio_client(parameters) as (read_stream, write_stream):
             async with ClientSession(read_stream, write_stream) as session:
-                await session.initialize()
+                initialized = await session.initialize()
+                if initialized.serverInfo.name != "K-Guard MCP":
+                    raise RuntimeError("MCP server name does not match the installed package")
+                if initialized.serverInfo.version != version("k-guard-mcp"):
+                    raise RuntimeError("MCP server version does not match the installed package")
                 listed = await session.list_tools()
                 tool_names = [tool.name for tool in listed.tools]
                 primary = {tool.name: tool for tool in listed.tools if tool.name in PRIMARY_TOOLS}
@@ -154,6 +160,8 @@ async def _run_stdio_contract(workspace: Path) -> dict[str, Any]:
                     raise RuntimeError("invalid review id did not fail closed")
 
     return {
+        "server_name": initialized.serverInfo.name,
+        "server_version": initialized.serverInfo.version,
         "tool_count": len(tool_names),
         "primary_tools": list(PRIMARY_TOOLS),
         "primary_output_schema_required": ["method", "experience"],
