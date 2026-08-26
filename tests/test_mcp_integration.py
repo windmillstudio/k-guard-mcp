@@ -948,7 +948,10 @@ def test_real_stdio_transport_validates_primary_structured_output():
             cwd=root,
         )
         with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as errlog:
-            with anyio.fail_after(60):
+            # Two complete reviews run through a real stdio server process.
+            # Keep the test bounded while allowing shared CI runners enough
+            # time to schedule both background review workers.
+            with anyio.fail_after(180):
                 async with stdio_client(parameters, errlog=errlog) as (read_stream, write_stream):
                     async with ClientSession(read_stream, write_stream) as session:
                         await session.initialize()
@@ -963,7 +966,7 @@ def test_real_stdio_transport_validates_primary_structured_output():
 
                         started = await invoke("check_my_app", {"path": ".", "include_flow": True})
                         initial_review_id = started["review_job"]["review_id"]
-                        for _ in range(12):
+                        for _ in range(30):
                             completed = await invoke(
                                 "continue_review",
                                 {"review_id": initial_review_id, "wait_seconds": 2},
@@ -986,7 +989,7 @@ def test_real_stdio_transport_validates_primary_structured_output():
                             },
                         )
                         release_review_id = release_started["review_job"]["review_id"]
-                        for _ in range(12):
+                        for _ in range(30):
                             release_completed = await invoke(
                                 "continue_review",
                                 {"review_id": release_review_id, "wait_seconds": 2},
