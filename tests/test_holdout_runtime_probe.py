@@ -35,6 +35,11 @@ def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
         base,
         ignore=shutil.ignore_patterns("site-packages", "__pycache__"),
         copy_function=shutil.copy2,
+        # Some official macOS Python frameworks contain optional Tk/Tcl
+        # header symlinks whose targets are not shipped.  They are unrelated
+        # to the isolated runtime under test and must not make fixture setup
+        # platform-image dependent.
+        ignore_dangling_symlinks=True,
     )
     python = base / ("python.exe" if sys.platform == "win32" else "bin/python")
     if not python.is_file() or python.is_symlink() or python.stat().st_nlink != 1:
