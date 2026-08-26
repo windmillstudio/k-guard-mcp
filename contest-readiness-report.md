@@ -10,34 +10,51 @@
 | check | passed |
 |---|---|
 | `submission_documented` | `True` |
-| `submission_claims_current` | `True` |
-| `three_minute_demo_video_valid` | `True` |
-| `submission_video_attestation_valid` | `True` |
+| `submission_claims_current` | `False` |
+| `three_minute_demo_video_valid` | `False` |
+| `submission_video_attestation_valid` | `False` |
 | `submission_report_bound_and_verified` | `False` |
-| `submission_artifact_manifest_valid` | `True` |
-| `submission_rights_documented` | `True` |
-| `fresh_wheel_stdio_current_source_passed` | `True` |
-| `submission_release_archives_match_current_source` | `True` |
-| `current_source_public_replay_passed` | `True` |
+| `submission_artifact_manifest_valid` | `False` |
+| `submission_rights_documented` | `False` |
+| `fresh_wheel_stdio_current_source_passed` | `False` |
+| `submission_release_archives_match_current_source` | `False` |
+| `current_source_public_replay_passed` | `False` |
 | `current_language_validation_pack_complete` | `True` |
 | `brand_consistent` | `True` |
-| `demo_contract_passed` | `True` |
+| `demo_contract_passed` | `False` |
 | `license_policy_passed` | `True` |
 | `sbom_present` | `True` |
-| `declared_sbom_component_count_matches_live_artifacts` | `True` |
-| `evidence_integrity_passed` | `True` |
-| `historical_client_evidence_contract_valid` | `True` |
-| `historical_public_effectiveness_evidence_contract_valid` | `True` |
+| `declared_sbom_component_count_matches_live_artifacts` | `False` |
+| `evidence_integrity_passed` | `False` |
+| `historical_client_evidence_contract_valid` | `False` |
+| `current_self_attested_client_process_evidence_at_least_3` | `False` |
+| `historical_public_effectiveness_evidence_contract_valid` | `False` |
 | `release_workflow_static_contract_valid` | `True` |
 | `community_files_present` | `True` |
 | `owned_partner_field_apps_at_least_12` | `False` |
-| `historical_client_recordings_at_least_3` | `True` |
-| `historical_public_app_effectiveness_qualified` | `True` |
+| `historical_client_recordings_at_least_3` | `False` |
+| `historical_public_app_effectiveness_qualified` | `False` |
 
 ## Remaining Blockers
 
+- `submission_claims_current`
+- `three_minute_demo_video_valid`
+- `submission_video_attestation_valid`
 - `submission_report_bound_and_verified`
+- `submission_artifact_manifest_valid`
+- `submission_rights_documented`
+- `fresh_wheel_stdio_current_source_passed`
+- `submission_release_archives_match_current_source`
+- `current_source_public_replay_passed`
+- `demo_contract_passed`
+- `declared_sbom_component_count_matches_live_artifacts`
+- `evidence_integrity_passed`
+- `historical_client_evidence_contract_valid`
+- `current_self_attested_client_process_evidence_at_least_3`
+- `historical_public_effectiveness_evidence_contract_valid`
 - `owned_partner_field_apps_at_least_12`
+- `historical_client_recordings_at_least_3`
+- `historical_public_app_effectiveness_qualified`
 
 ## Claim Boundary
 
