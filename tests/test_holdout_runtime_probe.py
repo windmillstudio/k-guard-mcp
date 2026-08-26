@@ -24,6 +24,35 @@ def _record_hash(payload: bytes) -> str:
     return base64.urlsafe_b64encode(hashlib.sha256(payload).digest()).decode("ascii").rstrip("=")
 
 
+def _runtime_copy_ignores(directory: str, names: list[str]) -> set[str]:
+    ignored = set(
+        shutil.ignore_patterns("site-packages", "__pycache__")(directory, names)
+    )
+    parent = Path(directory)
+    ignored.update(
+        name
+        for name in names
+        if (parent / name).is_symlink() and not (parent / name).exists()
+    )
+    return ignored
+
+
+def test_runtime_copy_ignores_only_truly_dangling_links(tmp_path: Path) -> None:
+    (tmp_path / "python-real").write_bytes(b"runtime")
+    try:
+        os.symlink("python-real", tmp_path / "python")
+        os.symlink("missing-target", tmp_path / "missing")
+    except (NotImplementedError, OSError):
+        pytest.skip("symbolic-link creation is unavailable")
+
+    ignored = _runtime_copy_ignores(
+        str(tmp_path),
+        ["python", "missing", "site-packages", "__pycache__"],
+    )
+
+    assert ignored == {"missing", "site-packages", "__pycache__"}
+
+
 @pytest.fixture(scope="session")
 def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Avoid inheriting hardlinks created by unrelated host-process tests."""
@@ -33,13 +62,12 @@ def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
     shutil.copytree(
         source,
         base,
-        ignore=shutil.ignore_patterns("site-packages", "__pycache__"),
+        # Official macOS frameworks may contain optional Tk/Tcl header links
+        # whose targets are not shipped.  Resolve dangling links relative to
+        # their containing directory so valid POSIX links such as bin/python
+        # are still followed and copied into independent regular files.
+        ignore=_runtime_copy_ignores,
         copy_function=shutil.copy2,
-        # Some official macOS Python frameworks contain optional Tk/Tcl
-        # header symlinks whose targets are not shipped.  They are unrelated
-        # to the isolated runtime under test and must not make fixture setup
-        # platform-image dependent.
-        ignore_dangling_symlinks=True,
     )
     python = base / ("python.exe" if sys.platform == "win32" else "bin/python")
     if not python.is_file() or python.is_symlink() or python.stat().st_nlink != 1:
