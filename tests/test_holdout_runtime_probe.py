@@ -37,6 +37,58 @@ def _runtime_copy_ignores(directory: str, names: list[str]) -> set[str]:
     return ignored
 
 
+def _materialize_runtime_symlinks(root: Path) -> None:
+    """Replace platform-created venv aliases with independent local copies."""
+
+    root = root.resolve(strict=True)
+    for _pass in range(256):
+        links: list[Path] = []
+        for directory, dirnames, filenames in os.walk(root, followlinks=False):
+            parent = Path(directory)
+            links.extend(
+                parent / name
+                for name in (*dirnames, *filenames)
+                if (parent / name).is_symlink()
+            )
+        if not links:
+            return
+
+        for link in sorted(links, key=lambda path: len(path.parts), reverse=True):
+            if not link.is_symlink():
+                continue
+            target = link.resolve(strict=True)
+            if target == root or target in root.parents or target in link.parents:
+                pytest.fail(
+                    f"cyclic runtime alias cannot be materialized: {link.relative_to(root)}"
+                )
+            staged = link.with_name(f".{link.name}.materialized")
+            if staged.exists() or staged.is_symlink():
+                pytest.fail(
+                    f"runtime alias staging path already exists: {staged.relative_to(root)}"
+                )
+            if target.is_dir():
+                shutil.copytree(
+                    target,
+                    staged,
+                    # Preserve nested links as links so a cycle cannot make
+                    # copytree recurse forever; the next pass materializes
+                    # each one under the same explicit checks.
+                    symlinks=True,
+                    copy_function=shutil.copy2,
+                )
+            elif target.is_file():
+                shutil.copy2(target, staged)
+            else:
+                pytest.fail(
+                    "runtime alias target is not a regular file or directory: "
+                    f"{link.relative_to(root)}"
+                )
+            link.unlink()
+            staged.replace(link)
+
+    pytest.fail("runtime alias materialization did not converge")
+
+
 def test_runtime_copy_ignores_only_truly_dangling_links(tmp_path: Path) -> None:
     (tmp_path / "python-real").write_bytes(b"runtime")
     try:
@@ -51,6 +103,22 @@ def test_runtime_copy_ignores_only_truly_dangling_links(tmp_path: Path) -> None:
     )
 
     assert ignored == {"missing", "site-packages", "__pycache__"}
+
+
+def test_materialize_runtime_symlinks_creates_independent_files(tmp_path: Path) -> None:
+    target = tmp_path / "runtime-real"
+    target.write_bytes(b"runtime")
+    alias = tmp_path / "runtime-alias"
+    try:
+        os.symlink(target.name, alias)
+    except (NotImplementedError, OSError):
+        pytest.skip("symbolic-link creation is unavailable")
+
+    _materialize_runtime_symlinks(tmp_path)
+
+    assert alias.read_bytes() == b"runtime"
+    assert not alias.is_symlink()
+    assert alias.stat().st_nlink == 1
 
 
 @pytest.fixture(scope="session")
@@ -95,7 +163,6 @@ def _fixture_runtime(tmp_path: Path, isolated_base_python: Path) -> tuple[Path, 
         stderr=subprocess.DEVNULL,
         timeout=120,
     )
-    scaffold = build_scanner_scaffold_manifest(environment)
     scanner = environment / ("Scripts/python.exe" if __import__("sys").platform == "win32" else "bin/python")
     purelib = Path(
         subprocess.check_output(
@@ -103,6 +170,12 @@ def _fixture_runtime(tmp_path: Path, isolated_base_python: Path) -> tuple[Path, 
             text=True,
         ).strip()
     )
+    # Some framework builds create executable or library aliases lazily on
+    # first launch even when venv was asked for copies.  The production probe
+    # must continue to reject every such alias, so normalize only this test
+    # fixture into an actually self-contained runtime before binding it.
+    _materialize_runtime_symlinks(environment)
+    scaffold = build_scanner_scaffold_manifest(environment)
     package = purelib / "k_guard_mcp"
     dist_info = purelib / "k_guard_mcp-0.1.0.dist-info"
     package.mkdir()
