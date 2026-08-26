@@ -83,7 +83,9 @@ def _exercise_official_sdk() -> dict[str, Any]:
     from mcp.server.fastmcp import FastMCP
 
     with tempfile.TemporaryDirectory(prefix="k-guard-official-sdk-validation-") as directory:
-        root = Path(directory)
+        # The path is process-created.  Resolve macOS's /var -> /private/var
+        # system alias before strict policy/audit symlink checks inspect it.
+        root = Path(directory).resolve(strict=True)
         policy_path = root / "access-policy.json"
         audit_path = root / "access-audit.jsonl"
         policy_path.write_text(
@@ -211,7 +213,9 @@ def _exercise_official_sdk() -> dict[str, Any]:
 
 async def _exercise_once() -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="k-guard-runtime-validation-") as directory:
-        root = Path(directory)
+        # The path is process-created.  Resolve macOS's /var -> /private/var
+        # system alias before strict policy/audit symlink checks inspect it.
+        root = Path(directory).resolve(strict=True)
         policy_path = root / "access-policy.json"
         audit_path = root / "access-audit.jsonl"
         report_path = root / "runtime-report.json"

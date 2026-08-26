@@ -6,6 +6,25 @@ on:
   workflow_call:
 
 jobs:
+  readme-install-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Fresh install through the README dependency path
+        run: |
+          python -m venv "$RUNNER_TEMP/k-guard-readme-smoke"
+          "$RUNNER_TEMP/k-guard-readme-smoke/bin/python" -m pip install .
+          "$RUNNER_TEMP/k-guard-readme-smoke/bin/python" -m pip check
+      - name: Exercise installed CLI and MCP stdio initialize
+        run: |
+          "$RUNNER_TEMP/k-guard-readme-smoke/bin/k-guard" --help
+          "$RUNNER_TEMP/k-guard-readme-smoke/bin/python" scripts/readme_install_smoke.py
+
   test:
     strategy:
       fail-fast: false
@@ -41,8 +60,8 @@ jobs:
         run: python scripts/synthetic_korean_corpus.py
       - name: Run authorized dynamic MCP harness
         run: python scripts/authorized_dynamic_harness.py
-      - name: Run benchmark gate
-        run: python scripts/benchmark.py
+      - name: Record shared-runner timing and enforce benchmark invariants
+        run: python scripts/benchmark.py --record-only --output tmp/benchmark-ci.json
       - name: Run inner-core product gate
         run: python scripts/inner_core_product_gate.py --targets 24 --output tmp/inner-core-product-gate-ci.json --markdown tmp/inner-core-product-gate-ci.md --html tmp/inner-core-product-gate-ci.html
       - name: Upload inner-core gate artifacts
@@ -51,6 +70,7 @@ jobs:
         with:
           name: inner-core-gate-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
+            tmp/benchmark-ci.json
             tmp/inner-core-product-gate-ci.json
             tmp/inner-core-product-gate-ci.md
             tmp/inner-core-product-gate-ci.html

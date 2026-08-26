@@ -1286,10 +1286,35 @@ def _read_bound_artifact(
         after = os.fstat(descriptor)
     finally:
         os.close(descriptor)
-    stable = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
-    if any(getattr(metadata, field, None) != getattr(before, field, None) for field in stable):
+    # CPython 3.12 changed ``st_ctime`` on Windows to the creation time for
+    # path-based stat calls, while the CRT-backed ``fstat`` used for an open
+    # descriptor can still expose the legacy metadata-change value.  Comparing
+    # those two values therefore rejects an unchanged file nondeterministically.
+    # ``st_birthtime_ns`` is the cross-API creation-time field on 3.12+; on
+    # older supported interpreters the file ID, size and mtime still bind the
+    # path to the descriptor.  Descriptor-to-descriptor checks below retain
+    # ctime so a change during the read remains fail-closed.
+    path_to_descriptor = ("st_dev", "st_ino", "st_size", "st_mtime_ns")
+    if os.name == "nt" and hasattr(metadata, "st_birthtime_ns"):
+        path_to_descriptor += ("st_birthtime_ns",)
+    elif os.name != "nt":
+        path_to_descriptor += ("st_ctime_ns",)
+    if any(
+        getattr(metadata, field, None) != getattr(before, field, None)
+        for field in path_to_descriptor
+    ):
         raise _ArtifactError("changed_before_read")
-    if any(getattr(before, field, None) != getattr(after, field, None) for field in stable):
+    descriptor_stable = (
+        "st_dev",
+        "st_ino",
+        "st_size",
+        "st_mtime_ns",
+        "st_ctime_ns",
+    )
+    if any(
+        getattr(before, field, None) != getattr(after, field, None)
+        for field in descriptor_stable
+    ):
         raise _ArtifactError("changed_during_read")
     if len(raw) != metadata.st_size or len(raw) > MAX_ARTIFACT_BYTES:
         raise _ArtifactError("changed_during_read")

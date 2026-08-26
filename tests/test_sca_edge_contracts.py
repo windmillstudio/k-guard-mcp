@@ -209,7 +209,8 @@ def test_requirement_and_pyproject_parsers_cover_strict_edges(monkeypatch: pytes
             sca._pyproject_contract(b"ignored")
 
     refs = sca._requirement_file_references(
-        b"-r local.txt\n--constraint=constraints.lock\n-r ../escape.txt\n-r C:/absolute.txt\n"
+        b"-r local.txt\n--constraint=constraints.lock\n-r ../escape.txt\n"
+        b"-r /absolute.txt\n-r C:/absolute.txt\n-r C:drive-relative.txt\n"
     )
     assert refs == ("constraints.lock", "local.txt")
 

@@ -15,7 +15,8 @@ def test_release_evidence_lock_matches_installed_declared_closure() -> None:
     versions = {name: importlib.metadata.version(name) for name in names}
 
     assert scope["runtime"] == [
-        "mcp>=1.0.0",
+        "mcp>=1.28.1,<2",
+        "httpx>=0.28.1,<1",
         "pydantic>=2.7,<3",
         "PyYAML>=6.0.2,<7",
         "PyJWT>=2.13.0",

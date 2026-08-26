@@ -45,7 +45,17 @@ def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
 def _fixture_runtime(tmp_path: Path, isolated_base_python: Path) -> tuple[Path, Path, dict]:
     environment = tmp_path / "venv"
     subprocess.run(
-        [str(isolated_base_python), "-I", "-B", "-S", "-m", "venv", "--without-pip", str(environment)],
+        [
+            str(isolated_base_python),
+            "-I",
+            "-B",
+            "-S",
+            "-m",
+            "venv",
+            "--without-pip",
+            "--copies",
+            str(environment),
+        ],
         check=True,
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,

@@ -13,7 +13,7 @@ import time
 import tomllib
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from types import MappingProxyType
 from typing import Any, Protocol
 
@@ -583,8 +583,17 @@ def _requirement_file_references(content: bytes) -> tuple[str, ...]:
         if not match:
             continue
         rendered = match.group(1).replace("\\", "/")
-        candidate = Path(rendered)
-        if candidate.is_absolute() or ".." in candidate.parts:
+        native = Path(rendered)
+        posix = PurePosixPath(rendered)
+        windows = PureWindowsPath(rendered)
+        if (
+            native.is_absolute()
+            or posix.is_absolute()
+            or windows.is_absolute()
+            or windows.drive
+            or ".." in posix.parts
+            or ".." in windows.parts
+        ):
             continue
         references.add(rendered.casefold())
     return tuple(sorted(references))

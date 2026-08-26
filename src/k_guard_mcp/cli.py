@@ -52,7 +52,18 @@ from k_guard_mcp.validation import run_validation_review, write_validation_revie
 _REDACTION_TOKEN_RE = re.compile(r"<redacted:[A-Z_]+:[0-9a-f]{12}>")
 
 
+def _configure_windows_utf8_streams() -> None:
+    """Keep Korean CLI output UTF-8 when Windows redirects stdout/stderr."""
+    if sys.platform != "win32":
+        return
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
+    _configure_windows_utf8_streams()
     effective_argv = list(argv) if argv is not None else sys.argv[1:]
     proxy_invocation = bool(effective_argv and effective_argv[0] in {"mcp-proxy", "mcp-http-proxy"})
     try:

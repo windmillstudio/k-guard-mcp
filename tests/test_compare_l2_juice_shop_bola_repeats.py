@@ -228,7 +228,9 @@ def test_negative_comparator_binds_the_two_positive_receipt_anchors(tmp_path: Pa
 
 def test_comparator_rejects_noncanonical_input_and_prevents_overwrite(tmp_path: Path) -> None:
     receipt = tmp_path / "receipt.json"
-    receipt.write_text("{}\n", encoding="utf-8")
+    # A canonical empty object is exactly b"{}\n" on POSIX.  Use a missing
+    # terminal newline so this fixture is non-canonical on every platform.
+    receipt.write_bytes(b"{}")
     with pytest.raises(ValueError, match="execution_receipt_not_canonical"):
         compare.compare_positive_receipts(receipt, receipt)
 

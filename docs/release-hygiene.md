@@ -11,6 +11,7 @@ Release cleanup should make the worktree explainable:
 - The tracking lane must remain valid JSONL.
 - `pyproject.toml` and `src/k_guard_mcp/__init__.py` must agree on the package version.
 - Package build inputs must be byte-identical to their Git index blobs at the strict boundary, including line endings.
+- Strict or tagged release authorization requires `contest-readiness-report.json` to declare `package_ready=true` with a package-ready status and requires `benchmark-report.json` to be bound to the current source. Honest blocked readiness and explicitly historical benchmark reports remain valid only for non-release hygiene.
 - A release tag must exactly equal `v{project.version}`.
 - A publish or tag step should use a clean worktree after the intended release commit is created.
 
@@ -25,7 +26,7 @@ python scripts/release_hygiene.py --strict-clean --expected-tag v0.1.0
 
 Default mode is for an in-progress release candidate. It passes only when dirty entries are in release-candidate categories and `generated_noise`, `review_required_artifact`, and `unclassified` are all absent.
 
-`--strict-clean` is for the final publish boundary. It fails unless the worktree is clean and package build input bytes match the Git index. This catches Windows clean-filter cases where `git status` is empty but a wheel would contain CRLF bytes different from the committed LF blobs.
+`--strict-clean` is for the final publish boundary. It fails unless the worktree is clean, package build input bytes match the Git index, package readiness is true, and performance evidence matches the current source rather than a historical private revision. This catches Windows clean-filter cases where `git status` is empty but a wheel would contain CRLF bytes different from the committed LF blobs.
 
 ## Included Categories
 

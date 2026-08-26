@@ -109,7 +109,9 @@ def _run_once() -> dict[str, Any]:
     cases: list[dict[str, Any]] = []
     control_errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="k-guard-control-validation-") as directory:
-        root = Path(directory)
+        # The path is process-created.  Resolve macOS's /var -> /private/var
+        # system alias before strict policy/audit symlink checks inspect it.
+        root = Path(directory).resolve(strict=True)
         try:
             cases.extend(_access_cases(root))
         except Exception as exc:

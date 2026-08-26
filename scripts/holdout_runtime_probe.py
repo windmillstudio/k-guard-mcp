@@ -10,6 +10,7 @@ import os
 import platform
 import re
 import site
+import stat
 import sys
 import sysconfig
 from pathlib import Path
@@ -39,12 +40,25 @@ TEXT_SUFFIXES = {
 }
 
 
+def _venv_scheme_path(prefix: Path, name: str) -> Path:
+    variables = {
+        "base": str(prefix),
+        "platbase": str(prefix),
+        "installed_base": str(prefix),
+        "installed_platbase": str(prefix),
+    }
+    return Path(sysconfig.get_path(name, scheme="venv", vars=variables)).resolve()
+
+
 def configure_no_site_runtime() -> Path:
-    if sys.platform != "win32" or sys.flags.no_site != 1:
-        raise RuntimeError("holdout runtime must start on Windows with Python -S")
+    if sys.flags.no_site != 1:
+        raise RuntimeError("holdout runtime must start with Python -S")
     executable = Path(sys.executable).resolve(strict=True)
     prefix = executable.parents[1]
-    purelib = (prefix / "Lib" / "site-packages").resolve(strict=True)
+    config = prefix / "pyvenv.cfg"
+    purelib = _venv_scheme_path(prefix, "purelib")
+    if not config.is_file() or config.is_symlink() or not purelib.is_dir() or purelib.is_symlink():
+        raise RuntimeError("holdout runtime virtual environment layout is invalid")
     base_prefix = Path(sys.base_prefix).resolve(strict=True)
     retained: list[str] = []
     for value in sys.path:
@@ -64,6 +78,32 @@ def configure_no_site_runtime() -> Path:
     sys.path[:] = [*retained, str(purelib)]
     site.ENABLE_USER_SITE = False
     return prefix
+
+
+def _is_standard_internal_venv_alias(
+    root: Path, path: Path, metadata: os.stat_result
+) -> bool:
+    """Accept only CPython's fixed in-prefix POSIX ``lib64 -> lib`` alias."""
+
+    if (
+        os.name != "posix"
+        or path.parent != root
+        or path.name != "lib64"
+        or not stat.S_ISLNK(metadata.st_mode)
+    ):
+        return False
+    try:
+        if os.readlink(path) != "lib":
+            return False
+        target = root / "lib"
+        target_metadata = target.stat(follow_symlinks=False)
+        return (
+            stat.S_ISDIR(target_metadata.st_mode)
+            and not stat.S_ISLNK(target_metadata.st_mode)
+            and path.resolve(strict=True) == target.resolve(strict=True)
+        )
+    except OSError:
+        return False
 
 
 def _canonical_bytes(payload: dict[str, Any]) -> bytes:
@@ -172,6 +212,8 @@ def _filesystem_tree_attestation(
                 errors.append(f"runtime_tree_entry_unresolvable:{relative}")
                 continue
             if entry.is_symlink() or getattr(metadata, "st_file_attributes", 0) & 0x400:
+                if _is_standard_internal_venv_alias(resolved_root, path, metadata):
+                    continue
                 errors.append(f"runtime_tree_reparse_point:{relative}")
                 continue
             folded = relative.casefold()
@@ -448,7 +490,10 @@ def capture(scanner_scaffold: dict[str, Any]) -> dict[str, Any]:
         errors.append("duplicate_distribution_names")
     if shared_files:
         errors.append("distribution_file_ownership_overlap")
-    site_roots = {(prefix / "Lib" / "site-packages").resolve(strict=True)}
+    site_roots = {
+        _venv_scheme_path(prefix, name)
+        for name in ("purelib", "platlib")
+    }
     site_files = {
         path.relative_to(prefix).as_posix()
         for root in site_roots
@@ -577,11 +622,8 @@ def capture(scanner_scaffold: dict[str, Any]) -> dict[str, Any]:
         },
         "platform": _platform_attestation(),
         "install_scheme": {
-            "purelib": _normalized_path(prefix / "Lib" / "site-packages", prefix, base_prefix),
-            "platlib": _normalized_path(prefix / "Lib" / "site-packages", prefix, base_prefix),
-            "scripts": _normalized_path(prefix / "Scripts", prefix, base_prefix),
-            "data": _normalized_path(prefix, prefix, base_prefix),
-            "include": _normalized_path(prefix / "Include", prefix, base_prefix),
+            name: _normalized_path(_venv_scheme_path(prefix, name), prefix, base_prefix)
+            for name in ("purelib", "platlib", "scripts", "data", "include")
         },
         "import_search_path": normalized_search_path,
         "outside_import_search_paths": outside_search_paths,

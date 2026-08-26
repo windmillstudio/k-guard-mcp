@@ -288,7 +288,7 @@ class SqliteReadOnlySession:
                 cached_statements=0,
                 check_same_thread=True,
             )
-            connection.enable_load_extension(False)
+            _disable_sqlite_extension_loading(connection)
             connection.execute("PRAGMA query_only=ON")
             connection.execute("PRAGMA trusted_schema=OFF")
             connection.execute("PRAGMA cell_size_check=ON")
@@ -571,6 +571,25 @@ def _safe_sqlite_identifier(value: Any) -> str:
         return _identifier(value, "sqlite")
     except ValueError:
         return ""
+
+
+def _disable_sqlite_extension_loading(connection: sqlite3.Connection) -> None:
+    """Disable extension loading when the platform exposes that capability.
+
+    Some system SQLite builds (notably the Python build shipped on macOS) omit
+    loadable-extension support and therefore do not expose
+    ``Connection.enable_load_extension``.  In that case there is no wrapper
+    capability to enable, while the session authorizer below still denies every
+    function call during explain and execution.  A present but malformed
+    capability remains a hard failure.
+    """
+
+    disable = getattr(connection, "enable_load_extension", None)
+    if disable is None:
+        return
+    if not callable(disable):
+        raise DatabaseGateError("sqlite_extension_hardening_unavailable")
+    disable(False)
 
 
 def _quote_sqlite_identifier(value: str) -> str:

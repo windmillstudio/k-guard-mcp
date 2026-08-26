@@ -10,6 +10,7 @@ import json
 import os
 import platform
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -117,6 +118,38 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _is_standard_internal_venv_alias(
+    root: Path, path: Path, metadata: os.stat_result
+) -> bool:
+    """Recognize CPython's fixed POSIX ``lib64 -> lib`` compatibility alias.
+
+    CPython creates this alias even when ``EnvBuilder(symlinks=False)`` is
+    requested.  It is safe to omit from the file scaffold only when its name,
+    literal target, and resolved target all match the in-prefix ``lib``
+    directory.  Every other symlink or reparse point remains rejected.
+    """
+
+    if (
+        os.name != "posix"
+        or path.parent != root
+        or path.name != "lib64"
+        or not stat.S_ISLNK(metadata.st_mode)
+    ):
+        return False
+    try:
+        if os.readlink(path) != "lib":
+            return False
+        target = root / "lib"
+        target_metadata = target.stat(follow_symlinks=False)
+        return (
+            stat.S_ISDIR(target_metadata.st_mode)
+            and not stat.S_ISLNK(target_metadata.st_mode)
+            and path.resolve(strict=True) == target.resolve(strict=True)
+        )
+    except OSError:
+        return False
+
+
 def build_scanner_scaffold_manifest(root: Path) -> dict[str, Any]:
     resolved_root = root.resolve(strict=True)
     rows: list[dict[str, Any]] = []
@@ -130,6 +163,8 @@ def build_scanner_scaffold_manifest(root: Path) -> dict[str, Any]:
                 relative = path.relative_to(resolved_root).as_posix()
                 metadata = path.stat(follow_symlinks=False)
                 if entry.is_symlink() or getattr(metadata, "st_file_attributes", 0) & 0x400:
+                    if _is_standard_internal_venv_alias(resolved_root, path, metadata):
+                        continue
                     raise ValueError(f"scanner scaffold contains a reparse point: {relative}")
                 folded = relative.casefold()
                 previous = seen_casefold.setdefault(folded, relative)
@@ -317,12 +352,12 @@ def capture_runtime_environment(
     probe_script: Path,
     scanner_scaffold: dict[str, Any],
 ) -> dict[str, Any]:
+    if not scanner_python.is_file() or scanner_python.is_symlink():
+        raise ValueError("holdout scanner Python must be a regular executable file")
+    if not probe_script.is_file() or probe_script.is_symlink():
+        raise ValueError("holdout runtime probe must be a regular file")
     python_path = scanner_python.resolve(strict=True)
     probe_path = probe_script.resolve(strict=True)
-    if not python_path.is_file() or python_path.is_symlink():
-        raise ValueError("holdout scanner Python must be a regular executable file")
-    if not probe_path.is_file() or probe_path.is_symlink():
-        raise ValueError("holdout runtime probe must be a regular file")
     environment = dict(os.environ)
     for key in ("PYTHONHOME", "PYTHONPATH", "PYTHONSTARTUP", "PYTHONUSERBASE"):
         environment.pop(key, None)

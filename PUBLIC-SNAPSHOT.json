@@ -3,7 +3,13 @@
   "project": "k-guard-mcp",
   "version": "0.1.0",
   "snapshot_kind": "sanitized_current_working_tree",
-  "base_commit": "aa22f9061bda89b4080cc3cb521959ad6776f0a5",
+  "base_commit": null,
+  "source_provenance": {
+    "kind": "sanitized_source_export",
+    "private_source_revision_disclosed": false,
+    "source_revision_available_in_public_history": false,
+    "public_tree_binding": "Use the public Git commit that contains this metadata and its tracked tree."
+  },
   "included": [
     ".github",
     "benchmarks",

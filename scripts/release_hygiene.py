@@ -50,6 +50,7 @@ RELEASE_ROOT_FILES = {
     "CONTRIBUTING.md",
     "LICENSE",
     "MANIFEST.in",
+    "PUBLIC-SNAPSHOT.json",
     "README.md",
     "MANIFEST.in",
     "requirements-evidence.lock",
@@ -88,6 +89,7 @@ REQUIRED_RELEASE_FILES = (
     "contest-readiness-report.md",
     "THIRD_PARTY_NOTICES.md",
     "LICENSES/Apache-2.0.txt",
+    "PUBLIC-SNAPSHOT.json",
     "requirements-evidence.lock",
     "requirements-evidence.in",
     "requirements-build.lock",
@@ -132,6 +134,10 @@ PERFORMANCE_V2_SUPPORTED_CLAIM_PREFIX = (
 )
 PERFORMANCE_V2_SMALL_SAMPLE_P95_INTERPRETATION = (
     "p95 equals the observed maximum for scaling n=5 and concurrency n=16"
+)
+HISTORICAL_PUBLICATION_SCOPE = "historical_private_source_revision"
+PACKAGE_READY_RELEASE_STATUSES = frozenset(
+    {"package_ready_field_evidence_pending", "award_evidence_ready"}
 )
 
 
@@ -292,6 +298,45 @@ def _root_json_artifacts_status() -> dict[str, Any]:
     return {"valid": not errors, "parsed": parsed, "errors": errors}
 
 
+def _release_authorization_status(required: bool) -> dict[str, Any]:
+    """Keep honest historical/blocked reports separate from publish authority."""
+
+    try:
+        readiness = json.loads(
+            (ROOT / "contest-readiness-report.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        readiness = {}
+    try:
+        performance = json.loads(
+            (ROOT / "benchmark-report.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        performance = {}
+
+    package_ready = (
+        isinstance(readiness, dict)
+        and readiness.get("package_ready") is True
+        and readiness.get("submission_ready") is True
+        and readiness.get("status") in PACKAGE_READY_RELEASE_STATUSES
+    )
+    publication = performance.get("publication_binding") if isinstance(performance, dict) else None
+    current_source_performance = isinstance(performance, dict) and bool(performance) and publication is None
+    return {
+        "required": required,
+        "contest_readiness": {
+            "package_ready": readiness.get("package_ready") if isinstance(readiness, dict) else None,
+            "status": readiness.get("status") if isinstance(readiness, dict) else None,
+            "valid": package_ready if required else True,
+        },
+        "performance_evidence": {
+            "publication_scope": publication.get("scope") if isinstance(publication, dict) else None,
+            "current_source_equivalence": current_source_performance,
+            "valid": current_source_performance if required else True,
+        },
+    }
+
+
 def _evidence_report_semantic_error(name: str, payload: Any) -> str | None:
     if not isinstance(payload, dict) or not payload:
         return "nonempty JSON object required"
@@ -315,11 +360,7 @@ def _evidence_report_semantic_error(name: str, payload: Any) -> str | None:
         if not isinstance(payload.get("repos"), list) or not payload["repos"]:
             return "nonempty repo comparison list required"
     elif name == "contest-readiness-report.json":
-        if payload.get("package_ready") is not True or payload.get("status") not in {
-            "package_ready_field_evidence_pending",
-            "award_evidence_ready",
-        }:
-            return "package_ready=true with an explicit package or award readiness status required"
+        return _contest_readiness_semantic_error(payload)
     elif name == "fixture-metrics.json":
         coverage = payload.get("coverage", {}) if isinstance(payload.get("coverage"), dict) else {}
         if payload.get("passed") is not True or coverage.get("all_required_rules_observed") is not True:
@@ -368,13 +409,20 @@ def _performance_v2_semantic_error(payload: dict[str, Any]) -> str | None:
     ):
         return "clean, HEAD-matching, unchanged source binding required"
     pre = binding.get("pre", {}) if isinstance(binding.get("pre"), dict) else {}
-    current_package_hash = package_tree_sha256(ROOT / "src" / "k_guard_mcp")
-    current_runner_hash = hashlib.sha256((ROOT / "scripts" / "benchmark.py").read_bytes()).hexdigest()
-    if (
-        pre.get("working_package_tree_sha256") != current_package_hash
-        or pre.get("runner_sha256") != current_runner_hash
-    ):
-        return "performance source binding does not match the current package and benchmark runner bytes"
+    post = binding.get("post", {}) if isinstance(binding.get("post"), dict) else {}
+    publication = payload.get("publication_binding")
+    if publication is None:
+        current_package_hash = package_tree_sha256(ROOT / "src" / "k_guard_mcp")
+        current_runner_hash = hashlib.sha256((ROOT / "scripts" / "benchmark.py").read_bytes()).hexdigest()
+        if (
+            pre.get("working_package_tree_sha256") != current_package_hash
+            or pre.get("runner_sha256") != current_runner_hash
+        ):
+            return "performance source binding does not match the current package and benchmark runner bytes"
+    else:
+        publication_error = _historical_publication_binding_error(publication, binding, pre, post)
+        if publication_error:
+            return publication_error
     environment = payload.get("environment", {}) if isinstance(payload.get("environment"), dict) else {}
     required_environment = (
         "python_implementation",
@@ -449,6 +497,87 @@ def _performance_v2_semantic_error(payload: dict[str, Any]) -> str | None:
     ).hexdigest()
     if fingerprint != expected_fingerprint:
         return "report fingerprint mismatch"
+    return None
+
+
+def _historical_publication_binding_error(
+    publication: Any,
+    binding: dict[str, Any],
+    pre: dict[str, Any],
+    post: dict[str, Any],
+) -> str | None:
+    if not isinstance(publication, dict) or publication != {
+        "current_public_source_equivalence_claimed": False,
+        "measured_revision_available_in_public_history": False,
+        "scope": HISTORICAL_PUBLICATION_SCOPE,
+    }:
+        return "exact historical public-snapshot performance boundary required"
+    measured_revision = binding.get("measured_git_head")
+    if not isinstance(measured_revision, str) or re.fullmatch(r"[0-9a-f]{40}", measured_revision) is None:
+        return "historical measured revision must be a full lowercase Git SHA"
+    package_hash = pre.get("working_package_tree_sha256")
+    runner_hash = pre.get("runner_sha256")
+    if not isinstance(package_hash, str) or re.fullmatch(r"[0-9a-f]{64}", package_hash) is None:
+        return "historical package-tree digest is invalid"
+    if not isinstance(runner_hash, str) or re.fullmatch(r"[0-9a-f]{64}", runner_hash) is None:
+        return "historical benchmark-runner digest is invalid"
+    if (
+        binding.get("git_head") != measured_revision
+        or pre.get("git_head") != measured_revision
+        or post.get("git_head") != measured_revision
+        or pre.get("clean") is not True
+        or post.get("clean") is not True
+        or pre.get("head_package_tree_sha256") != package_hash
+        or post.get("working_package_tree_sha256") != package_hash
+        or post.get("head_package_tree_sha256") != package_hash
+        or pre.get("head_runner_sha256") != runner_hash
+        or post.get("runner_sha256") != runner_hash
+        or post.get("head_runner_sha256") != runner_hash
+    ):
+        return "historical source binding is internally inconsistent"
+    return None
+
+
+def _contest_readiness_semantic_error(payload: dict[str, Any]) -> str | None:
+    if payload.get("schema") != "k_guard_contest_readiness.v3":
+        return "contest readiness v3 schema required"
+    package_ready = payload.get("package_ready")
+    submission_ready = payload.get("submission_ready")
+    award_ready = payload.get("award_evidence_ready")
+    if not all(isinstance(value, bool) for value in (package_ready, submission_ready, award_ready)):
+        return "boolean package, submission, and award readiness fields required"
+    if submission_ready is not package_ready:
+        return "submission_ready compatibility alias must equal package_ready"
+    internal = payload.get("internal_checks")
+    external = payload.get("external_checks")
+    blockers = payload.get("blockers")
+    if (
+        not isinstance(internal, dict)
+        or not internal
+        or any(not isinstance(value, bool) for value in internal.values())
+        or not isinstance(external, dict)
+        or not external
+        or any(not isinstance(value, bool) for value in external.values())
+        or not isinstance(blockers, list)
+        or any(not isinstance(value, str) for value in blockers)
+    ):
+        return "boolean readiness checks and a string blocker list required"
+    expected_package = all(internal.values())
+    expected_award = expected_package and all(external.values())
+    expected_status = (
+        "award_evidence_ready"
+        if expected_award
+        else "package_ready_field_evidence_pending"
+        if expected_package
+        else "package_verification_blocked"
+    )
+    expected_blockers = [name for name, passed in {**internal, **external}.items() if not passed]
+    if package_ready is not expected_package or award_ready is not expected_award:
+        return "readiness booleans must be derived from the published checks"
+    if payload.get("status") != expected_status:
+        return "readiness status does not match the published checks"
+    if blockers != expected_blockers:
+        return "readiness blockers do not match the failed published checks"
     return None
 
 
@@ -537,6 +666,9 @@ def build_report(strict_clean: bool = False, expected_tag: str | None = None) ->
     missing_required = [path for path in REQUIRED_RELEASE_FILES if not (ROOT / path).exists()]
     tracking_jsonl = _tracking_jsonl_status()
     root_json_artifacts = _root_json_artifacts_status()
+    release_authorization = _release_authorization_status(
+        strict_clean or expected_tag is not None
+    )
     evidence_tree = _evidence_tree_status()
     ignored_release_artifacts = _ignored_release_artifacts_status()
     generated_noise = grouped.get("generated_noise", [])
@@ -548,6 +680,12 @@ def build_report(strict_clean: bool = False, expected_tag: str | None = None) ->
         "release_tag_matches_version": bool(release_tag["valid"]),
         "tracking_jsonl_valid": bool(tracking_jsonl["valid"]),
         "root_json_artifacts_valid": bool(root_json_artifacts["valid"]),
+        "contest_package_ready_for_release": bool(
+            release_authorization["contest_readiness"]["valid"]
+        ),
+        "current_source_performance_evidence_for_release": bool(
+            release_authorization["performance_evidence"]["valid"]
+        ),
         "evidence_tree_valid": bool(evidence_tree["valid"]),
         "no_ignored_release_artifacts": bool(ignored_release_artifacts["valid"]),
         "required_release_files_present": not missing_required,
@@ -575,6 +713,7 @@ def build_report(strict_clean: bool = False, expected_tag: str | None = None) ->
         },
         "tracking_jsonl": tracking_jsonl,
         "root_json_artifacts": root_json_artifacts,
+        "release_authorization": release_authorization,
         "evidence_tree": evidence_tree,
         "ignored_release_artifacts": ignored_release_artifacts,
         "git_status": {
@@ -593,7 +732,7 @@ def build_report(strict_clean: bool = False, expected_tag: str | None = None) ->
             ],
             "blocking_categories": ["review_required_artifact", "unclassified", "generated_noise"],
             "excluded_runtime_prefixes": list(GENERATED_NOISE_PREFIXES),
-            "publish_rule": "Run with --strict-clean after committing the release candidate; strict mode requires an empty status and exact worktree/index bytes for package build inputs. Tagged releases also require --expected-tag v{project.version}.",
+            "publish_rule": "Run with --strict-clean after committing the release candidate; strict or tagged release authorization requires package_ready=true with a package-ready status and current-source performance evidence, while historical performance and honestly blocked readiness reports remain valid only for non-release hygiene. Strict mode also requires an empty status and exact worktree/index bytes for package build inputs. Tagged releases require --expected-tag v{project.version}.",
         },
     }
 

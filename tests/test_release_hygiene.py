@@ -36,6 +36,7 @@ def test_release_hygiene_classifies_expected_paths():
     assert release_hygiene.classify_path("evidence/public/report.json") == "release_evidence"
     assert release_hygiene.classify_path("submission/RIGHTS.md") == "release_submission"
     assert release_hygiene.classify_path("README.md") == "release_root"
+    assert release_hygiene.classify_path("PUBLIC-SNAPSHOT.json") == "release_root"
     assert release_hygiene.classify_path("contest-readiness-report.json") == "root_evidence_report"
     assert release_hygiene.classify_path("contest-readiness-report.md") == "release_root"
     assert release_hygiene.classify_path("THIRD_PARTY_NOTICES.md") == "release_root"
@@ -68,6 +69,65 @@ def test_release_hygiene_default_report_has_release_contract():
     assert "review_required_artifact" not in report["git_status"]["categories"]
     assert report["pass_conditions"]["tracking_jsonl_valid"]
     assert report["pass_conditions"]["required_release_files_present"]
+    assert report["pass_conditions"]["contest_package_ready_for_release"]
+    assert report["pass_conditions"]["current_source_performance_evidence_for_release"]
+    assert "current-source performance evidence" in report["release_boundary"]["publish_rule"]
+
+
+def test_release_authorization_rejects_blocked_and_historical_reports(tmp_path, monkeypatch):
+    monkeypatch.setattr(release_hygiene, "ROOT", tmp_path)
+    readiness_path = tmp_path / "contest-readiness-report.json"
+    performance_path = tmp_path / "benchmark-report.json"
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "package_ready": False,
+                "submission_ready": False,
+                "status": "package_verification_blocked",
+            }
+        ),
+        encoding="utf-8",
+    )
+    performance_path.write_text(
+        json.dumps(
+            {
+                "schema": "k_guard_performance_benchmark.v2",
+                "publication_binding": {
+                    "current_public_source_equivalence_claimed": False,
+                    "measured_revision_available_in_public_history": False,
+                    "scope": release_hygiene.HISTORICAL_PUBLICATION_SCOPE,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    non_release = release_hygiene._release_authorization_status(False)
+    release = release_hygiene._release_authorization_status(True)
+
+    assert non_release["contest_readiness"]["valid"] is True
+    assert non_release["performance_evidence"]["valid"] is True
+    assert release["contest_readiness"]["valid"] is False
+    assert release["performance_evidence"]["valid"] is False
+
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "package_ready": True,
+                "submission_ready": True,
+                "status": "package_ready_field_evidence_pending",
+            }
+        ),
+        encoding="utf-8",
+    )
+    performance_path.write_text(
+        json.dumps({"schema": "k_guard_performance_benchmark.v2", "passed": True}),
+        encoding="utf-8",
+    )
+
+    authorized = release_hygiene._release_authorization_status(True)
+    assert authorized["contest_readiness"]["valid"] is True
+    assert authorized["performance_evidence"]["valid"] is True
 
 
 def test_release_hygiene_strict_clean_fails_with_dirty_entries(monkeypatch):
@@ -81,6 +141,37 @@ def test_release_hygiene_strict_clean_fails_with_dirty_entries(monkeypatch):
 
     assert not report["passed"]
     assert not report["pass_conditions"]["clean_worktree_when_strict"]
+
+
+def test_release_hygiene_strict_and_tagged_boundaries_activate_release_authorization(
+    monkeypatch,
+):
+    required_values: list[bool] = []
+
+    def authorization(required: bool) -> dict:
+        required_values.append(required)
+        return {
+            "required": required,
+            "contest_readiness": {"valid": not required},
+            "performance_evidence": {"valid": not required},
+        }
+
+    monkeypatch.setattr(release_hygiene, "_release_authorization_status", authorization)
+
+    strict = release_hygiene.build_report(strict_clean=True)
+    tagged = release_hygiene.build_report(
+        strict_clean=False,
+        expected_tag=f"v{strict['version']['pyproject']}",
+    )
+
+    assert required_values == [True, True]
+    for report in (strict, tagged):
+        assert report["pass_conditions"]["contest_package_ready_for_release"] is False
+        assert (
+            report["pass_conditions"]["current_source_performance_evidence_for_release"]
+            is False
+        )
+        assert report["passed"] is False
 
 
 def test_release_hygiene_rejects_unclassified_review_artifacts(monkeypatch):
@@ -138,20 +229,43 @@ def test_release_hygiene_rejects_empty_or_failed_evidence_reports():
     assert release_hygiene._evidence_report_semantic_error(
         "contest-readiness-report.json",
         {
+            "schema": "k_guard_contest_readiness.v3",
             "package_ready": True,
             "submission_ready": True,
             "award_evidence_ready": False,
             "status": "package_ready_field_evidence_pending",
+            "internal_checks": {"package": True},
+            "external_checks": {"field": False},
+            "blockers": ["field"],
         },
     ) is None
     assert release_hygiene._evidence_report_semantic_error(
         "contest-readiness-report.json",
         {
+            "schema": "k_guard_contest_readiness.v3",
             "submission_ready": True,
+            "package_ready": False,
             "award_evidence_ready": False,
             "status": "submission_ready_external_evidence_pending",
+            "internal_checks": {"package": False},
+            "external_checks": {"field": False},
+            "blockers": ["package", "field"],
         },
     ) is not None
+
+    blocked = {
+        "schema": "k_guard_contest_readiness.v3",
+        "package_ready": False,
+        "submission_ready": False,
+        "award_evidence_ready": False,
+        "status": "package_verification_blocked",
+        "internal_checks": {"package": False, "docs": True},
+        "external_checks": {"field": False},
+        "blockers": ["package", "field"],
+    }
+    assert release_hygiene._evidence_report_semantic_error(
+        "contest-readiness-report.json", blocked
+    ) is None
 
 
 def test_release_hygiene_requires_full_v2_performance_evidence():
@@ -247,6 +361,54 @@ def test_release_hygiene_requires_full_v2_performance_evidence():
     ).hexdigest()
 
     assert release_hygiene._evidence_report_semantic_error("benchmark-report.json", payload) is None
+
+    historical = json.loads(json.dumps(payload))
+    measured_revision = "7" * 40
+    package_hash = historical["source_binding"]["pre"]["working_package_tree_sha256"]
+    runner_hash = historical["source_binding"]["pre"]["runner_sha256"]
+    historical["publication_binding"] = {
+        "current_public_source_equivalence_claimed": False,
+        "measured_revision_available_in_public_history": False,
+        "scope": release_hygiene.HISTORICAL_PUBLICATION_SCOPE,
+    }
+    historical["source_binding"].update(
+        {
+            "git_head": measured_revision,
+            "measured_git_head": measured_revision,
+            "post": {
+                "clean": True,
+                "git_head": measured_revision,
+                "working_package_tree_sha256": package_hash,
+                "head_package_tree_sha256": package_hash,
+                "runner_sha256": runner_hash,
+                "head_runner_sha256": runner_hash,
+            },
+        }
+    )
+    historical["source_binding"]["pre"].update(
+        {
+            "clean": True,
+            "git_head": measured_revision,
+            "head_package_tree_sha256": package_hash,
+            "head_runner_sha256": runner_hash,
+        }
+    )
+    historical["report_fingerprint_sha256"] = hashlib.sha256(
+        json.dumps(
+            {key: value for key, value in historical.items() if key != "report_fingerprint_sha256"},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    assert release_hygiene._evidence_report_semantic_error(
+        "benchmark-report.json", historical
+    ) is None
+
+    historical["publication_binding"]["current_public_source_equivalence_claimed"] = True
+    assert "historical public-snapshot" in release_hygiene._evidence_report_semantic_error(
+        "benchmark-report.json", historical
+    )
 
     wrong_scope = json.loads(json.dumps(payload))
     wrong_scope["claim_boundary"]["supported_claim"] = "generic scanner capacity"

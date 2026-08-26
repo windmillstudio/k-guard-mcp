@@ -114,6 +114,8 @@ k-guard-dashboard --port 8765
 
 ## 설치된 wheel CLI
 
+아래 명령 중 `tests/fixtures/korean_fixture_corpus.json`은 **소스 체크아웃에서 바로 실행할 수 있는 공개 예제 corpus**입니다. wheel만 설치한 사용자는 같은 스키마의 자체 fixture 경로로 바꿉니다.
+
 ```bash
 python -m k_guard_mcp.cli scan .
 python -m k_guard_mcp.cli scan . --json report.json --markdown report.md
@@ -133,7 +135,7 @@ python -m k_guard_mcp.cli control-validate --output control-validation.json
 python -m k_guard_mcp.cli runtime-validate --output runtime-validation.json
 python -m k_guard_mcp.cli access-policy-template --output access-policy.json
 python -m k_guard_mcp.cli agent-grant --policy access-policy.json --output agent.jwt --app-id APP --session-id SESSION --purpose RELEASE_REVIEW --subject AGENT --role release-reviewer --method tools/list --method tools/call --tool check_my_app --tool start_review_before_ship
-python -m k_guard_mcp.cli score-corpus --corpus .k-guard/korean-fixture-corpus.json --output fixture-metrics.json --json
+python -m k_guard_mcp.cli score-corpus --corpus tests/fixtures/korean_fixture_corpus.json --output fixture-metrics.json --json
 python -m k_guard_mcp.cli benchmark-template --output benchmarks/field-benchmark-template.csv
 python -m k_guard_mcp.cli benchmark --manifest benchmarks/field-benchmark-template.csv --output field-benchmark.json --markdown field-benchmark.md --html field-benchmark.html
 python -m k_guard_mcp.cli guardian-template --output benchmarks/guardian-targets.csv
@@ -149,7 +151,7 @@ python -m k_guard_mcp.cli field-validation-queue --guardian-report guardian-gate
 python -m k_guard_mcp.cli field-validation-sign --review benchmarks/field-review.csv
 python -m k_guard_mcp.cli field-validation-report --guardian-report guardian-gate.json --repeat-guardian-report guardian-gate-repeat.json --roster benchmarks/field-app-roster.csv --ground-truth benchmarks/field-ground-truth.csv --review benchmarks/field-review.csv --preregistration benchmarks/field-preregistration.json --profile field --output field-validation.json
 python -m k_guard_mcp.cli mcp-intercept --events mcp-events.jsonl --forwarded-output forwarded.jsonl --report intercept-report.json --app-id YOUR_APP_ID --session-id RELEASE_SESSION_ID --guardian-report guardian-gate.json --fail-on-block
-python -m k_guard_mcp.cli data-release-gate --guardian-report guardian-gate.json --guardian-manifest .k-guard/guardian-targets.csv --validation-source-guardian-report validation-source-guardian.json --validation-repeat-guardian-report validation-source-guardian-repeat.json --validation-report field-validation.json --validation-review benchmarks/field-review.csv --validation-ground-truth benchmarks/field-ground-truth.csv --validation-preregistration benchmarks/field-preregistration.json --validation-roster benchmarks/field-app-roster.csv --korean-fixture-corpus .k-guard/korean-fixture-corpus.json --korean-corpus-report fixture-metrics.json --mcp-intercept-report intercept-report.json --mcp-forwarded-output forwarded.jsonl --output data-release-gate.json
+python -m k_guard_mcp.cli data-release-gate --guardian-report guardian-gate.json --guardian-manifest .k-guard/guardian-targets.csv --validation-source-guardian-report validation-source-guardian.json --validation-repeat-guardian-report validation-source-guardian-repeat.json --validation-report field-validation.json --validation-review benchmarks/field-review.csv --validation-ground-truth benchmarks/field-ground-truth.csv --validation-preregistration benchmarks/field-preregistration.json --validation-roster benchmarks/field-app-roster.csv --korean-fixture-corpus tests/fixtures/korean_fixture_corpus.json --korean-corpus-report fixture-metrics.json --mcp-intercept-report intercept-report.json --mcp-forwarded-output forwarded.jsonl --output data-release-gate.json
 ```
 
 `session.headers.json` is short-lived and bound to one exact origin. Guardian only counts an authenticated comparison as complete when the asserted identity response also matches:

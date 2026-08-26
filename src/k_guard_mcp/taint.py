@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import ast
 import heapq
+import io
 import re
 import string
+import tokenize
 from bisect import bisect_right
 from collections import deque
 from dataclasses import dataclass, field
@@ -469,17 +471,17 @@ class AstTaintAnalyzer:
                     rule_id="PYTHON_AST_FSTRING_RECOVERY_USED",
                     severity="info",
                     confidence="high",
-                    title="Python AST used narrow f-string syntax recovery",
+                    title="Python AST identified newer f-string compatibility recovery",
                     file=str(path),
                     evidence=(
                         f"detector_subtype=python_ast_fstring_recovery recovered_line_count={len(recovered_lines)} "
                         f"line_set_hash={evidence_hash('|'.join(str(line) for line in recovered_lines))} raw_returned=false"
                     ),
-                    why_it_matters="A newer f-string grammar was normalized only on syntax-error lines so the remaining file could be reviewed.",
+                    why_it_matters="A newer f-string grammar needs narrow normalization on the oldest supported Python parser so the remaining file can still be reviewed.",
                     recommendation="Use a scanner runtime matching the app's Python grammar for the highest-fidelity release run.",
                     audit_depth=3,
-                    inspected_scope="All recoverable statements outside the invalid f-string expression remained in the AST review.",
-                    not_inspected="Expression semantics inside the recovered f-string line were not preserved.",
+                    inspected_scope="The original AST is retained when the active parser supports the grammar; older parsers review all recoverable statements outside the normalized expression.",
+                    not_inspected="On an older parser, expression semantics inside the normalized f-string line are not preserved.",
                 )
             )
         lines = text.splitlines()
@@ -556,11 +558,89 @@ class AstTaintAnalyzer:
 
 
 def _parse_python_tree_with_recovery(text: str) -> tuple[ast.AST | None, tuple[int, ...]]:
+    try:
+        current_tree = ast.parse(text)
+    except SyntaxError:
+        return _parse_python_tree_recovering_fstrings(text)
+
+    # Python 3.12's PEP 701 parser accepts f-string forms that Python 3.11,
+    # which remains a supported K-Guard runtime, cannot parse.  Keep the
+    # higher-fidelity current AST, but run the 3.11 grammar check so results do
+    # not silently vary by scanner interpreter version.
+    try:
+        ast.parse(text, feature_version=(3, 11))
+    except SyntaxError:
+        _compatibility_tree, recovered = _parse_python_tree_recovering_fstrings(
+            text,
+            feature_version=(3, 11),
+        )
+        return current_tree, recovered
+    return current_tree, _python311_fstring_compatibility_lines(text)
+
+
+def _python311_fstring_compatibility_lines(text: str) -> tuple[int, ...]:
+    """Identify PEP 701 quote reuse that the 3.11 tokenizer cannot parse.
+
+    ``ast.parse(..., feature_version=(3, 11))`` is intentionally best-effort
+    and still accepts PEP 701 lexical forms on Python 3.12+.  The newer
+    tokenizer exposes f-string boundaries, allowing us to flag same-delimiter
+    string literals inside a replacement field without downgrading the AST.
+    """
+
+    fstring_start = getattr(tokenize, "FSTRING_START", None)
+    fstring_end = getattr(tokenize, "FSTRING_END", None)
+    if fstring_start is None or fstring_end is None:
+        return ()
+    stack: list[list[object]] = []
+    recovered: set[int] = set()
+    try:
+        tokens = tokenize.generate_tokens(io.StringIO(text).readline)
+        for token in tokens:
+            if token.type == fstring_start:
+                delimiter = _python_string_delimiter(token.string)
+                if stack and int(stack[-1][1]) > 0 and delimiter == stack[-1][0]:
+                    recovered.add(token.start[0])
+                stack.append([delimiter, 0])
+                continue
+            if not stack:
+                continue
+            if token.type == fstring_end:
+                stack.pop()
+                continue
+            if token.type == tokenize.OP and token.string == "{":
+                stack[-1][1] = int(stack[-1][1]) + 1
+                continue
+            if token.type == tokenize.OP and token.string == "}":
+                stack[-1][1] = max(0, int(stack[-1][1]) - 1)
+                continue
+            if token.type == tokenize.STRING and int(stack[-1][1]) > 0:
+                if _python_string_delimiter(token.string) == stack[-1][0]:
+                    recovered.add(token.start[0])
+    except (IndentationError, tokenize.TokenError):
+        return ()
+    return tuple(sorted(recovered))
+
+
+def _python_string_delimiter(value: str) -> str | None:
+    match = re.match(r"(?i)^(?:r|u|b|f|br|rb|fr|rf)*(?:(''')|(\"\"\")|(')|(\"))", value)
+    if match is None:
+        return None
+    return next((group for group in match.groups() if group is not None), None)
+
+
+def _parse_python_tree_recovering_fstrings(
+    text: str,
+    *,
+    feature_version: tuple[int, int] | None = None,
+) -> tuple[ast.AST | None, tuple[int, ...]]:
     lines = text.splitlines(keepends=True)
     recovered: list[int] = []
     for _ in range(100):
         try:
-            return ast.parse("".join(lines)), tuple(recovered)
+            return ast.parse(
+                "".join(lines),
+                feature_version=feature_version,
+            ), tuple(recovered)
         except SyntaxError as exc:
             line_index = int(exc.lineno or 1) - 1
             if line_index < 0 or line_index >= len(lines):

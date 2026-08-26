@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -61,6 +62,39 @@ def test_nearest_rank_and_repeat_fingerprint_are_deterministic():
     assert report["p95_seconds"] == 3.0
     assert report["fingerprints_stable"] is True
     assert report["all_candidates_complete"] is True
+
+
+def test_quick_synthetic_edge_cap_tracks_the_active_analyzer_limits(monkeypatch):
+    class FakeAstTaint:
+        max_js_ts_edges_per_file = 11
+
+    class FakeFlowAnalyzer:
+        max_edges_per_file = 7
+        ast_taint = FakeAstTaint()
+
+    class FakeFlowMap:
+        edges = [None] * (240 * 18)
+        nodes = []
+
+    class FakeResult:
+        findings = []
+        flow_map = FakeFlowMap()
+
+    class FakeScanner:
+        flow_analyzer = FakeFlowAnalyzer()
+
+        def scan_workspace(self, _root):
+            return FakeResult()
+
+    monkeypatch.setattr(benchmark, "KGuardScanner", FakeScanner)
+
+    report = benchmark._benchmark_synthetic_repo()
+
+    assert report["maximum_heuristic_flow_edges_per_file"] == 7
+    assert report["maximum_js_ts_taint_edges_per_file"] == 11
+    assert report["maximum_flow_edges_per_file"] == 18
+    assert report["maximum_flow_edges"] == 240 * 18
+    assert report["edge_cap_met"] is True
 
 
 def test_concurrency_worker_uses_fake_scan_without_product_work(monkeypatch, tmp_path):
@@ -333,6 +367,81 @@ def test_quick_profile_default_output_remains_historical(tmp_path, monkeypatch):
 
     assert benchmark.main([]) == 0
     assert written == [Path(benchmark.HISTORICAL_BENCHMARK_REPORT)]
+
+
+def test_quick_report_separates_functional_invariants_from_timing(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        benchmark,
+        "_benchmark_synthetic_repo",
+        lambda: {
+            "mb_per_second": 0.1,
+            "elapsed_seconds": 100.0,
+            "edge_cap_met": True,
+            "file_count": 1,
+            "total_mb": 1.0,
+            "finding_count": 0,
+            "flow_nodes": 1,
+            "flow_edges": 1,
+        },
+    )
+    monkeypatch.setattr(benchmark, "_benchmark_polyglot_repo", lambda: {"elapsed_seconds": 100.0})
+    monkeypatch.setattr(benchmark, "_benchmark_product_source", lambda _root: {"elapsed_seconds": 100.0})
+    monkeypatch.setattr(benchmark, "_workspace_archive_diagnostic", lambda _root: {})
+
+    report = benchmark._quick_report(tmp_path)
+
+    assert report["slo"]["all_met"] is False
+    assert report["functional_invariants"] == {
+        "all_met": True,
+        "checks": {"synthetic_flow_edge_cap_met": True},
+    }
+
+
+def test_record_only_ignores_timing_failure_but_enforces_functional_invariants(tmp_path, monkeypatch):
+    report = {
+        "slo": {"all_met": False},
+        "functional_invariants": {
+            "all_met": True,
+            "checks": {"synthetic_flow_edge_cap_met": True},
+        },
+        "raw_free": True,
+    }
+    monkeypatch.setattr(benchmark, "_quick_report", lambda _root: dict(report))
+
+    output = tmp_path / "benchmark-ci.json"
+    assert benchmark.main(["--record-only", "--output", str(output)]) == 0
+    written = json.loads(output.read_text(encoding="utf-8"))
+    assert written["slo"]["all_met"] is False
+    assert written["measurement_policy"] == {
+        "timing_slo_enforced": False,
+        "functional_invariants_enforced": True,
+        "reason": "shared hosted runners are not hardware-normalized",
+    }
+
+    report["slo"]["all_met"] = True
+    report["functional_invariants"]["all_met"] = False
+    report["functional_invariants"]["checks"]["synthetic_flow_edge_cap_met"] = False
+    assert benchmark.main(["--record-only", "--output", str(output)]) == 1
+
+
+def test_record_only_requires_explicit_nonhistorical_quick_output(tmp_path, capsys):
+    output = tmp_path / "benchmark-ci.json"
+
+    with pytest.raises(SystemExit):
+        benchmark.main(["--record-only"])
+    assert "requires an explicit --output" in capsys.readouterr().err
+
+    with pytest.raises(SystemExit):
+        benchmark.main(["--record-only", "--output", "benchmark-report.json"])
+    assert "must not write benchmark-report.json" in capsys.readouterr().err
+
+    with pytest.raises(SystemExit):
+        benchmark.main(["--record-only", "--profile", "contest", "--output", str(output)])
+    assert "only valid with the quick profile" in capsys.readouterr().err
+
+    with pytest.raises(SystemExit):
+        benchmark.main(["--record-only", "--target-grade-process-scaling", "--output", str(output)])
+    assert "not valid with --target-grade-process-scaling" in capsys.readouterr().err
 
 
 def test_process_scaling_report_records_isolated_child_metrics(tmp_path):

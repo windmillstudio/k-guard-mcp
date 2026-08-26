@@ -284,7 +284,8 @@ def _read_stable_bytes(path: Path, *, maximum_bytes: int, label: str) -> bytes:
         if before.st_size > maximum_bytes:
             raise ValueError(f"{label} exceeds its byte budget")
         if (
-            _storage_identity(before_path) != _storage_identity(before)
+            _path_descriptor_identity(before_path)
+            != _path_descriptor_identity(before)
             or _is_reparse(before)
             or not stat.S_ISREG(before.st_mode)
             or before.st_nlink != 1
@@ -582,6 +583,34 @@ def _storage_identity(metadata: os.stat_result) -> tuple[int, ...]:
             "st_file_attributes",
         )
     )
+
+
+def _path_descriptor_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    """Return fields stable between path ``stat`` and descriptor ``fstat``.
+
+    On CPython 3.12+ for Windows, path-based ``st_ctime_ns`` is creation time,
+    while the CRT descriptor path can still report the legacy change time.
+    ``st_birthtime_ns`` is consistent across both APIs.  File identity, type,
+    link count, length and mtime remain mandatory on every supported runtime;
+    descriptor-to-descriptor mutation checks continue to use the stricter
+    :func:`_storage_identity` above.
+    """
+
+    fields = [
+        "st_dev",
+        "st_ino",
+        "st_mode",
+        "st_nlink",
+        "st_size",
+        "st_mtime_ns",
+    ]
+    if os.name == "nt":
+        if hasattr(metadata, "st_birthtime_ns"):
+            fields.append("st_birthtime_ns")
+    else:
+        fields.append("st_ctime_ns")
+    fields.append("st_file_attributes")
+    return tuple(int(getattr(metadata, field, 0)) for field in fields)
 
 
 def _hash_storage_file(path: Path, before: os.stat_result) -> tuple[str, int]:

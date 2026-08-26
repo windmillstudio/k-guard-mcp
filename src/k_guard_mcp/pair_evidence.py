@@ -293,10 +293,15 @@ def verify_pair_evidence(
 
     selected_runner = runner or SubprocessDockerRunner()
     with tempfile.TemporaryDirectory(prefix="k-guard-pair-replay-") as temporary:
+        # ``tempfile`` returns /var/... on macOS even though /var is the
+        # platform's system alias for /private/var.  This directory is created
+        # by this process rather than supplied by the caller, so canonicalize
+        # that trusted container before applying the normal strict root checks.
+        snapshot_parent = Path(temporary).resolve(strict=True)
         snapshot_roots = _snapshot_pair_roots(
             roots,
             source_receipts,
-            Path(temporary),
+            snapshot_parent,
         )
         (
             image_receipt,

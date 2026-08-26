@@ -17,6 +17,7 @@ from k_guard_mcp.database_gate import (
     SqliteReadOnlySession,
     TableGrant,
     ValidatedReadQuery,
+    _disable_sqlite_extension_loading,
     build_database_gate_report,
 )
 from k_guard_mcp.scanner import KGuardScanner
@@ -233,6 +234,48 @@ def test_forged_validated_query_is_still_denied_by_sqlite_backstops(tmp_path: Pa
         assert connection.execute("SELECT count(*) FROM users").fetchone()[0] == 2
     finally:
         connection.close()
+
+
+def test_sqlite_extension_hardening_handles_platform_capability_without_opening_a_gap() -> None:
+    class ExtensionCapabilityAbsent:
+        pass
+
+    class ExtensionCapabilityPresent:
+        def __init__(self) -> None:
+            self.calls: list[bool] = []
+
+        def enable_load_extension(self, enabled: bool) -> None:
+            self.calls.append(enabled)
+
+    class MalformedExtensionCapability:
+        enable_load_extension = False
+
+    _disable_sqlite_extension_loading(ExtensionCapabilityAbsent())  # type: ignore[arg-type]
+    present = ExtensionCapabilityPresent()
+    _disable_sqlite_extension_loading(present)  # type: ignore[arg-type]
+    assert present.calls == [False]
+    with pytest.raises(DatabaseGateError, match="sqlite_extension_hardening_unavailable"):
+        _disable_sqlite_extension_loading(MalformedExtensionCapability())  # type: ignore[arg-type]
+
+
+def test_forged_extension_load_is_denied_by_sqlite_authorizer(tmp_path: Path) -> None:
+    database = tmp_path / "app.sqlite"
+    _database(database)
+    grant = _grant()
+    forged = ValidatedReadQuery(
+        query_ref="forged-extension-load",
+        ast_sha256="0" * 64,
+        dialect="sqlite",
+        schema="main",
+        table="users",
+        columns=("id",),
+        limit=1,
+        _sql="SELECT load_extension('untrusted')",
+    )
+
+    with SqliteReadOnlySession(database, root=tmp_path, grant=grant) as session:
+        with pytest.raises(DatabaseGateError, match="sqlite_read_denied_or_failed"):
+            session.execute_read(forged)
 
 
 def test_sqlite_path_size_and_symlink_boundaries_fail_closed(tmp_path: Path) -> None:

@@ -214,8 +214,13 @@
     "warm_samples": 20,
     "warmup_samples_discarded": 1
   },
+  "publication_binding": {
+    "current_public_source_equivalence_claimed": false,
+    "measured_revision_available_in_public_history": false,
+    "scope": "historical_private_source_revision"
+  },
   "raw_free": true,
-  "report_fingerprint_sha256": "da493aec7eabd58cbbcff8910e960b4fbb938276ad3202223a4c9033f836cd03",
+  "report_fingerprint_sha256": "5ee2870e3521afae48c3b0109ee65f5c4596538655bb41f10a3b6158d69b610b",
   "scaling": {
     "10": {
       "all_candidates_complete": true,

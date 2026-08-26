@@ -59,6 +59,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", choices=("quick", "contest"), default="quick")
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument(
+        "--record-only",
+        action="store_true",
+        help=(
+            "Write the quick-profile measurement without making its hardware-sensitive "
+            "timing SLO the process exit gate. Deterministic functional invariants remain "
+            "enforced. Requires an explicit non-historical --output path."
+        ),
+    )
+    parser.add_argument(
         "--target-grade-process-scaling",
         action="store_true",
         help="Measure isolated child-process scaling. Requires --output and never writes benchmark-report.json.",
@@ -86,6 +95,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.target_grade_process_scaling:
+        if args.record_only:
+            parser.error("--record-only is not valid with --target-grade-process-scaling")
         if args.profile != "quick":
             parser.error("--target-grade-process-scaling is separate from --profile contest|quick")
         if args.output is None:
@@ -98,9 +109,24 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         return 0 if passed else 1
 
+    if args.record_only:
+        if args.profile != "quick":
+            parser.error("--record-only is only valid with the quick profile")
+        if args.output is None:
+            parser.error("--record-only requires an explicit --output path")
+        if _is_historical_benchmark_report(args.output):
+            parser.error("--record-only must not write benchmark-report.json")
+
     output = args.output if args.output is not None else Path(HISTORICAL_BENCHMARK_REPORT)
     report = _contest_report(Path.cwd()) if args.profile == "contest" else _quick_report(Path.cwd())
     passed = report["passed"] is True if args.profile == "contest" else report["slo"]["all_met"] is True
+    if args.record_only:
+        passed = report["functional_invariants"]["all_met"] is True
+        report["measurement_policy"] = {
+            "timing_slo_enforced": False,
+            "functional_invariants_enforced": True,
+            "reason": "shared hosted runners are not hardware-normalized",
+        }
     _write_report(output, report)
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if passed else 1
@@ -131,12 +157,18 @@ def _quick_report(root: Path) -> dict[str, Any]:
             "self_product_source_completed": self_repo["elapsed_seconds"] <= 30,
             "self_repository_completed": self_repo["elapsed_seconds"] <= 30,
         },
+        "functional_invariants": {
+            "checks": {
+                "synthetic_flow_edge_cap_met": synthetic["edge_cap_met"] is True,
+            },
+        },
     }
+    report["functional_invariants"]["all_met"] = all(report["functional_invariants"]["checks"].values())
     report["slo"]["all_met"] = bool(
         report["slo"]["synthetic_throughput_met"]
         and report["slo"]["polyglot_completed"]
         and report["slo"]["self_repository_completed"]
-        and synthetic["edge_cap_met"]
+        and report["functional_invariants"]["all_met"]
     )
     report.update({key: synthetic[key] for key in ("file_count", "total_mb", "elapsed_seconds", "mb_per_second", "finding_count", "flow_nodes", "flow_edges")})
     return report
@@ -884,6 +916,7 @@ def _write_report(path: Path, report: dict[str, Any]) -> None:
 def _benchmark_synthetic_repo() -> dict[str, object]:
     file_count = 240
     lines_per_file = 180
+    scanner = KGuardScanner()
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         total_bytes = 0
@@ -894,11 +927,14 @@ def _benchmark_synthetic_repo() -> dict[str, object]:
             path.write_text(content, encoding="utf-8")
             total_bytes += len(content.encode("utf-8"))
         start = time.perf_counter()
-        result = KGuardScanner().scan_workspace(root)
+        result = scanner.scan_workspace(root)
         elapsed = time.perf_counter() - start
     mb = total_bytes / MIB
     flow_edges = len(result.flow_map.edges) if result.flow_map else 0
-    maximum_flow_edges = file_count * 80
+    maximum_heuristic_flow_edges_per_file = scanner.flow_analyzer.max_edges_per_file
+    maximum_js_ts_taint_edges_per_file = scanner.flow_analyzer.ast_taint.max_js_ts_edges_per_file
+    maximum_flow_edges_per_file = maximum_heuristic_flow_edges_per_file + maximum_js_ts_taint_edges_per_file
+    maximum_flow_edges = file_count * maximum_flow_edges_per_file
     return {
         "name": "synthetic_typescript_routes",
         "file_count": file_count,
@@ -908,6 +944,9 @@ def _benchmark_synthetic_repo() -> dict[str, object]:
         "finding_count": len(result.findings),
         "flow_nodes": len(result.flow_map.nodes) if result.flow_map else 0,
         "flow_edges": flow_edges,
+        "maximum_heuristic_flow_edges_per_file": maximum_heuristic_flow_edges_per_file,
+        "maximum_js_ts_taint_edges_per_file": maximum_js_ts_taint_edges_per_file,
+        "maximum_flow_edges_per_file": maximum_flow_edges_per_file,
         "maximum_flow_edges": maximum_flow_edges,
         "edge_cap_met": flow_edges <= maximum_flow_edges,
     }

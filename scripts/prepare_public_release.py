@@ -254,13 +254,49 @@ def local_identity_report(snapshot: Path) -> dict[str, object]:
     return {"passed": not matches, "matches": matches}
 
 
-def write_snapshot_metadata(snapshot: Path, base_commit: str | None) -> None:
+def public_source_provenance() -> dict[str, object]:
+    return {
+        "kind": "sanitized_source_export",
+        "private_source_revision_disclosed": False,
+        "source_revision_available_in_public_history": False,
+        "public_tree_binding": "Use the public Git commit that contains this metadata and its tracked tree.",
+    }
+
+
+def mark_historical_public_benchmark(snapshot: Path) -> None:
+    path = snapshot / "benchmark-report.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema") != "k_guard_performance_benchmark.v2":
+        raise RuntimeError("public benchmark report must use the v2 schema")
+    payload["publication_binding"] = {
+        "current_public_source_equivalence_claimed": False,
+        "measured_revision_available_in_public_history": False,
+        "scope": "historical_private_source_revision",
+    }
+    canonical = dict(payload)
+    canonical.pop("report_fingerprint_sha256", None)
+    payload["report_fingerprint_sha256"] = hashlib.sha256(
+        json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
+def write_snapshot_metadata(snapshot: Path, _source_commit: str | None) -> None:
     metadata = {
         "schema": "k_guard_public_source_snapshot.v1",
         "project": "k-guard-mcp",
         "version": "0.1.0",
         "snapshot_kind": "sanitized_current_working_tree",
-        "base_commit": base_commit,
+        # A sanitized export is committed into a separate public history after
+        # this file is written. Publishing the private source SHA here made it
+        # look like a resolvable public base even though it was not. The public
+        # commit containing this file is the authoritative tree binding.
+        "base_commit": None,
+        "source_provenance": public_source_provenance(),
         "included": [*SOURCE_DIRECTORIES, "LICENSES", "root project files", "curated root reports"],
         "excluded": [
             "evidence/",
@@ -287,7 +323,7 @@ def write_snapshot_metadata(snapshot: Path, base_commit: str | None) -> None:
     )
 
 
-def source_manifest(snapshot: Path, base_commit: str | None) -> dict[str, object]:
+def source_manifest(snapshot: Path, _source_commit: str | None) -> dict[str, object]:
     files: list[dict[str, object]] = []
     total_bytes = 0
     for path in sorted(snapshot.rglob("*")):
@@ -308,7 +344,8 @@ def source_manifest(snapshot: Path, base_commit: str | None) -> dict[str, object
         "schema": "k_guard_public_source_manifest.v1",
         "project": "k-guard-mcp",
         "version": "0.1.0",
-        "base_commit": base_commit,
+        "base_commit": None,
+        "source_provenance": public_source_provenance(),
         "file_count": len(files),
         "total_bytes": total_bytes,
         "files": files,
@@ -382,6 +419,7 @@ def main() -> int:
         snapshot.mkdir()
         base_commit = git_value("rev-parse", "HEAD")
         populate_snapshot(snapshot)
+        mark_historical_public_benchmark(snapshot)
         workflow = snapshot / ".github" / "workflows" / "ci.yml"
         workflow_text = workflow.read_text(encoding="utf-8")
         original_test_command = "run: python -m coverage run -m pytest -q"
