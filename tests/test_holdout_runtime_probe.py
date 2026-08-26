@@ -171,9 +171,15 @@ def _fixture_runtime(tmp_path: Path, isolated_base_python: Path) -> tuple[Path, 
         ).strip()
     )
     # Some framework builds create executable or library aliases lazily on
-    # first launch even when venv was asked for copies.  The production probe
-    # must continue to reject every such alias, so normalize only this test
-    # fixture into an actually self-contained runtime before binding it.
+    # first launch even when venv was asked for copies.  The probe attests both
+    # the venv and its copied base runtime.  Keep the production rejection
+    # strict and normalize only those two test fixtures before binding them.
+    base_runtime = (
+        isolated_base_python.parent
+        if sys.platform == "win32"
+        else isolated_base_python.parents[1]
+    )
+    _materialize_runtime_symlinks(base_runtime)
     _materialize_runtime_symlinks(environment)
     scaffold = build_scanner_scaffold_manifest(environment)
     package = purelib / "k_guard_mcp"
