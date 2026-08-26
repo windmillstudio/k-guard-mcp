@@ -121,6 +121,18 @@ def test_materialize_runtime_symlinks_creates_independent_files(tmp_path: Path) 
     assert alias.stat().st_nlink == 1
 
 
+def test_scanner_scaffold_rejects_nonstandard_symlinks(tmp_path: Path) -> None:
+    target = tmp_path / "runtime-real"
+    target.write_bytes(b"runtime")
+    try:
+        os.symlink(target.name, tmp_path / "runtime-alias")
+    except (NotImplementedError, OSError):
+        pytest.skip("symbolic-link creation is unavailable")
+
+    with pytest.raises(ValueError, match="reparse point"):
+        build_scanner_scaffold_manifest(tmp_path)
+
+
 @pytest.fixture(scope="session")
 def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Avoid inheriting hardlinks created by unrelated host-process tests."""
@@ -140,6 +152,21 @@ def isolated_base_python(tmp_path_factory: pytest.TempPathFactory) -> Path:
     python = base / ("python.exe" if sys.platform == "win32" else "bin/python")
     if not python.is_file() or python.is_symlink() or python.stat().st_nlink != 1:
         pytest.fail("isolated base runtime is not a regular independent executable")
+    reported_base = Path(
+        subprocess.check_output(
+            [str(python), "-I", "-B", "-S", "-c", "import sys; print(sys.base_prefix)"],
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=30,
+        ).strip()
+    ).resolve(strict=True)
+    if reported_base != base.resolve(strict=True):
+        # Official framework CPython builds on macOS have fixed shared-library
+        # paths and cannot be relocated by copying.  A false positive baseline
+        # would make the negative tests vacuously pass, so skip every dependent
+        # isolated-runtime test while keeping the fail-closed link test above.
+        pytest.skip("host CPython base runtime is non-relocatable")
     return python
 
 
