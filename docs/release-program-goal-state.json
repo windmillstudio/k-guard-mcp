@@ -1,0 +1,187 @@
+{
+  "active_card": {
+    "board_reference": "docs/p24b313-api13-ktor-resource-owner-preregistration-ko.md",
+    "completed_gates": [
+      "A"
+    ],
+    "goal_id": "G1",
+    "id": "P2.4B.3.13",
+    "next_gate": "B",
+    "phase_id": "P2",
+    "status": "ACTIVE",
+    "title": "api-13 Ktor resource-owner source-tree identity"
+  },
+  "as_of": "2026-07-25",
+  "goals": [
+    {
+      "id": "G1",
+      "phase_ids": [
+        "P0",
+        "P1",
+        "P2"
+      ],
+      "status": "IN_PROGRESS",
+      "title": "정직한 분모와 oracle"
+    },
+    {
+      "id": "G2",
+      "phase_ids": [
+        "P3"
+      ],
+      "status": "NOT_STARTED",
+      "title": "측정 가능한 탐지 성능"
+    },
+    {
+      "id": "G3",
+      "phase_ids": [
+        "P4"
+      ],
+      "status": "NOT_STARTED",
+      "title": "정확한 Guardian gate"
+    },
+    {
+      "id": "G4",
+      "phase_ids": [
+        "P5"
+      ],
+      "status": "NOT_STARTED",
+      "title": "사이트, API, 데이터, 운영 검토 깊이"
+    },
+    {
+      "id": "G5",
+      "phase_ids": [
+        "P7"
+      ],
+      "status": "NOT_STARTED",
+      "title": "실제 설치와 사용 가능성"
+    },
+    {
+      "id": "G6",
+      "phase_ids": [
+        "P6"
+      ],
+      "status": "NOT_STARTED",
+      "title": "정직한 최종 출하 주장"
+    },
+    {
+      "id": "G7",
+      "phase_ids": [
+        "P8"
+      ],
+      "status": "IN_PROGRESS",
+      "title": "목표 통제와 독립 검증 운영"
+    }
+  ],
+  "north_star": {
+    "id": "G0",
+    "required_goal_ids": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7"
+    ],
+    "status": "ACTIVE",
+    "title": "한국 바이브코더의 출하 전 시니어 감사관형 fail-closed release gate"
+  },
+  "paused_cards": [],
+  "phases": [
+    {
+      "goal_id": "G1",
+      "id": "P0",
+      "phase_review_status": "FIX_NARROW",
+      "status": "FIX_NARROW",
+      "title": "기준선과 실행 환경",
+      "work_board": "docs/release-program-phase-ledger-ko.md"
+    },
+    {
+      "goal_id": "G1",
+      "id": "P1",
+      "phase_review_status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
+      "title": "oracle과 finding 1:1 결속",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G1",
+      "id": "P2",
+      "phase_review_status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
+      "title": "공개 분모와 holdout 구성",
+      "work_board": "docs/p24b2-source-flow-materialization-wbs-ko.md"
+    },
+    {
+      "goal_id": "G2",
+      "id": "P3",
+      "phase_review_status": "NOT_STARTED",
+      "status": "NOT_STARTED",
+      "title": "성능 측정과 coverage HOLD",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G3",
+      "id": "P4",
+      "phase_review_status": "NOT_STARTED",
+      "status": "NOT_STARTED",
+      "title": "오류군 observe, warn, block 승격",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G4",
+      "id": "P5",
+      "phase_review_status": "NOT_STARTED",
+      "status": "NOT_STARTED",
+      "title": "사이트, API, 데이터, 운영 깊이",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G6",
+      "id": "P6",
+      "phase_review_status": "NOT_STARTED",
+      "status": "NOT_STARTED",
+      "title": "H100 final holdout과 출하 처분",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G5",
+      "id": "P7",
+      "phase_review_status": "NOT_STARTED",
+      "status": "NOT_STARTED",
+      "title": "설치, CLI, MCP, 클라이언트 호환",
+      "work_board": "docs/release-program-atomic-goals-ko.md"
+    },
+    {
+      "goal_id": "G7",
+      "id": "P8",
+      "phase_review_status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
+      "title": "목표 통제와 독립 검증 운영",
+      "work_board": "docs/release-program-goal-control-ko.md"
+    }
+  ],
+  "product_work_card_registry": "docs/release-program-product-card-registry.json",
+  "program_status": "ACTIVE",
+  "review_policy": {
+    "card_gates": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F1",
+      "F2",
+      "G"
+    ],
+    "card_review_required_after_gate": "E",
+    "phase_review_required": true,
+    "required_models": {
+      "claude": "claude-opus-5",
+      "grok": "grok-4.6"
+    },
+    "required_review_runs": 2,
+    "review_comparator_required_status": "FIX"
+  },
+  "schema": "k_guard_release_program_goal_state.v1"
+}

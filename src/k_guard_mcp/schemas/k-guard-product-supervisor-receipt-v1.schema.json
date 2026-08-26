@@ -1,0 +1,336 @@
+{
+  "$id": "https://k-guard.local/schemas/k-guard-product-supervisor-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "bindings": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "candidate_tree": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contract_file_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sealed_packet_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "candidate_commit",
+        "candidate_tree",
+        "contract_file_sha256",
+        "sealed_packet_sha256"
+      ],
+      "type": "object"
+    },
+    "decision": {
+      "additionalProperties": false,
+      "properties": {
+        "blocker_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "blockers": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "product_approval": {
+          "type": "boolean"
+        },
+        "source_verdict": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "GO",
+            "HOLD",
+            "BLOCKED"
+          ]
+        }
+      },
+      "required": [
+        "blocker_class",
+        "blockers",
+        "product_approval",
+        "source_verdict",
+        "verdict"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_kind": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attestation_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provider_envelope_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provider_envelope_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "raw_returned": {
+          "const": false
+        }
+      },
+      "required": [
+        "attestation_kind",
+        "attestation_path",
+        "attestation_sha256",
+        "provider_envelope_path",
+        "provider_envelope_sha256",
+        "raw_returned"
+      ],
+      "type": "object"
+    },
+    "independence": {
+      "additionalProperties": false,
+      "properties": {
+        "peer_verdict_supplied": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "peer_verdict_supplied"
+      ],
+      "type": "object"
+    },
+    "phase_id": {
+      "pattern": "^phase-(?:[0-9]+|3c)$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "raw_returned": {
+      "const": false
+    },
+    "receipt_context": {
+      "enum": [
+        "phase_review",
+        "contract_review",
+        "retry_authority",
+        "sol_pre_gate"
+      ]
+    },
+    "recorded_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "requested_model_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewer": {
+      "enum": [
+        "sol",
+        "opus",
+        "grok"
+      ]
+    },
+    "runtime_model_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema": {
+      "const": "k_guard_product_supervisor_receipt.v1"
+    },
+    "scope": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "session_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical": {
+          "type": "boolean"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "canonical",
+        "path",
+        "schema",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "usage": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "input_tokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "output_tokens": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "total_tokens": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "input_tokens",
+            "output_tokens",
+            "total_tokens"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "validation": {
+      "additionalProperties": false,
+      "properties": {
+        "decision_consistent": {
+          "type": "boolean"
+        },
+        "evidence_binding_complete": {
+          "type": "boolean"
+        },
+        "exact_model_binding": {
+          "type": "boolean"
+        },
+        "failure_reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "peer_independent": {
+          "type": "boolean"
+        },
+        "positive_usage": {
+          "type": "boolean"
+        },
+        "product_gate_admissible": {
+          "type": "boolean"
+        },
+        "source_canonical": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "decision_consistent",
+        "evidence_binding_complete",
+        "exact_model_binding",
+        "failure_reasons",
+        "peer_independent",
+        "positive_usage",
+        "product_gate_admissible",
+        "source_canonical"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "attempt",
+    "bindings",
+    "decision",
+    "evidence",
+    "independence",
+    "phase_id",
+    "raw_returned",
+    "receipt_context",
+    "recorded_at",
+    "requested_model_id",
+    "reviewer",
+    "runtime_model_id",
+    "schema",
+    "scope",
+    "session_id",
+    "source",
+    "usage",
+    "validation"
+  ],
+  "title": "K-Guard canonical product supervisor receipt",
+  "type": "object"
+}

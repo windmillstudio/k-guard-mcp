@@ -1,0 +1,355 @@
+{
+  "positive_count": 500,
+  "negative_count": 100,
+  "recall": 1.0,
+  "false_positive_rate": 0.0,
+  "thresholds": {
+    "minimum_recall": 0.95,
+    "maximum_false_positive_rate": 0.05
+  },
+  "passed": true,
+  "positives_sample": [
+    {
+      "name": "person_phone_0",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_1",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_2",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_3",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_4",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_5",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_6",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_7",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_8",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_9",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_10",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_11",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_12",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_13",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_14",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_15",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_16",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_17",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_18",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    },
+    {
+      "name": "person_phone_19",
+      "passed": true,
+      "expected_any": [
+        "KR_COMBO_PERSON_PHONE"
+      ],
+      "rules": [
+        "KR_COMBO_PERSON_PHONE",
+        "PII_PERSON",
+        "PII_PHONE"
+      ]
+    }
+  ],
+  "negatives_sample": [
+    {
+      "name": "negative_0",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_1",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_2",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_3",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_4",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_5",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_6",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_7",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_8",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_9",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_10",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_11",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_12",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_13",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_14",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_15",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_16",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_17",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_18",
+      "passed": true,
+      "rules": []
+    },
+    {
+      "name": "negative_19",
+      "passed": true,
+      "rules": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-07-25T16:55:59.426663+00:00",
+  "checker_path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\planning\\tools\\verify_contract_freeze.py",
+  "checker_sha256": "6c1b556848b0d65ce19ce1e790c34ec898464c281823888cd0860bb1d8bfc880",
+  "contract_agreement_path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\planning\\contract-agreement-receipt.json",
+  "contract_agreement_sha256": "2f9eefa736c3509e9c9a30b9d00be9931b2d22ac77f98da0e6a0855c06ce6d97",
+  "contract_byte_count": 67362,
+  "contract_file_sha256": "18839bd930422c45fc9a7cf610d87bacc9aa976721c55556fd64a279d8c15dad",
+  "contract_path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\local-user-workspace\\outputs\\k-guard-mcp\\docs\\terra-product-hardening-execution-contract-ko.md",
+  "event": "entry",
+  "phase_id": "phase-0",
+  "schema_version": "k-guard.contract-freeze-check.v1",
+  "status": "PASS"
+}

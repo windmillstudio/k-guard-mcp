@@ -1,0 +1,60 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/oracle-program-operating-contract-ko.md",
+      "sha256": "1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"
+    },
+    {
+      "path": "docs/external-supervisor-health-check-20260721.md",
+      "sha256": "37ba8e33db91cfa5c659c66eca45a432b82d790d7257fe1adf27baa806beb5fb"
+    },
+    {
+      "path": "scripts/validate_supervisor_review_receipts.py",
+      "sha256": "2600e1efdc14829959476ff37ef6fe3ea0d46ab7c8f1b9b8129fbd7472af1846"
+    },
+    {
+      "path": "src/k_guard_mcp/supervisor_reviews.py",
+      "sha256": "793ae76d11a4d4b5e7d84584af402802a7a90402fada951f1f18963c0599310b"
+    },
+    {
+      "path": "tests/test_supervisor_reviews.py",
+      "sha256": "c15e21f29ba00756c33e0ebd51a30474a29e12cabf64b70d43d6d103c90602ac"
+    }
+  ],
+  "claim_boundary": {
+    "product_performance_or_release_claim": false,
+    "supervisor_receipt_promotion_control_only": true
+  },
+  "health_lanes": [
+    {
+      "model": "claude-opus-4-8",
+      "status": "HEALTHY"
+    },
+    {
+      "model": "grok-4.5",
+      "status": "HEALTHY"
+    },
+    {
+      "model": "cline-pass/glm-5.2",
+      "status": "HEALTHY"
+    }
+  ],
+  "raw_returned": false,
+  "schema": "k_guard_supervisor_governance_evidence_manifest.v1",
+  "test_evidence": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_supervisor_reviews.py",
+      "passed": 11,
+      "projection_sha256": "8cea9472328c4ea7f3f35aaa07d294264132cf78c2e3413521359c297c86e814",
+      "repeat_exact": true,
+      "run_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "passed": 2187,
+      "skipped": 5
+    },
+    "raw_returned": false
+  }
+}

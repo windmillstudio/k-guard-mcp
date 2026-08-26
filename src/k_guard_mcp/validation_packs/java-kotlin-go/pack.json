@@ -1,0 +1,32 @@
+{
+  "schema": "k_guard_language_validation_pack.v1",
+  "pack_id": "nine-language-intrafile-development-v3",
+  "languages": [
+    "python",
+    "javascript",
+    "typescript",
+    "java",
+    "kotlin",
+    "go",
+    "php",
+    "ruby",
+    "csharp"
+  ],
+  "fixture_root": "fixtures",
+  "expectations": {
+    "path": "expectations.json",
+    "sha256": "a37e7bf3ec474902b6cdfe8182858baebf05bfbcf8c3e9480261c915b70bac16"
+  },
+  "profile": {
+    "name": "semgrep-deep.yml",
+    "sha256": "c29adf2272f2683ff090e10f9411899cc561bc010721a9ff0db9ee142d02c816",
+    "rules_sha256": "48261d3ef57c823d0805961c093fa94a69b90fc588e34a18d7dbee4d235dee20",
+    "rule_count": 40
+  },
+  "analyzer": {
+    "name": "semgrep",
+    "executable_version": "1.174.0"
+  },
+  "claim_boundary": "development_validation_not_field_accuracy",
+  "raw_free": true
+}

@@ -1,0 +1,12 @@
+{
+  "adversarial_count": 46,
+  "korean_positive_count": 37,
+  "korean_negative_count": 19,
+  "minimums": {
+    "adversarial": 45,
+    "korean_positives": 25,
+    "korean_negatives": 15
+  },
+  "errors": [],
+  "passed": true
+}

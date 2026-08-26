@@ -1,0 +1,88 @@
+{
+  "admission_blockers": [
+    "evidence_signature_missing",
+    "independent_upstream_fixed_revision_missing",
+    "source_bound_severity_rubric_missing"
+  ],
+  "claim_boundary": {
+    "raw_returned": false,
+    "release_gate_admitted": false,
+    "scanner_accuracy_proven": false,
+    "severity_or_cwe_admitted": false,
+    "source_bound_scanner_mapping_proven": true,
+    "tp_fp_fn_admitted": false
+  },
+  "consensus": {
+    "projection_sha256": "aa7c4a1e38d449de306a3e56a2e7dc34728c1ff2310127a068fd53ea6a136aa1",
+    "raw_returned": false,
+    "run_count": 2,
+    "two_runs_byte_equivalent_after_normalization": true
+  },
+  "execution_pair": {
+    "both_statuses_passed": true,
+    "negative_control_receipt_sha256": "baee6c365c87526a5a7b00717c14616e7497eb55f804a9a0fdf9fe36160bddaa",
+    "positive_execution_receipt_sha256": "3d1e162931ec875f1b9de8564ff08733677e7125347eb559c91318c67e86a874",
+    "raw_returned": false,
+    "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b"
+  },
+  "failure_code": null,
+  "mapping": {
+    "implementation_source": {
+      "content_sha256": "f0093cfbfa91c8a6b1c3e708bf8a22bf1a523899fd561ed18dcdd7b98f5ddeb1",
+      "line": 40,
+      "path": "src/main/java/org/owasp/webgoat/lessons/idor/IDOREditOtherProfile.java"
+    },
+    "mapping_kind": "upstream-integration-put-to-spring-path-variable",
+    "oracle_source": {
+      "content_sha256": "bcf5db68da5b1574a4710a2cb087a4907ece95e4688310ef7213c957d2ddf6a9",
+      "line": 97,
+      "path": "src/it/java/org/owasp/webgoat/integration/IDORIntegrationTest.java"
+    },
+    "raw_returned": false
+  },
+  "mapping_status": "SCANNER_MAPPING_PASS",
+  "raw_returned": false,
+  "release_gate_passed": false,
+  "runs": [
+    {
+      "artifact_scope": "runtime_source",
+      "confidence": "medium",
+      "detector_subtype": "java_spring_cross_account_write_observe",
+      "implementation_path": "src/main/java/org/owasp/webgoat/lessons/idor/IDOREditOtherProfile.java",
+      "line": 53,
+      "line_hash": "03baf357e91b1c5d",
+      "raw_returned": false,
+      "rule_id": "API_IDOR_ROUTE_PARAM_LOOKUP",
+      "severity": "high"
+    },
+    {
+      "artifact_scope": "runtime_source",
+      "confidence": "medium",
+      "detector_subtype": "java_spring_cross_account_write_observe",
+      "implementation_path": "src/main/java/org/owasp/webgoat/lessons/idor/IDOREditOtherProfile.java",
+      "line": 53,
+      "line_hash": "03baf357e91b1c5d",
+      "raw_returned": false,
+      "rule_id": "API_IDOR_ROUTE_PARAM_LOOKUP",
+      "severity": "high"
+    }
+  ],
+  "schema": "k_guard_l2_webgoat_idor_scanner_mapping.v1",
+  "source": {
+    "commit": "5142935bf7c279882c3b0fc0ecec42c447de6fd5",
+    "commit_tree": "6c45e60db0995416a5bbe5977657a78d5084dcf7",
+    "file_count": 1211,
+    "raw_returned": false,
+    "repository_id": "webgoat/webgoat",
+    "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b",
+    "source_tree_sha256": "0b2193e30038f4366715986e939645d7851e647c6188b992311639dd7564da3c",
+    "total_bytes": 21101002
+  },
+  "tool_provenance": {
+    "observer_sha256": "7b433355f00b124f8b9818b5712896c94987b84d12a2a035cf2bd0aa1dfa55a3",
+    "polyglot_detector_sha256": "7a998873c8caefaf4cfc695295e71efc3dd82d0f9074832406881720939c404f",
+    "raw_returned": false,
+    "runtime_contract_sha256": "d9f52d4fca410fe4c27cd9c4e8aa0e9ea7e696e80df34f67f5b04ef69bd1ce29",
+    "scanner_sha256": "9ab74fad035fbda9cf33403e0d6731600195b5fbb697e2b456705d04ad8a340f"
+  }
+}

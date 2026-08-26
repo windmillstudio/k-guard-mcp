@@ -1,0 +1,755 @@
+{
+  "repos": [
+    {
+      "name": "AI-Infra-Guard",
+      "path": "tmp\\competitor-dogfood\\AI-Infra-Guard",
+      "file_count": 4408,
+      "total_mb": 16.699,
+      "include_flow": false,
+      "finding_count": 1598,
+      "summary": {
+        "critical": 9,
+        "high": 17,
+        "medium": 741,
+        "low": 831,
+        "info": 0
+      },
+      "by_source": {
+        "config": 9,
+        "static": 1589
+      },
+      "top_rules": [
+        [
+          "PII_IP_ADDRESS",
+          371
+        ],
+        [
+          "PII_BIRTHDATE",
+          369
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          303
+        ],
+        [
+          "PII_MEDICAL_INFO",
+          270
+        ],
+        [
+          "PII_EMAIL",
+          156
+        ],
+        [
+          "PII_TIMESTAMP",
+          35
+        ],
+        [
+          "PII_ACCOUNT_ID",
+          30
+        ],
+        [
+          "PII_ORDER_ID",
+          26
+        ],
+        [
+          "PII_FRN",
+          8
+        ],
+        [
+          "PII_CREDIT_CARD",
+          6
+        ],
+        [
+          "PII_PHONE",
+          6
+        ],
+        [
+          "CONFIG_DEBUG_TRUE",
+          5
+        ]
+      ],
+      "flow_nodes": 0,
+      "flow_edges": 0,
+      "flow_findings": 0
+    },
+    {
+      "name": "MCPScan",
+      "path": "tmp\\competitor-dogfood\\MCPScan",
+      "file_count": 22,
+      "total_mb": 0.073,
+      "finding_count": 7,
+      "summary": {
+        "critical": 0,
+        "high": 5,
+        "medium": 1,
+        "low": 1,
+        "info": 0
+      },
+      "by_source": {
+        "flow": 5,
+        "static": 2
+      },
+      "top_rules": [
+        [
+          "FLOW_SENSITIVE_TO_EXTERNAL_HTTP",
+          5
+        ],
+        [
+          "PII_EMAIL",
+          1
+        ],
+        [
+          "PII_IP_ADDRESS",
+          1
+        ]
+      ],
+      "flow_nodes": 12,
+      "flow_edges": 7,
+      "flow_findings": 5
+    },
+    {
+      "name": "agent-scan",
+      "path": "tmp\\competitor-dogfood\\agent-scan",
+      "file_count": 256,
+      "total_mb": 2.549,
+      "finding_count": 140,
+      "summary": {
+        "critical": 8,
+        "high": 9,
+        "medium": 24,
+        "low": 99,
+        "info": 0
+      },
+      "by_source": {
+        "static": 134,
+        "flow": 4,
+        "config": 2
+      },
+      "top_rules": [
+        [
+          "PII_BIRTHDATE",
+          35
+        ],
+        [
+          "PII_IP_ADDRESS",
+          24
+        ],
+        [
+          "PII_ORDER_ID",
+          22
+        ],
+        [
+          "PII_EMAIL",
+          21
+        ],
+        [
+          "PII_TIMESTAMP",
+          18
+        ],
+        [
+          "SECRET_AWS_ACCESS_KEY",
+          7
+        ],
+        [
+          "PII_CI",
+          4
+        ],
+        [
+          "FLOW_PII_TO_LOG",
+          4
+        ],
+        [
+          "PII_CREDIT_CARD",
+          1
+        ],
+        [
+          "PII_FRN",
+          1
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          1
+        ],
+        [
+          "CONFIG_DEBUG_TRUE",
+          1
+        ]
+      ],
+      "flow_nodes": 18,
+      "flow_edges": 7,
+      "flow_findings": 4
+    },
+    {
+      "name": "agentic-radar",
+      "path": "tmp\\competitor-dogfood\\agentic-radar",
+      "file_count": 219,
+      "total_mb": 0.95,
+      "finding_count": 56,
+      "summary": {
+        "critical": 2,
+        "high": 8,
+        "medium": 20,
+        "low": 26,
+        "info": 0
+      },
+      "by_source": {
+        "static": 48,
+        "flow": 8
+      },
+      "top_rules": [
+        [
+          "PII_BIRTHDATE",
+          22
+        ],
+        [
+          "PII_EMAIL",
+          17
+        ],
+        [
+          "FLOW_PII_TO_LOG",
+          5
+        ],
+        [
+          "PII_ORDER_ID",
+          4
+        ],
+        [
+          "FLOW_SENSITIVE_TO_EXTERNAL_HTTP",
+          3
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          3
+        ],
+        [
+          "PII_CREDIT_CARD",
+          2
+        ]
+      ],
+      "flow_nodes": 30,
+      "flow_edges": 20,
+      "flow_findings": 8
+    },
+    {
+      "name": "agentseal",
+      "path": "tmp\\competitor-dogfood\\agentseal",
+      "file_count": 254,
+      "total_mb": 2.605,
+      "include_flow": true,
+      "finding_count": 202,
+      "summary": {
+        "critical": 13,
+        "high": 15,
+        "medium": 16,
+        "low": 158,
+        "info": 0
+      },
+      "by_source": {
+        "static": 183,
+        "flow": 15,
+        "config": 4
+      },
+      "top_rules": [
+        [
+          "PII_TIMESTAMP",
+          91
+        ],
+        [
+          "PII_BIRTHDATE",
+          50
+        ],
+        [
+          "FLOW_SENSITIVE_TO_EXTERNAL_HTTP",
+          12
+        ],
+        [
+          "PII_IP_ADDRESS",
+          10
+        ],
+        [
+          "PII_EMAIL",
+          9
+        ],
+        [
+          "PII_ORDER_ID",
+          7
+        ],
+        [
+          "SECRET_OPENAI_STYLE_KEY",
+          5
+        ],
+        [
+          "SECRET_AWS_ACCESS_KEY",
+          5
+        ],
+        [
+          "SECRET_GITHUB_PAT",
+          3
+        ],
+        [
+          "FLOW_PII_TO_LOG",
+          3
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          2
+        ],
+        [
+          "CONFIG_DEBUG_TRUE",
+          2
+        ]
+      ],
+      "flow_nodes": 50,
+      "flow_edges": 28,
+      "flow_findings": 15
+    },
+    {
+      "name": "agentshield",
+      "path": "tmp\\competitor-dogfood\\agentshield",
+      "file_count": 195,
+      "total_mb": 2.275,
+      "finding_count": 266,
+      "summary": {
+        "critical": 38,
+        "high": 8,
+        "medium": 68,
+        "low": 152,
+        "info": 0
+      },
+      "by_source": {
+        "static": 262,
+        "config": 3,
+        "flow": 1
+      },
+      "top_rules": [
+        [
+          "PII_TIMESTAMP",
+          73
+        ],
+        [
+          "PII_EMAIL",
+          66
+        ],
+        [
+          "PII_IP_ADDRESS",
+          62
+        ],
+        [
+          "SECRET_OPENAI_STYLE_KEY",
+          17
+        ],
+        [
+          "PII_BIRTHDATE",
+          12
+        ],
+        [
+          "SECRET_DB_URL",
+          7
+        ],
+        [
+          "SECRET_GITHUB_PAT",
+          7
+        ],
+        [
+          "SECRET_PRIVATE_KEY",
+          6
+        ],
+        [
+          "SECRET_JWT",
+          3
+        ],
+        [
+          "PII_ORDER_ID",
+          3
+        ],
+        [
+          "SECRET_WEBHOOK_URL",
+          2
+        ],
+        [
+          "PII_DEVICE_ID",
+          2
+        ]
+      ],
+      "flow_nodes": 14,
+      "flow_edges": 5,
+      "flow_findings": 1
+    },
+    {
+      "name": "hol-guard",
+      "path": "tmp\\competitor-dogfood\\hol-guard",
+      "file_count": 1105,
+      "total_mb": 15.909,
+      "include_flow": false,
+      "finding_count": 4040,
+      "summary": {
+        "critical": 102,
+        "high": 68,
+        "medium": 100,
+        "low": 3770,
+        "info": 0
+      },
+      "by_source": {
+        "static": 4035,
+        "config": 5
+      },
+      "top_rules": [
+        [
+          "PII_TIMESTAMP",
+          2122
+        ],
+        [
+          "PII_IP_ADDRESS",
+          1484
+        ],
+        [
+          "PII_EMAIL",
+          96
+        ],
+        [
+          "PII_BIRTHDATE",
+          81
+        ],
+        [
+          "PII_DEVICE_ID",
+          62
+        ],
+        [
+          "SECRET_PRIVATE_KEY",
+          53
+        ],
+        [
+          "PII_RRN",
+          33
+        ],
+        [
+          "PII_FRN",
+          29
+        ],
+        [
+          "PII_ORDER_ID",
+          21
+        ],
+        [
+          "SECRET_GITHUB_PAT",
+          20
+        ],
+        [
+          "SECRET_OPENAI_STYLE_KEY",
+          14
+        ],
+        [
+          "SECRET_DB_URL",
+          9
+        ]
+      ],
+      "flow_nodes": 0,
+      "flow_edges": 0,
+      "flow_findings": 0
+    },
+    {
+      "name": "mcp",
+      "path": "tmp\\competitor-dogfood\\mcp",
+      "file_count": 37,
+      "total_mb": 0.114,
+      "finding_count": 33,
+      "summary": {
+        "critical": 0,
+        "high": 2,
+        "medium": 8,
+        "low": 23,
+        "info": 0
+      },
+      "by_source": {
+        "flow": 2,
+        "static": 31
+      },
+      "top_rules": [
+        [
+          "PII_BIRTHDATE",
+          17
+        ],
+        [
+          "PII_IP_ADDRESS",
+          6
+        ],
+        [
+          "PII_EMAIL",
+          5
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          3
+        ],
+        [
+          "FLOW_PII_TO_LOG",
+          2
+        ]
+      ],
+      "flow_nodes": 7,
+      "flow_edges": 4,
+      "flow_findings": 2
+    },
+    {
+      "name": "mcp-scanner",
+      "path": "tmp\\competitor-dogfood\\mcp-scanner",
+      "file_count": 398,
+      "total_mb": 3.632,
+      "finding_count": 427,
+      "summary": {
+        "critical": 6,
+        "high": 60,
+        "medium": 29,
+        "low": 332,
+        "info": 0
+      },
+      "by_source": {
+        "config": 6,
+        "static": 361,
+        "flow": 60
+      },
+      "top_rules": [
+        [
+          "PII_IP_ADDRESS",
+          183
+        ],
+        [
+          "PII_BIRTHDATE",
+          83
+        ],
+        [
+          "FLOW_PII_TO_LOG",
+          52
+        ],
+        [
+          "PII_TIMESTAMP",
+          49
+        ],
+        [
+          "PII_EMAIL",
+          22
+        ],
+        [
+          "PII_ORDER_ID",
+          14
+        ],
+        [
+          "FLOW_SENSITIVE_TO_EXTERNAL_HTTP",
+          8
+        ],
+        [
+          "CONFIG_DOCKER_SOCK",
+          5
+        ],
+        [
+          "PII_SENSITIVE_INFO",
+          5
+        ],
+        [
+          "PII_ACCOUNT_ID",
+          3
+        ],
+        [
+          "SECRET_OPENAI_STYLE_KEY",
+          1
+        ],
+        [
+          "CONFIG_DEBUG_TRUE",
+          1
+        ]
+      ],
+      "flow_nodes": 149,
+      "flow_edges": 93,
+      "flow_findings": 60
+    },
+    {
+      "name": "mcp-shield",
+      "path": "tmp\\competitor-dogfood\\mcp-shield",
+      "file_count": 15,
+      "total_mb": 0.14,
+      "finding_count": 4,
+      "summary": {
+        "critical": 0,
+        "high": 0,
+        "medium": 2,
+        "low": 2,
+        "info": 0
+      },
+      "by_source": {
+        "static": 4
+      },
+      "top_rules": [
+        [
+          "PII_EMAIL",
+          2
+        ],
+        [
+          "PII_BIRTHDATE",
+          1
+        ],
+        [
+          "PII_ORDER_ID",
+          1
+        ]
+      ],
+      "flow_nodes": 1,
+      "flow_edges": 0,
+      "flow_findings": 0
+    },
+    {
+      "name": "mcp-watch",
+      "path": "tmp\\competitor-dogfood\\mcp-watch",
+      "file_count": 32,
+      "total_mb": 0.188,
+      "include_flow": true,
+      "finding_count": 2,
+      "summary": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 1,
+        "info": 0
+      },
+      "by_source": {
+        "config": 1,
+        "static": 1
+      },
+      "top_rules": [
+        [
+          "CONFIG_SOURCE_MAP_ENABLED",
+          1
+        ],
+        [
+          "PII_IP_ADDRESS",
+          1
+        ]
+      ],
+      "flow_nodes": 0,
+      "flow_edges": 0,
+      "flow_findings": 0
+    },
+    {
+      "name": "pipelock",
+      "path": "tmp\\competitor-dogfood\\pipelock",
+      "file_count": 2520,
+      "total_mb": 27.132,
+      "include_flow": false,
+      "finding_count": 4142,
+      "summary": {
+        "critical": 114,
+        "high": 5,
+        "medium": 304,
+        "low": 3719,
+        "info": 0
+      },
+      "by_source": {
+        "static": 4134,
+        "config": 8
+      },
+      "top_rules": [
+        [
+          "PII_IP_ADDRESS",
+          2622
+        ],
+        [
+          "PII_TIMESTAMP",
+          669
+        ],
+        [
+          "PII_EMAIL",
+          279
+        ],
+        [
+          "PII_BIRTHDATE",
+          239
+        ],
+        [
+          "PII_ORDER_ID",
+          186
+        ],
+        [
+          "PII_CREDIT_CARD",
+          52
+        ],
+        [
+          "SECRET_OPENAI_STYLE_KEY",
+          24
+        ],
+        [
+          "SECRET_DB_URL",
+          18
+        ],
+        [
+          "SECRET_AWS_ACCESS_KEY",
+          16
+        ],
+        [
+          "PII_MEDICAL_INFO",
+          7
+        ],
+        [
+          "CONFIG_DEBUG_TRUE",
+          6
+        ],
+        [
+          "KR_COMBO_EMAIL_ORDER",
+          4
+        ]
+      ],
+      "flow_nodes": 0,
+      "flow_edges": 0,
+      "flow_findings": 0
+    },
+    {
+      "name": "ramparts",
+      "path": "tmp\\competitor-dogfood\\ramparts",
+      "file_count": 31,
+      "total_mb": 0.216,
+      "finding_count": 50,
+      "summary": {
+        "critical": 1,
+        "high": 1,
+        "medium": 3,
+        "low": 45,
+        "info": 0
+      },
+      "by_source": {
+        "static": 49,
+        "config": 1
+      },
+      "top_rules": [
+        [
+          "PII_TIMESTAMP",
+          22
+        ],
+        [
+          "PII_BIRTHDATE",
+          13
+        ],
+        [
+          "PII_IP_ADDRESS",
+          9
+        ],
+        [
+          "PII_EMAIL",
+          3
+        ],
+        [
+          "SECRET_AWS_ACCESS_KEY",
+          1
+        ],
+        [
+          "CONFIG_CORS_WILDCARD",
+          1
+        ],
+        [
+          "PII_ORDER_ID",
+          1
+        ]
+      ],
+      "flow_nodes": 0,
+      "flow_edges": 0,
+      "flow_findings": 0
+    }
+  ]
+}

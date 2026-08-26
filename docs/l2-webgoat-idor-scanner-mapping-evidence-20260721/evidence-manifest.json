@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721.md",
+      "sha256": "f5a4022b9a19c4eb9c4b7ea07a9a14c2b7fb94bb55384f1b32b49ef241de6f30"
+    },
+    {
+      "path": "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/receipt-r3.json",
+      "sha256": "0cbfd99d8e1ac3f95874aca03d3c52037c99ee94b5b76e2234395897a5d9edc1"
+    },
+    {
+      "path": "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/receipt-r4.json",
+      "sha256": "0cbfd99d8e1ac3f95874aca03d3c52037c99ee94b5b76e2234395897a5d9edc1"
+    },
+    {
+      "path": "docs/oracle-program-operating-contract-ko.md",
+      "sha256": "1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"
+    },
+    {
+      "path": "scripts/observe_l2_webgoat_idor_scanner.py",
+      "sha256": "7b433355f00b124f8b9818b5712896c94987b84d12a2a035cf2bd0aa1dfa55a3"
+    },
+    {
+      "path": "scripts/validate_supervisor_review_receipts.py",
+      "sha256": "2600e1efdc14829959476ff37ef6fe3ea0d46ab7c8f1b9b8129fbd7472af1846"
+    },
+    {
+      "path": "src/k_guard_mcp/detectors/polyglot.py",
+      "sha256": "7a998873c8caefaf4cfc695295e71efc3dd82d0f9074832406881720939c404f"
+    },
+    {
+      "path": "src/k_guard_mcp/supervisor_reviews.py",
+      "sha256": "793ae76d11a4d4b5e7d84584af402802a7a90402fada951f1f18963c0599310b"
+    },
+    {
+      "path": "tests/test_observe_l2_webgoat_idor_scanner.py",
+      "sha256": "3978742a8788942d803aa476ad91116fdca1c6d2392baa6214dca4d9fe3b0c53"
+    },
+    {
+      "path": "tests/test_public_app_regressions.py",
+      "sha256": "23a4b583233d1f607f5b40d680ba6081cef6d8e11c79187fdf47e7e7c2daef0a"
+    },
+    {
+      "path": "tests/test_supervisor_reviews.py",
+      "sha256": "c15e21f29ba00756c33e0ebd51a30474a29e12cabf64b70d43d6d103c90602ac"
+    }
+  ],
+  "claim_boundary": {
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "scanner_accuracy_or_tp_fp_fn_claim": false,
+    "source_bound_scanner_mapping_subfield_only": true
+  },
+  "field_id": "l2.webgoat-idor.source-bound-scanner-mapping",
+  "live_evidence": {
+    "negative_control_receipt_sha256": "baee6c365c87526a5a7b00717c14616e7497eb55f804a9a0fdf9fe36160bddaa",
+    "positive_execution_receipt_sha256": "3d1e162931ec875f1b9de8564ff08733677e7125347eb559c91318c67e86a874",
+    "repeat_receipt_sha256": "0cbfd99d8e1ac3f95874aca03d3c52037c99ee94b5b76e2234395897a5d9edc1",
+    "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b"
+  },
+  "raw_returned": false,
+  "schema": "k_guard_l2_webgoat_idor_scanner_mapping_evidence_manifest.v1",
+  "test_evidence": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_observe_l2_webgoat_idor_scanner.py tests/test_public_app_regressions.py tests/test_replay_l2_webgoat_idor.py tests/test_materialize_l2_oracles.py tests/test_supervisor_reviews.py",
+      "passed": 117,
+      "projection_definition": "sha256 of canonical compact JSON containing command, passed, and skipped",
+      "projection_sha256": "4bd68aaf87d8a9156eba4e8f8c5c153971938b0d1ac237ed3cfc6a2cf16c1c49",
+      "repeat_exact": true,
+      "run_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "passed": 2196,
+      "skipped": 5
+    },
+    "raw_returned": false
+  }
+}

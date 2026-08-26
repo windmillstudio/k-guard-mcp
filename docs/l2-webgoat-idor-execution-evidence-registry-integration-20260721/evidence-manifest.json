@@ -1,0 +1,98 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/l2-webgoat-idor-execution-evidence-registry-integration-20260721.md",
+      "sha256": "95baa003980e93133c2ee9867cf34952e063c9fb95384a34d96c0b8dc164ab1a"
+    },
+    {
+      "path": "docs/oracle-program-operating-contract-ko.md",
+      "sha256": "1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"
+    },
+    {
+      "path": "scripts/derive_l2_webgoat_idor_execution_evidence.py",
+      "sha256": "a9be7dba085a5c1b5bafcd5ee3a310ee7d8792f4ba33c9def42d3edd99bfa5bf"
+    },
+    {
+      "path": "scripts/materialize_l2_oracles.py",
+      "sha256": "3e83e1e97e39e3c22a95e7b460ba51cc7fffe5322112401b61696c1fe47eabc5"
+    },
+    {
+      "path": "scripts/replay_l2_webgoat_idor.py",
+      "sha256": "d9f52d4fca410fe4c27cd9c4e8aa0e9ea7e696e80df34f67f5b04ef69bd1ce29"
+    },
+    {
+      "path": "scripts/validate_supervisor_review_receipts.py",
+      "sha256": "2600e1efdc14829959476ff37ef6fe3ea0d46ab7c8f1b9b8129fbd7472af1846"
+    },
+    {
+      "path": "src/k_guard_mcp/supervisor_reviews.py",
+      "sha256": "793ae76d11a4d4b5e7d84584af402802a7a90402fada951f1f18963c0599310b"
+    },
+    {
+      "path": "tests/test_derive_l2_webgoat_idor_execution_evidence.py",
+      "sha256": "2f1dbb724354a7fe890f6db06c9b79d7434a82f02e25fdd59473257ea8db7681"
+    },
+    {
+      "path": "tests/test_materialize_l2_oracles.py",
+      "sha256": "73caa94b50a6ef5980eb5302a9d01c949247ec76f58b03e83538579c3aa5cfd6"
+    },
+    {
+      "path": "tests/test_replay_l2_webgoat_idor.py",
+      "sha256": "f8f9cfa68e8c3513006bac3f7091962bffbe4cb31d76eedd647a244defd3aeb2"
+    },
+    {
+      "path": "tests/test_supervisor_reviews.py",
+      "sha256": "c15e21f29ba00756c33e0ebd51a30474a29e12cabf64b70d43d6d103c90602ac"
+    }
+  ],
+  "claim_boundary": {
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "registry_scenario_admission_claim": false,
+    "scanner_accuracy_or_tp_fp_fn_claim": false,
+    "webgoat_execution_evidence_registry_integration_subfield_only": true
+  },
+  "dynamic_evidence": {
+    "attached_candidate_count": 1,
+    "candidate_count": 414,
+    "execution_evidence_sha256": "38a4468071f51f0408bbe08713068522f86645de7f1988b66f07c9f92226bb4e",
+    "missing_execution_evidence_validation_exit": 1,
+    "registry_state_reset_admitted": false,
+    "repeat_exact": true,
+    "repeat_registry_sha256": "4af5638fa9b793524a0b93f41dcb07f1df3137229984822b2a79f544e6d568cb",
+    "repeat_run_count": 2,
+    "same_input_validation": {
+      "exit_code": 2,
+      "exit_contract": "0=phase_2_l2_pass;2=validated_hold_not_release",
+      "phase_2_l2_status": "HOLD",
+      "registry_contract_valid": true
+    },
+    "status": "HOLD"
+  },
+  "field_id": "l2.webgoat-idor.execution-evidence-registry-integration",
+  "live_inputs": {
+    "calculator_receipt_sha256": "abed66c802f6c397bf5542dfd3af88665e308fec818a1c22e006ccdd79b7ec7b",
+    "negative_result_sha256": "e07e779759f7c27da53419d8a78b852c26730cd7609c45ef682dca7cec102c69",
+    "positive_result_sha256": "148c53f8f020ff6213746b781b2f0ee3f842e0f10cef43f51cb392155a44c655",
+    "source_admission_sha256": "32b9618dfdcb3ff4f8e87fa5012c36eff51a1beba2dd0e0357a7bbd9c99ecc1a",
+    "webgoat_source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b"
+  },
+  "raw_returned": false,
+  "schema": "k_guard_l2_webgoat_idor_execution_evidence_registry_integration_manifest.v1",
+  "test_evidence": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_replay_l2_webgoat_idor.py tests/test_derive_l2_webgoat_idor_execution_evidence.py tests/test_materialize_l2_oracles.py tests/test_supervisor_reviews.py",
+      "passed": 82,
+      "repeat_exact": true,
+      "run_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "passed": 2213,
+      "requirement": "zero failures on the immutable review target; configured skips are reported rather than treated as passes",
+      "skipped": 5
+    },
+    "raw_returned": false
+  }
+}

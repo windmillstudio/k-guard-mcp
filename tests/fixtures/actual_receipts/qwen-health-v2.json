@@ -1,0 +1,122 @@
+{
+  "all_exit_zero": true,
+  "all_returned_healthy": true,
+  "all_runtime_models_match": true,
+  "all_usage_positive": true,
+  "base_commit": "a68b2b1991a6556c2c279bebaa619aebc0213410",
+  "claim_boundary": {
+    "product_implementation_quality_proven": false,
+    "read_only_health_only": true,
+    "release_gate_passed": false
+  },
+  "contract_file_sha256": "18839bd930422c45fc9a7cf610d87bacc9aa976721c55556fd64a279d8c15dad",
+  "parallel_worker_count": 3,
+  "profile": "qwen",
+  "provider": "Model_Studio_Token_Plan_Personal",
+  "recorded_at_kst": "2026-07-26T01:56:32.410267+09:00",
+  "repo_clean_after": true,
+  "repo_clean_before": true,
+  "repository": "<LOCAL_USER_HOME>\\Desktop\\mcp\\local-user-workspace\\outputs\\k-guard-phase0-integration",
+  "requested_model_id": "qwen3.8-max-preview",
+  "schema": "k_guard_qwen_parallel_health.v2",
+  "status": "GO",
+  "tool": {
+    "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\planning\\tools\\run_qwen_parallel_health.py",
+    "sha256": "ecd0460746870bcebf946c56e0c04491d50e7dfb61ea9c3c358cd5ac14e07cfa"
+  },
+  "workers": [
+    {
+      "event_count": 5,
+      "exit_code": 0,
+      "healthy": true,
+      "last_message": {
+        "status": "HEALTHY",
+        "worker_id": "worker-1"
+      },
+      "parse_errors": [],
+      "runtime_model_id": "qwen3.8-max-preview",
+      "stderr": {
+        "byte_count": 2235,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-1-stderr.log",
+        "sha256": "d3bb9075dd3a78fcde1a98ca3e4458e40cabea30a09dd19960843296cd248f82"
+      },
+      "stdout": {
+        "byte_count": 646,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-1-stdout.jsonl",
+        "sha256": "255c14338356d17b7cd5a105501bdb0007e6b95de4581111141be9fa28bd4a8c"
+      },
+      "thread_id": "019f9a34-bf8a-7841-b801-e5f915e69db1",
+      "timed_out": false,
+      "usage": {
+        "cached_input_tokens": 95232,
+        "input_tokens": 95652,
+        "output_tokens": 61,
+        "reasoning_output_tokens": 39
+      },
+      "wall_time_seconds": 10.61,
+      "worker_id": "worker-1"
+    },
+    {
+      "event_count": 5,
+      "exit_code": 0,
+      "healthy": true,
+      "last_message": {
+        "status": "HEALTHY",
+        "worker_id": "worker-2"
+      },
+      "parse_errors": [],
+      "runtime_model_id": "qwen3.8-max-preview",
+      "stderr": {
+        "byte_count": 2235,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-2-stderr.log",
+        "sha256": "ed4b0361eb038ae8dd38492d7e50df32b9d717462efc325d29508610f3147518"
+      },
+      "stdout": {
+        "byte_count": 643,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-2-stdout.jsonl",
+        "sha256": "c4d5b406fe919c7811e727727a9010ac9ef3205b264a0bf5737236d2653f21d0"
+      },
+      "thread_id": "019f9a34-bf92-71e2-a0d3-436a5eade98a",
+      "timed_out": false,
+      "usage": {
+        "cached_input_tokens": 90112,
+        "input_tokens": 95652,
+        "output_tokens": 58,
+        "reasoning_output_tokens": 39
+      },
+      "wall_time_seconds": 16.016,
+      "worker_id": "worker-2"
+    },
+    {
+      "event_count": 5,
+      "exit_code": 0,
+      "healthy": true,
+      "last_message": {
+        "status": "HEALTHY",
+        "worker_id": "worker-3"
+      },
+      "parse_errors": [],
+      "runtime_model_id": "qwen3.8-max-preview",
+      "stderr": {
+        "byte_count": 2235,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-3-stderr.log",
+        "sha256": "4977cb014b757242153556bb8cadcbd9ed385b6291faaa3157860abce83326a1"
+      },
+      "stdout": {
+        "byte_count": 633,
+        "path": "<LOCAL_USER_HOME>\\Desktop\\mcp\\k-guard-live-evidence\\product-hardening-20260731\\phase-0-freeze\\attempt-2\\correction-1\\qwen-health-r3\\worker-3-stdout.jsonl",
+        "sha256": "bd90372de8de11a07acdaaa2377ca364fe618841e1411f11f746acb52b7846ed"
+      },
+      "thread_id": "019f9a34-bfa3-79c0-9f70-261be4fad60c",
+      "timed_out": false,
+      "usage": {
+        "cached_input_tokens": 95232,
+        "input_tokens": 95652,
+        "output_tokens": 58,
+        "reasoning_output_tokens": 39
+      },
+      "wall_time_seconds": 16.594,
+      "worker_id": "worker-3"
+    }
+  ]
+}

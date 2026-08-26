@@ -1,0 +1,139 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  compatibility:
+    uses: ./.github/workflows/ci.yml
+
+  build-test-smoke:
+    needs: compatibility
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: "1.26.5"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Check clean checkout boundary
+        run: python scripts/release_hygiene.py --strict-clean
+      - name: Bind release tag to package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python scripts/release_hygiene.py --strict-clean --expected-tag "$GITHUB_REF_NAME"
+      - name: Install source-checkout build and test dependencies
+        env:
+          K_GUARD_EVIDENCE_HMAC_KEY: ${{ secrets.K_GUARD_EVIDENCE_HMAC_KEY }}
+        run: |
+          python -m pip install --require-hashes -r requirements-build.lock
+          python -m pip install --require-hashes -r requirements-evidence.lock
+          python -m pip install --no-build-isolation --no-deps -e .
+          python -m venv "$RUNNER_TEMP/pip-audit-tool"
+          "$RUNNER_TEMP/pip-audit-tool/bin/python" -m pip install --require-hashes -r requirements-pip-audit.lock
+          python -m venv "$RUNNER_TEMP/semgrep-tool"
+          "$RUNNER_TEMP/semgrep-tool/bin/python" -m pip install --require-hashes -r requirements-semgrep.lock
+          echo "$RUNNER_TEMP/pip-audit-tool/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/semgrep-tool/bin" >> "$GITHUB_PATH"
+          go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+          rm -rf build dist src/*.egg-info
+          python -c "from k_guard_mcp.hashing import uses_public_evidence_key; assert not uses_public_evidence_key(), 'K_GUARD_EVIDENCE_HMAC_KEY release secret is required'"
+      - name: Recheck clean release boundary after install
+        run: python scripts/release_hygiene.py --strict-clean
+      - name: Run source-checkout tests with branch coverage
+        run: |
+          python -m coverage erase
+          python -m coverage run -m pytest -q
+          python -m coverage report
+          python -m coverage report --include="*/redaction.py" --fail-under=90
+          python -m coverage erase
+      - name: Enforce dependency license policy
+        run: python scripts/license_report.py
+      - name: Audit pinned dependency evidence
+        run: python scripts/dependency_audit.py
+      - name: Generate pinned dependency SBOM
+        run: python scripts/generate_sbom.py
+      - name: Generate operator-bound release control evidence
+        env:
+          K_GUARD_EVIDENCE_HMAC_KEY: ${{ secrets.K_GUARD_EVIDENCE_HMAC_KEY }}
+        run: |
+          mkdir -p tmp/release-control-evidence
+          k-guard language-validate --output tmp/release-control-evidence/language-validation.json
+          k-guard sca . --output tmp/release-control-evidence/sca.json
+          k-guard control-validate --output tmp/release-control-evidence/control-validation.json
+          k-guard runtime-validate --output tmp/release-control-evidence/runtime-validation.json
+      - name: Require generated evidence to match the release commit
+        run: git diff --exit-code -- audit-report.json license-report.json sbom.cdx.json
+      - name: Recheck clean boundary before reproducible builds
+        run: |
+          rm -rf build dist src/*.egg-info
+          python scripts/release_hygiene.py --strict-clean
+      - name: Build wheel and source distribution twice
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
+          python -m build --no-isolation --outdir "$RUNNER_TEMP/k-guard-dist-first"
+          python scripts/normalize_sdist.py "$RUNNER_TEMP/k-guard-dist-first"/*.tar.gz
+          python scripts/build_source_zip.py "$RUNNER_TEMP/k-guard-dist-first"/*.tar.gz
+          rm -rf build src/*.egg-info
+          python -m build --no-isolation --outdir "$RUNNER_TEMP/k-guard-dist-second"
+          python scripts/normalize_sdist.py "$RUNNER_TEMP/k-guard-dist-second"/*.tar.gz
+          python scripts/build_source_zip.py "$RUNNER_TEMP/k-guard-dist-second"/*.tar.gz
+          python scripts/verify_reproducible_builds.py --first "$RUNNER_TEMP/k-guard-dist-first" --second "$RUNNER_TEMP/k-guard-dist-second"
+          mkdir dist
+          cp "$RUNNER_TEMP/k-guard-dist-first"/* dist/
+          cp requirements-evidence.lock dist/requirements-evidence.lock
+          cp requirements-evidence.in dist/requirements-evidence.in
+          cp audit-report.json license-report.json sbom.cdx.json dist/
+          cp tmp/release-control-evidence/*.json dist/
+      - name: Verify release archive contracts
+        run: python scripts/verify_release_archives.py --dist dist --repo-root .
+      - name: Install and exercise the built wheel over real stdio in a fresh venv
+        run: |
+          SMOKE_VENV="$RUNNER_TEMP/k-guard-wheel-smoke"
+          python -m venv "$SMOKE_VENV"
+          "$SMOKE_VENV/bin/python" -m pip install --require-hashes -r dist/requirements-evidence.lock
+          "$SMOKE_VENV/bin/python" -m pip install --no-deps dist/*.whl
+          "$SMOKE_VENV/bin/k-guard" --help
+          WHEEL_PATH="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          "$SMOKE_VENV/bin/python" scripts/fresh_wheel_stdio_smoke.py \
+            --wheel "$WHEEL_PATH" \
+            --source-revision "$(git rev-parse HEAD)" \
+            --output dist/fresh-wheel-stdio-smoke.json
+      - name: Generate distribution checksums
+        run: sha256sum dist/*.whl dist/*.tar.gz dist/*-source.zip dist/*.json dist/requirements-evidence.lock dist/requirements-evidence.in > dist/SHA256SUMS
+      - name: Generate signed SLSA build provenance
+        id: attest-release
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4
+        with:
+          subject-path: dist/*
+      - name: Generate signed CycloneDX SBOM attestation
+        id: attest-sbom
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4
+        with:
+          subject-path: dist/*.whl
+          sbom-path: dist/sbom.cdx.json
+      - name: Bundle offline-verifiable attestations
+        run: |
+          cp "${{ steps.attest-release.outputs.bundle-path }}" dist/release-provenance.sigstore.json
+          cp "${{ steps.attest-sbom.outputs.bundle-path }}" dist/release-sbom.sigstore.json
+      - name: Upload release distributions
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: k-guard-mcp-distributions
+          path: dist/*
+          if-no-files-found: error
+      - name: Publish immutable GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes --title "K-Guard MCP $GITHUB_REF_NAME"

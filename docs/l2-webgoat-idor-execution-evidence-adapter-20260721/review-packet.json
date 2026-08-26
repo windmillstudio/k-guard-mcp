@@ -1,0 +1,85 @@
+{
+  "claim_boundary": {
+    "approved_claim": "One pinned WebGoat IDOR positive/negative execution pair has a raw-free, source-bound process-evidence adapter with distinct normalized outcomes and cleanup proof.",
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "registry_scenario_admission_claim": false,
+    "scanner_accuracy_or_tp_fp_fn_claim": false,
+    "webgoat_execution_evidence_adapter_subfield_only": true
+  },
+  "decision_contract": {
+    "blocked": "Use only when the assigned provider or requested review path is unavailable; do not infer a technical defect from unavailability.",
+    "go": "Use only when the supplied evidence and assigned review scope reveal no material defect in canonical-input binding, source selector binding, process shape, cleanup proof, negative-control distinction, repeatability, or the stated claim boundary.",
+    "hold": "Use when a material defect, false-admission path, or claim-boundary violation remains.",
+    "required_terminal_json": {
+      "blocker_count": "non-negative integer",
+      "claim_boundary_confirmed": "boolean",
+      "finding_summary": "single raw-free sentence",
+      "nonblocking_count": "non-negative integer",
+      "verdict": "GO|HOLD|BLOCKED"
+    }
+  },
+  "evidence_manifest": {
+    "path": "docs/l2-webgoat-idor-execution-evidence-adapter-20260721/evidence-manifest.json",
+    "sha256": "5097b8dc15f71fc4b347985d76a924b1d8043c8903e06887f91b87d9eb102e37"
+  },
+  "evidence_summary": {
+    "execution_pair": {
+      "negative_control_receipt_sha256": "baee6c365c87526a5a7b00717c14616e7497eb55f804a9a0fdf9fe36160bddaa",
+      "negative_result_sha256": "e07e779759f7c27da53419d8a78b852c26730cd7609c45ef682dca7cec102c69",
+      "positive_execution_receipt_sha256": "3d1e162931ec875f1b9de8564ff08733677e7125347eb559c91318c67e86a874",
+      "positive_result_sha256": "148c53f8f020ff6213746b781b2f0ee3f842e0f10cef43f51cb392155a44c655",
+      "repeat_evidence_sha256": "38a4468071f51f0408bbe08713068522f86645de7f1988b66f07c9f92226bb4e",
+      "repeat_run_count": 2
+    },
+    "source_selector": {
+      "commit": "5142935bf7c279882c3b0fc0ecec42c447de6fd5",
+      "line": 28,
+      "path": "src/it/java/org/owasp/webgoat/integration/IDORIntegrationTest.java",
+      "repository": "webgoat/webgoat",
+      "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b"
+    }
+  },
+  "field_id": "l2.webgoat-idor.execution-evidence-adapter",
+  "implementation_contract": {
+    "adapter": "The adapter accepts canonical pinned source, positive, and generated-negative receipts; validates the replay contracts; binds the selector and two distinct result hashes; emits only raw-free process expectations; and refuses output overwrite.",
+    "negative_control": "The generated source variant must preserve the original source checkout, execute twice with an expected nonzero exit, have passed cleanup, and produce a normalized result digest different from the positive process.",
+    "state_reset": "The adapter proves pair cleanup evidence but explicitly leaves registry state_reset admission false until the registry-integration field supplies its own command proof."
+  },
+  "raw_returned": false,
+  "review_questions": [
+    "Does the adapter reject changes to canonical receipts, source identity, source selector, execution result hash, cleanup proof, and generated-control source immutability before emitting evidence?",
+    "Does its process output preserve the L2 v3 command contract without silently interpreting process evidence as HTTP evidence?",
+    "Does the positive-versus-negative result distinction prevent the same outcome from serving as both oracle and control?",
+    "Do the explicit nonclaims prevent this narrow adapter from being represented as registry admission, scanner accuracy, TP/FP/FN, L2 completion, or release approval?"
+  ],
+  "review_scope": {
+    "claude_direct_files": [
+      "scripts/derive_l2_webgoat_idor_execution_evidence.py",
+      "tests/test_derive_l2_webgoat_idor_execution_evidence.py",
+      "scripts/replay_l2_webgoat_idor.py",
+      "tests/test_replay_l2_webgoat_idor.py",
+      "scripts/materialize_l2_oracles.py",
+      "tests/test_materialize_l2_oracles.py",
+      "docs/l2-webgoat-idor-execution-evidence-adapter-20260721.md",
+      "docs/l2-webgoat-idor-execution-evidence-adapter-20260721/evidence-manifest.json",
+      "docs/l2-webgoat-idor-execution-evidence-adapter-20260721/review-packet.json"
+    ],
+    "grok_and_glm": "sanitized-packet-only"
+  },
+  "schema": "k_guard_l2_webgoat_idor_execution_evidence_adapter_review_packet.v1",
+  "test_attestation_basis": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_replay_l2_webgoat_idor.py tests/test_derive_l2_webgoat_idor_execution_evidence.py tests/test_materialize_l2_oracles.py tests/test_supervisor_reviews.py",
+      "expected_passed": 76,
+      "required_repeat_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "expected_passed": 2207,
+      "expected_skipped": 5,
+      "requirement": "zero failures on the final immutable target; configured skips are reported rather than treated as passes"
+    }
+  }
+}

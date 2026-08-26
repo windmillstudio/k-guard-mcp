@@ -1,0 +1,9 @@
+{
+  "demo_state": "hold",
+  "users": [
+    {
+      "rrn": "synthetic-demo-value",
+      "email": "demo@example.invalid"
+    }
+  ]
+}

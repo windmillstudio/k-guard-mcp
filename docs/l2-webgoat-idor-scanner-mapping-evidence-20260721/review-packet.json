@@ -1,0 +1,90 @@
+{
+  "claim_boundary": {
+    "approved_claim": "One pinned WebGoat IDOR execution pair is source-bound to one deterministic static scanner observation.",
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "scanner_accuracy_or_tp_fp_fn_claim": false,
+    "source_bound_scanner_mapping_subfield_only": true
+  },
+  "decision_contract": {
+    "blocked": "Use only when the assigned provider or requested review path is unavailable; do not infer a technical defect from unavailability.",
+    "go": "Use only when the supplied evidence and assigned review scope reveal no material defect in source binding, fail-closed behavior, repeatability, or the stated claim boundary.",
+    "hold": "Use when a material defect, unproven premise, false-pass path, or claim-boundary violation remains.",
+    "required_terminal_json": {
+      "blocker_count": "non-negative integer",
+      "claim_boundary_confirmed": "boolean",
+      "finding_summary": "single raw-free sentence",
+      "nonblocking_count": "non-negative integer",
+      "verdict": "GO|HOLD|BLOCKED"
+    }
+  },
+  "evidence_manifest": {
+    "path": "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/evidence-manifest.json",
+    "sha256": "0f61939032f121f1c3060f5640d07bdde3cd3d3c334f8793b7889248afb53ed6"
+  },
+  "evidence_summary": {
+    "external_source_identity": {
+      "commit": "5142935bf7c279882c3b0fc0ecec42c447de6fd5",
+      "repository": "webgoat/webgoat",
+      "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b"
+    },
+    "observed_static_candidate": {
+      "artifact_scope": "source",
+      "confidence": "medium",
+      "detector_subtype": "java_spring_cross_account_write_observe",
+      "line": 53,
+      "line_fingerprint": "03baf357e91b1c5d",
+      "rule_id": "API_IDOR_ROUTE_PARAM_LOOKUP",
+      "severity": "high"
+    },
+    "prior_execution_pair": {
+      "negative_control_receipt_sha256": "baee6c365c87526a5a7b00717c14616e7497eb55f804a9a0fdf9fe36160bddaa",
+      "positive_execution_receipt_sha256": "3d1e162931ec875f1b9de8564ff08733677e7125347eb559c91318c67e86a874"
+    },
+    "repeat_mapping_receipts": {
+      "normalized_receipt_sha256": "0cbfd99d8e1ac3f95874aca03d3c52037c99ee94b5b76e2234395897a5d9edc1",
+      "run_count": 2,
+      "status": "SCANNER_MAPPING_PASS"
+    }
+  },
+  "field_id": "l2.webgoat-idor.source-bound-scanner-mapping",
+  "implementation_contract": {
+    "detector": "The narrow Spring observer requires a mutating route, a path-variable target, request-body identity distinct from authenticated identity, persistence, and no visible delegated-role or ownership policy. Its medium confidence remains manual-review only.",
+    "observer": "The observer validates the complete pinned source workspace and two pre-existing execution receipts, binds integration and implementation route markers, scans the implementation twice, and fails closed on identity, location, receipt, finding-shape, or repeat mismatch.",
+    "parser_fix": "Java/Kotlin brace matching now ignores quote and brace characters inside line and block comments before identifying a method body."
+  },
+  "raw_returned": false,
+  "review_questions": [
+    "Does the implementation prove the stated narrow source-to-scanner mapping without silently accepting a changed, partial, or inconsistent source or receipt?",
+    "Does the parser fix address the observed comment-handling failure without weakening the existing detector contract?",
+    "Do the tests and two identical raw-free mapping receipts support repeatability for this exact narrow field?",
+    "Are the explicit nonclaims sufficient so this field cannot be represented as scanner accuracy, TP/FP/FN, L2 completion, or release approval?"
+  ],
+  "review_scope": {
+    "claude_direct_files": [
+      "src/k_guard_mcp/detectors/polyglot.py",
+      "tests/test_public_app_regressions.py",
+      "scripts/observe_l2_webgoat_idor_scanner.py",
+      "tests/test_observe_l2_webgoat_idor_scanner.py",
+      "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721.md",
+      "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/evidence-manifest.json",
+      "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/receipt-r3.json",
+      "docs/l2-webgoat-idor-scanner-mapping-evidence-20260721/receipt-r4.json"
+    ],
+    "grok_and_glm": "sanitized-packet-only"
+  },
+  "schema": "k_guard_l2_webgoat_idor_scanner_mapping_review_packet.v1",
+  "test_attestation_basis": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_observe_l2_webgoat_idor_scanner.py tests/test_public_app_regressions.py tests/test_replay_l2_webgoat_idor.py tests/test_materialize_l2_oracles.py tests/test_supervisor_reviews.py",
+      "expected_passed": 117,
+      "required_repeat_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "expected_passed": 2196,
+      "expected_skipped": 5
+    }
+  }
+}

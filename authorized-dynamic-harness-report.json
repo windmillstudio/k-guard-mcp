@@ -1,0 +1,99 @@
+{
+  "mode": "authorized_local_dynamic_harness",
+  "target": {
+    "base_url": "http://127.0.0.1:<ephemeral>",
+    "scope": "local 127.0.0.1 test server only",
+    "active_paths": [
+      "/",
+      "/admin",
+      "/api",
+      "/api/users",
+      "/swagger.json",
+      "/openapi.json",
+      "/_next/static/chunks/app.js.map"
+    ]
+  },
+  "static": {
+    "finding_count": 29,
+    "summary": {
+      "critical": 5,
+      "high": 6,
+      "medium": 14,
+      "low": 4,
+      "info": 0
+    },
+    "rule_ids": [
+      "CONFIG_PUBLIC_ENV_SECRET",
+      "CONNECTOR_STORAGE_PII_AT_REST",
+      "FLOW_PII_TO_LOG",
+      "JS_TS_TAINT_PII_TO_LOG",
+      "JS_TS_TAINT_PII_TO_RESPONSE",
+      "KR_COMBO_PERSON_EMAIL",
+      "KR_COMBO_PERSON_PHONE",
+      "KR_COMBO_PERSON_RRN",
+      "KR_COMBO_VEHICLE_LOCATION_TIME",
+      "PII_EMAIL",
+      "PII_LOCATION",
+      "PII_PERSON",
+      "PII_PHONE",
+      "PII_RRN_VALID",
+      "PII_TIMESTAMP",
+      "PII_VEHICLE_NUMBER",
+      "RELEASE_API_RATE_LIMIT_EVIDENCE_MISSING",
+      "RELEASE_CI_GATE_EVIDENCE_MISSING",
+      "RETENTION_ERASURE_PATH_MISSING_FOR_PERSONAL_DATA",
+      "RETENTION_POLICY_MISSING_FOR_PERSONAL_DATA",
+      "RULE_YARA_LITE_KR_BULK_SCHEMA",
+      "SECRET_DB_URL",
+      "SECRET_OPENAI_STYLE_KEY"
+    ],
+    "missing_expected_rules": []
+  },
+  "dynamic": {
+    "finding_count": 19,
+    "summary": {
+      "critical": 3,
+      "high": 12,
+      "medium": 4,
+      "low": 0,
+      "info": 0
+    },
+    "rule_ids": [
+      "DYN_CORS_WILDCARD_CREDENTIALS",
+      "DYN_DEBUG_ERROR_LEAK",
+      "DYN_OPENAPI_EXPOSED",
+      "DYN_RESPONSE_PII_LEAK",
+      "DYN_RESPONSE_SECRET_LEAK",
+      "DYN_SECURITY_HEADERS_MISSING",
+      "DYN_SOURCE_MAP_ACCESSIBLE",
+      "DYN_UNAUTH_ADMIN_ACCESS",
+      "DYN_UNAUTH_API_JSON"
+    ],
+    "missing_expected_rules": []
+  },
+  "mcp_probe_http": {
+    "finding_count": 20,
+    "summary": {
+      "critical": 3,
+      "high": 12,
+      "medium": 4,
+      "low": 0,
+      "info": 1
+    },
+    "rule_ids": [
+      "DYN_CORS_WILDCARD_CREDENTIALS",
+      "DYN_DEBUG_ERROR_LEAK",
+      "DYN_OPENAPI_EXPOSED",
+      "DYN_RESPONSE_PII_LEAK",
+      "DYN_RESPONSE_SECRET_LEAK",
+      "DYN_SECURITY_HEADERS_MISSING",
+      "DYN_SOURCE_MAP_ACCESSIBLE",
+      "DYN_UNAUTH_ADMIN_ACCESS",
+      "DYN_UNAUTH_API_JSON",
+      "MCP_PROBE_ENABLED_AUDIT"
+    ],
+    "missing_expected_rules": []
+  },
+  "raw_marker_leaks": [],
+  "passed": true
+}

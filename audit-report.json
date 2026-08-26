@@ -1,0 +1,856 @@
+{
+  "scope": "pinned_release_evidence_dependency_closure",
+  "audit_scope": "all_active_requirements_locks",
+  "direct_runtime_dependencies": [
+    "mcp>=1.0.0",
+    "pydantic>=2.7,<3",
+    "PyYAML>=6.0.2,<7",
+    "PyJWT>=2.13.0",
+    "sqlglot>=30.12.0,<31",
+    "tree-sitter==0.26.0",
+    "tree-sitter-java==0.23.5"
+  ],
+  "optional_dependency_groups": {
+    "mcp": [
+      "mcp>=1.0.0"
+    ],
+    "dev": [
+      "coverage[toml]>=7.0.0",
+      "packaging>=24.2",
+      "pytest>=8.0.0"
+    ]
+  },
+  "evidence_lock": {
+    "path": "requirements-evidence.lock",
+    "sha256": "85cacef7fbbdfee5162f1c52f0d9f4d80bacf61c67efda671e94c4aa283e6929",
+    "active_versions": {
+      "annotated-types": "0.7.0",
+      "anyio": "4.12.1",
+      "attrs": "25.4.0",
+      "certifi": "2026.1.4",
+      "cffi": "2.0.0",
+      "click": "8.4.2",
+      "colorama": "0.4.6",
+      "coverage": "7.15.0",
+      "cryptography": "50.0.0",
+      "h11": "0.16.0",
+      "httpcore": "1.0.9",
+      "httpx": "0.28.1",
+      "httpx-sse": "0.4.3",
+      "idna": "3.15",
+      "iniconfig": "2.3.0",
+      "jsonschema": "4.26.0",
+      "jsonschema-specifications": "2025.9.1",
+      "mcp": "1.28.1",
+      "packaging": "26.0",
+      "pluggy": "1.6.0",
+      "pycparser": "2.23",
+      "pydantic": "2.12.5",
+      "pydantic-core": "2.41.5",
+      "pydantic-settings": "2.14.2",
+      "pygments": "2.20.0",
+      "pyjwt": "2.13.0",
+      "pytest": "9.1.1",
+      "python-dotenv": "1.2.2",
+      "python-multipart": "0.0.32",
+      "pywin32": "312",
+      "pyyaml": "6.0.3",
+      "referencing": "0.37.0",
+      "rpds-py": "2026.6.3",
+      "sqlglot": "30.12.0",
+      "sse-starlette": "3.4.5",
+      "starlette": "1.3.1",
+      "tree-sitter": "0.26.0",
+      "tree-sitter-java": "0.23.5",
+      "typing-extensions": "4.15.0",
+      "typing-inspection": "0.4.2",
+      "uvicorn": "0.50.1"
+    },
+    "active_entry_count": 41,
+    "entry_count": 41,
+    "hashed_entry_count": 41,
+    "hash_count": 665,
+    "all_entries_hashed": true,
+    "errors": [],
+    "valid": true
+  },
+  "required_locks": [
+    "requirements-evidence.lock",
+    "requirements-semgrep.lock",
+    "requirements-pip-audit.lock",
+    "requirements-build.lock"
+  ],
+  "required_lock_count": 4,
+  "locks_present": true,
+  "audit_runs": [
+    {
+      "label": "release_evidence_lock",
+      "requirements_file": "requirements-evidence.lock",
+      "skipped": false,
+      "returncode": 0,
+      "pip_audit_stdout_json": {
+        "dependencies": [
+          {
+            "name": "annotated-types",
+            "version": "0.7.0",
+            "vulns": []
+          },
+          {
+            "name": "anyio",
+            "version": "4.12.1",
+            "vulns": []
+          },
+          {
+            "name": "attrs",
+            "version": "25.4.0",
+            "vulns": []
+          },
+          {
+            "name": "certifi",
+            "version": "2026.1.4",
+            "vulns": []
+          },
+          {
+            "name": "cffi",
+            "version": "2.0.0",
+            "vulns": []
+          },
+          {
+            "name": "click",
+            "version": "8.4.2",
+            "vulns": []
+          },
+          {
+            "name": "colorama",
+            "version": "0.4.6",
+            "vulns": []
+          },
+          {
+            "name": "coverage",
+            "version": "7.15.0",
+            "vulns": []
+          },
+          {
+            "name": "cryptography",
+            "version": "50.0.0",
+            "vulns": []
+          },
+          {
+            "name": "h11",
+            "version": "0.16.0",
+            "vulns": []
+          },
+          {
+            "name": "httpcore",
+            "version": "1.0.9",
+            "vulns": []
+          },
+          {
+            "name": "httpx",
+            "version": "0.28.1",
+            "vulns": []
+          },
+          {
+            "name": "httpx-sse",
+            "version": "0.4.3",
+            "vulns": []
+          },
+          {
+            "name": "idna",
+            "version": "3.15",
+            "vulns": []
+          },
+          {
+            "name": "iniconfig",
+            "version": "2.3.0",
+            "vulns": []
+          },
+          {
+            "name": "jsonschema",
+            "version": "4.26.0",
+            "vulns": []
+          },
+          {
+            "name": "jsonschema-specifications",
+            "version": "2025.9.1",
+            "vulns": []
+          },
+          {
+            "name": "mcp",
+            "version": "1.28.1",
+            "vulns": []
+          },
+          {
+            "name": "pydantic",
+            "version": "2.12.5",
+            "vulns": []
+          },
+          {
+            "name": "packaging",
+            "version": "26.0",
+            "vulns": []
+          },
+          {
+            "name": "pluggy",
+            "version": "1.6.0",
+            "vulns": []
+          },
+          {
+            "name": "pycparser",
+            "version": "2.23",
+            "vulns": []
+          },
+          {
+            "name": "pydantic-core",
+            "version": "2.41.5",
+            "vulns": []
+          },
+          {
+            "name": "pydantic-settings",
+            "version": "2.14.2",
+            "vulns": []
+          },
+          {
+            "name": "pygments",
+            "version": "2.20.0",
+            "vulns": []
+          },
+          {
+            "name": "pyjwt",
+            "version": "2.13.0",
+            "vulns": []
+          },
+          {
+            "name": "pytest",
+            "version": "9.1.1",
+            "vulns": []
+          },
+          {
+            "name": "python-dotenv",
+            "version": "1.2.2",
+            "vulns": []
+          },
+          {
+            "name": "python-multipart",
+            "version": "0.0.32",
+            "vulns": []
+          },
+          {
+            "name": "pywin32",
+            "version": "312",
+            "vulns": []
+          },
+          {
+            "name": "pyyaml",
+            "version": "6.0.3",
+            "vulns": []
+          },
+          {
+            "name": "referencing",
+            "version": "0.37.0",
+            "vulns": []
+          },
+          {
+            "name": "rpds-py",
+            "version": "2026.6.3",
+            "vulns": []
+          },
+          {
+            "name": "sqlglot",
+            "version": "30.12.0",
+            "vulns": []
+          },
+          {
+            "name": "sse-starlette",
+            "version": "3.4.5",
+            "vulns": []
+          },
+          {
+            "name": "starlette",
+            "version": "1.3.1",
+            "vulns": []
+          },
+          {
+            "name": "tree-sitter",
+            "version": "0.26.0",
+            "vulns": []
+          },
+          {
+            "name": "tree-sitter-java",
+            "version": "0.23.5",
+            "vulns": []
+          },
+          {
+            "name": "typing-extensions",
+            "version": "4.15.0",
+            "vulns": []
+          },
+          {
+            "name": "typing-inspection",
+            "version": "0.4.2",
+            "vulns": []
+          },
+          {
+            "name": "uvicorn",
+            "version": "0.50.1",
+            "vulns": []
+          }
+        ],
+        "fixes": []
+      },
+      "pip_audit_stderr": "No known vulnerabilities found\n",
+      "vulnerability_count": 0,
+      "output_valid": true
+    },
+    {
+      "label": "semgrep_tool_lock",
+      "requirements_file": "requirements-semgrep.lock",
+      "skipped": false,
+      "returncode": 0,
+      "pip_audit_stdout_json": {
+        "dependencies": [
+          {
+            "name": "annotated-types",
+            "version": "0.7.0",
+            "vulns": []
+          },
+          {
+            "name": "anyio",
+            "version": "4.14.2",
+            "vulns": []
+          },
+          {
+            "name": "attrs",
+            "version": "26.1.0",
+            "vulns": []
+          },
+          {
+            "name": "boltons",
+            "version": "21.0.0",
+            "vulns": []
+          },
+          {
+            "name": "bracex",
+            "version": "3.0",
+            "vulns": []
+          },
+          {
+            "name": "certifi",
+            "version": "2026.6.17",
+            "vulns": []
+          },
+          {
+            "name": "cffi",
+            "version": "2.1.0",
+            "vulns": []
+          },
+          {
+            "name": "charset-normalizer",
+            "version": "3.4.9",
+            "vulns": []
+          },
+          {
+            "name": "click",
+            "version": "8.4.2",
+            "vulns": []
+          },
+          {
+            "name": "click-option-group",
+            "version": "0.5.9",
+            "vulns": []
+          },
+          {
+            "name": "colorama",
+            "version": "0.4.6",
+            "vulns": []
+          },
+          {
+            "name": "cryptography",
+            "version": "50.0.0",
+            "vulns": []
+          },
+          {
+            "name": "exceptiongroup",
+            "version": "1.2.2",
+            "vulns": []
+          },
+          {
+            "name": "face",
+            "version": "26.0.1",
+            "vulns": []
+          },
+          {
+            "name": "glom",
+            "version": "25.12.0",
+            "vulns": []
+          },
+          {
+            "name": "googleapis-common-protos",
+            "version": "1.75.0",
+            "vulns": []
+          },
+          {
+            "name": "protobuf",
+            "version": "6.33.6",
+            "vulns": []
+          },
+          {
+            "name": "h11",
+            "version": "0.16.0",
+            "vulns": []
+          },
+          {
+            "name": "httpcore",
+            "version": "1.0.9",
+            "vulns": []
+          },
+          {
+            "name": "httpx",
+            "version": "0.28.1",
+            "vulns": []
+          },
+          {
+            "name": "httpx-sse",
+            "version": "0.4.3",
+            "vulns": []
+          },
+          {
+            "name": "idna",
+            "version": "3.18",
+            "vulns": []
+          },
+          {
+            "name": "importlib-metadata",
+            "version": "8.7.1",
+            "vulns": []
+          },
+          {
+            "name": "jsonschema",
+            "version": "4.25.1",
+            "vulns": []
+          },
+          {
+            "name": "jsonschema-specifications",
+            "version": "2025.9.1",
+            "vulns": []
+          },
+          {
+            "name": "markdown-it-py",
+            "version": "4.2.0",
+            "vulns": []
+          },
+          {
+            "name": "mdurl",
+            "version": "0.1.2",
+            "vulns": []
+          },
+          {
+            "name": "mcp",
+            "version": "1.29.0",
+            "vulns": []
+          },
+          {
+            "name": "pydantic",
+            "version": "2.13.4",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-api",
+            "version": "1.37.0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-exporter-otlp-proto-common",
+            "version": "1.37.0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-exporter-otlp-proto-http",
+            "version": "1.37.0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-sdk",
+            "version": "1.37.0",
+            "vulns": []
+          },
+          {
+            "name": "requests",
+            "version": "2.34.2",
+            "vulns": []
+          },
+          {
+            "name": "urllib3",
+            "version": "2.7.0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-instrumentation",
+            "version": "0.58b0",
+            "vulns": []
+          },
+          {
+            "name": "wrapt",
+            "version": "1.17.3",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-instrumentation-requests",
+            "version": "0.58b0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-instrumentation-threading",
+            "version": "0.58b0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-proto",
+            "version": "1.37.0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-semantic-conventions",
+            "version": "0.58b0",
+            "vulns": []
+          },
+          {
+            "name": "opentelemetry-util-http",
+            "version": "0.58b0",
+            "vulns": []
+          },
+          {
+            "name": "packaging",
+            "version": "26.2",
+            "vulns": []
+          },
+          {
+            "name": "peewee",
+            "version": "3.19.0",
+            "vulns": []
+          },
+          {
+            "name": "pycparser",
+            "version": "3.0",
+            "vulns": []
+          },
+          {
+            "name": "pydantic-core",
+            "version": "2.46.4",
+            "vulns": []
+          },
+          {
+            "name": "pydantic-settings",
+            "version": "2.14.2",
+            "vulns": []
+          },
+          {
+            "name": "pygments",
+            "version": "2.20.0",
+            "vulns": []
+          },
+          {
+            "name": "pyjwt",
+            "version": "2.13.0",
+            "vulns": []
+          },
+          {
+            "name": "python-dotenv",
+            "version": "1.2.2",
+            "vulns": []
+          },
+          {
+            "name": "python-multipart",
+            "version": "0.0.32",
+            "vulns": []
+          },
+          {
+            "name": "pywin32",
+            "version": "311",
+            "vulns": []
+          },
+          {
+            "name": "referencing",
+            "version": "0.37.0",
+            "vulns": []
+          },
+          {
+            "name": "rich",
+            "version": "15.0.0",
+            "vulns": []
+          },
+          {
+            "name": "rpds-py",
+            "version": "2026.6.3",
+            "vulns": []
+          },
+          {
+            "name": "ruamel-yaml",
+            "version": "0.19.1",
+            "vulns": []
+          },
+          {
+            "name": "ruamel-yaml-clib",
+            "version": "0.2.15",
+            "vulns": []
+          },
+          {
+            "name": "semantic-version",
+            "version": "2.10.0",
+            "vulns": []
+          },
+          {
+            "name": "semgrep",
+            "version": "1.174.0",
+            "vulns": []
+          },
+          {
+            "name": "tomli",
+            "version": "2.4.1",
+            "vulns": []
+          },
+          {
+            "name": "typing-extensions",
+            "version": "4.16.0",
+            "vulns": []
+          },
+          {
+            "name": "wcmatch",
+            "version": "8.5.2",
+            "vulns": []
+          },
+          {
+            "name": "sse-starlette",
+            "version": "3.4.5",
+            "vulns": []
+          },
+          {
+            "name": "starlette",
+            "version": "1.3.1",
+            "vulns": []
+          },
+          {
+            "name": "typing-inspection",
+            "version": "0.4.2",
+            "vulns": []
+          },
+          {
+            "name": "uvicorn",
+            "version": "0.51.0",
+            "vulns": []
+          },
+          {
+            "name": "zipp",
+            "version": "4.1.0",
+            "vulns": []
+          }
+        ],
+        "fixes": []
+      },
+      "pip_audit_stderr": "No known vulnerabilities found\n",
+      "vulnerability_count": 0,
+      "output_valid": true
+    },
+    {
+      "label": "pip_audit_tool_lock",
+      "requirements_file": "requirements-pip-audit.lock",
+      "skipped": false,
+      "returncode": 0,
+      "pip_audit_stdout_json": {
+        "dependencies": [
+          {
+            "name": "boolean-py",
+            "version": "5.0",
+            "vulns": []
+          },
+          {
+            "name": "cachecontrol",
+            "version": "0.14.4",
+            "vulns": []
+          },
+          {
+            "name": "msgpack",
+            "version": "1.2.1",
+            "vulns": []
+          },
+          {
+            "name": "certifi",
+            "version": "2026.6.17",
+            "vulns": []
+          },
+          {
+            "name": "charset-normalizer",
+            "version": "3.4.9",
+            "vulns": []
+          },
+          {
+            "name": "cyclonedx-python-lib",
+            "version": "11.11.0",
+            "vulns": []
+          },
+          {
+            "name": "license-expression",
+            "version": "30.4.4",
+            "vulns": []
+          },
+          {
+            "name": "packageurl-python",
+            "version": "0.17.6",
+            "vulns": []
+          },
+          {
+            "name": "py-serializable",
+            "version": "2.1.0",
+            "vulns": []
+          },
+          {
+            "name": "defusedxml",
+            "version": "0.7.1",
+            "vulns": []
+          },
+          {
+            "name": "sortedcontainers",
+            "version": "2.4.0",
+            "vulns": []
+          },
+          {
+            "name": "typing-extensions",
+            "version": "4.16.0",
+            "vulns": []
+          },
+          {
+            "name": "filelock",
+            "version": "3.29.7",
+            "vulns": []
+          },
+          {
+            "name": "idna",
+            "version": "3.18",
+            "vulns": []
+          },
+          {
+            "name": "markdown-it-py",
+            "version": "4.2.0",
+            "vulns": []
+          },
+          {
+            "name": "mdurl",
+            "version": "0.1.2",
+            "vulns": []
+          },
+          {
+            "name": "packaging",
+            "version": "26.2",
+            "vulns": []
+          },
+          {
+            "name": "pip-api",
+            "version": "0.0.34",
+            "vulns": []
+          },
+          {
+            "name": "pip-audit",
+            "version": "2.10.1",
+            "vulns": []
+          },
+          {
+            "name": "pip-requirements-parser",
+            "version": "32.0.1",
+            "vulns": []
+          },
+          {
+            "name": "platformdirs",
+            "version": "4.10.0",
+            "vulns": []
+          },
+          {
+            "name": "pygments",
+            "version": "2.20.0",
+            "vulns": []
+          },
+          {
+            "name": "pyparsing",
+            "version": "3.3.2",
+            "vulns": []
+          },
+          {
+            "name": "requests",
+            "version": "2.34.2",
+            "vulns": []
+          },
+          {
+            "name": "urllib3",
+            "version": "2.7.0",
+            "vulns": []
+          },
+          {
+            "name": "rich",
+            "version": "15.0.0",
+            "vulns": []
+          },
+          {
+            "name": "tomli",
+            "version": "2.4.1",
+            "vulns": []
+          },
+          {
+            "name": "tomli-w",
+            "version": "1.2.0",
+            "vulns": []
+          }
+        ],
+        "fixes": []
+      },
+      "pip_audit_stderr": "WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nNo known vulnerabilities found\n",
+      "vulnerability_count": 0,
+      "output_valid": true
+    },
+    {
+      "label": "release_build_lock",
+      "requirements_file": "requirements-build.lock",
+      "skipped": false,
+      "returncode": 0,
+      "pip_audit_stdout_json": {
+        "dependencies": [
+          {
+            "name": "build",
+            "version": "1.5.1",
+            "vulns": []
+          },
+          {
+            "name": "colorama",
+            "version": "0.4.6",
+            "vulns": []
+          },
+          {
+            "name": "packaging",
+            "version": "26.0",
+            "vulns": []
+          },
+          {
+            "name": "pyproject-hooks",
+            "version": "1.2.0",
+            "vulns": []
+          },
+          {
+            "name": "setuptools",
+            "version": "83.0.0",
+            "vulns": []
+          },
+          {
+            "name": "wheel",
+            "version": "0.47.0",
+            "vulns": []
+          }
+        ],
+        "fixes": []
+      },
+      "pip_audit_stderr": "WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nWARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored\nNo known vulnerabilities found\n",
+      "vulnerability_count": 0,
+      "output_valid": true
+    }
+  ],
+  "pip_audit_available": true,
+  "vulnerability_count": 0,
+  "passed": true
+}

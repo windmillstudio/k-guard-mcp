@@ -1,0 +1,79 @@
+{
+  "claim_boundary": {
+    "approved_claim": "The L2 registry can represent a bounded process execution oracle without pretending it is an HTTP exchange, while preserving fail-closed evidence requirements.",
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "scenario_admission_or_label_claim": false,
+    "schema_contract_subfield_only": true
+  },
+  "decision_contract": {
+    "blocked": "Use only when the assigned provider or requested review path is unavailable; do not infer a technical defect from unavailability.",
+    "go": "Use only when the supplied evidence and assigned review scope reveal no material defect in command-kind separation, fail-closed validation, negative-control distinction, repeatability, or the stated claim boundary.",
+    "hold": "Use when a material defect, false-admission path, or claim-boundary violation remains.",
+    "required_terminal_json": {
+      "blocker_count": "non-negative integer",
+      "claim_boundary_confirmed": "boolean",
+      "finding_summary": "single raw-free sentence",
+      "nonblocking_count": "non-negative integer",
+      "verdict": "GO|HOLD|BLOCKED"
+    }
+  },
+  "evidence_manifest": {
+    "path": "docs/l2-process-oracle-contract-evidence-20260721/evidence-manifest.json",
+    "sha256": "720c155778a61899ae54c81970e2d4f9d964c75bdd70106392191a94bc1eadac"
+  },
+  "evidence_summary": {
+    "dynamic_registry": {
+      "admitted_high_critical_scenario_count": 0,
+      "candidate_count": 414,
+      "expected_exit": 2,
+      "registry_sha256": "235d65b57b91a0db032a2b2e5f3e93cb48a03f04ad381ab5ae6b980ea6e29ef3",
+      "repeat_count": 2,
+      "status": "HOLD"
+    },
+    "remaining_deficits": [
+      "oracle_expected_result_sha256_missing",
+      "negative_control_missing",
+      "state_reset_missing",
+      "cwe_missing",
+      "cvss_v4_high_critical_missing",
+      "expected_disposition_missing"
+    ]
+  },
+  "field_id": "l2.process-oracle-contract",
+  "implementation_contract": {
+    "http": "HTTP commands require a valid status, body digest, and normalized result digest.",
+    "negative_control": "A negative control may expect a nonzero process exit but its expected outcome projection must not equal the positive oracle outcome projection.",
+    "process": "Process commands require null HTTP fields and an exact normalized result digest. Standard oracle and reset commands must expect exit 0."
+  },
+  "raw_returned": false,
+  "review_questions": [
+    "Does command-kind separation remove the HTTP schema mismatch without creating a pass path for missing process evidence?",
+    "Does the negative-control distinction prevent a positive oracle from being replayed as its own control?",
+    "Does the v3 schema appropriately prevent a v2 record from being reinterpreted under the stronger contract?",
+    "Do dynamic repeated HOLD results and explicit nonclaims prevent this field from being presented as an admitted scenario, metric, L2 completion, or release approval?"
+  ],
+  "review_scope": {
+    "claude_direct_files": [
+      "scripts/materialize_l2_oracles.py",
+      "tests/test_materialize_l2_oracles.py",
+      "docs/l2-process-oracle-contract-evidence-20260721.md",
+      "docs/l2-process-oracle-contract-evidence-20260721/evidence-manifest.json",
+      "docs/l2-process-oracle-contract-evidence-20260721/review-packet.json"
+    ],
+    "grok_and_glm": "sanitized-packet-only"
+  },
+  "schema": "k_guard_l2_process_oracle_contract_review_packet.v1",
+  "test_attestation_basis": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_materialize_l2_oracles.py",
+      "expected_passed": 37,
+      "required_repeat_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "requirement": "zero failures on the final immutable target; configured skips are reported rather than treated as passes"
+    }
+  }
+}

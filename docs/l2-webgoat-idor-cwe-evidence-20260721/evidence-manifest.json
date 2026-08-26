@@ -1,0 +1,21 @@
+{
+  "artifacts": [
+    {"path":"docs/l2-webgoat-idor-cwe-evidence-20260721.md","sha256":"ddddfc3b249bde24c48035dceba8feeea6f2ef460f6809045dcd43f357f0ac61"},
+    {"path":"docs/oracle-program-operating-contract-ko.md","sha256":"1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"},
+    {"path":"scripts/derive_l2_webgoat_idor_cwe_evidence.py","sha256":"c9dad2372ce7e45cd4ae6bde5c53dc185582cb0fb4cfdffea4306a0dfd4ee10a"},
+    {"path":"scripts/derive_l2_webgoat_idor_execution_evidence.py","sha256":"a9be7dba085a5c1b5bafcd5ee3a310ee7d8792f4ba33c9def42d3edd99bfa5bf"},
+    {"path":"scripts/replay_l2_webgoat_idor.py","sha256":"d9f52d4fca410fe4c27cd9c4e8aa0e9ea7e696e80df34f67f5b04ef69bd1ce29"},
+    {"path":"scripts/validate_supervisor_review_receipts.py","sha256":"2600e1efdc14829959476ff37ef6fe3ea0d46ab7c8f1b9b8129fbd7472af1846"},
+    {"path":"src/k_guard_mcp/supervisor_reviews.py","sha256":"793ae76d11a4d4b5e7d84584af402802a7a90402fada951f1f18963c0599310b"},
+    {"path":"tests/test_derive_l2_webgoat_idor_cwe_evidence.py","sha256":"a0102fb75d37a40c76b24f53f65ec3852492464f3932ad42ded6714676909771"},
+    {"path":"tests/test_derive_l2_webgoat_idor_execution_evidence.py","sha256":"2f1dbb724354a7fe890f6db06c9b79d7434a82f02e25fdd59473257ea8db7681"},
+    {"path":"tests/test_replay_l2_webgoat_idor.py","sha256":"f8f9cfa68e8c3513006bac3f7091962bffbe4cb31d76eedd647a244defd3aeb2"},
+    {"path":"tests/test_supervisor_reviews.py","sha256":"c15e21f29ba00756c33e0ebd51a30474a29e12cabf64b70d43d6d103c90602ac"}
+  ],
+  "claim_boundary":{"customer_deployment_severity_claim":false,"l2_overall_pass":false,"product_performance_or_release_claim":false,"registry_scenario_admission_claim":false,"scanner_accuracy_or_tp_fp_fn_claim":false,"webgoat_idor_cwe_mechanism_subfield_only":true},
+  "field_id":"l2.webgoat-idor.source-bound-cwe-mechanism-evidence",
+  "live_evidence":{"cwe":"CWE-639","evidence_sha256":"01f98199baf0680b96e36119a7ac1fa5756dec79293394825ab9723da1d7d7ee","mechanism_truth":"present","repeat_exact":true,"repeat_run_count":2,"source_receipt_sha256":"7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b","status":"CWE_MECHANISM_EVIDENCE_PASS"},
+  "raw_returned":false,
+  "schema":"k_guard_l2_webgoat_idor_cwe_evidence_manifest.v1",
+  "test_evidence":{"focused":{"passed":87,"repeat_exact":true,"run_count":2,"skipped":0},"full_regression":{"first_run":"1 unrelated SCA timeout failure; 2217 passed, 5 skipped","idle_rerun":"2218 passed, 5 skipped","isolated_sca_repetitions_passed":5},"raw_returned":false}
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-07-25T23:56:37.2584124+09:00",
+  "reviewer": "Claude Opus 5",
+  "requested_model": "claude-opus-5",
+  "runtime_model": "claude-opus-5",
+  "scope": "execution_contract_only",
+  "contract_sha256": "ba5f7e6e8184dd6aa64e890fea44eed5bbae0d8499be6d9ae181dde29ed68729",
+  "verdict": "HOLD",
+  "product_approval": false,
+  "direct_file_read": true,
+  "peer_verdict_supplied": false,
+  "session_id": "34a36954-bd6e-454b-95ac-ff55355d2a15",
+  "provider_envelope_sha256": "3e18f8a25f2c0f05211346c6c750d20b2e37c5ac0065c69cef4e4ae30e478e11",
+  "usage": {
+    "input_tokens": 1933,
+    "cache_creation_input_tokens": 49799,
+    "cache_read_input_tokens": 297863,
+    "output_tokens": 18508,
+    "total_tokens_derived": 368103
+  },
+  "blockers": [
+    "B23-FREEZE-CHECK-SHA-FIELD-UNSATISFIABLE",
+    "B24-PHASE3C-PROMOTION-VALIDATION-POOL-INFEASIBLE"
+  ],
+  "disposition": "SUPERVISOR_HOLD_RECORDED_AND_CONTRACT_REVISION_REQUIRED"
+}

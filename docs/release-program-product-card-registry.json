@@ -1,0 +1,1704 @@
+{
+  "as_of": "2026-07-25",
+  "cards": [
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [],
+      "goal_id": "G1",
+      "id": "P0.5A",
+      "next_gate": null,
+      "phase_exit": true,
+      "phase_id": "P0",
+      "status": "FIX_NARROW",
+      "title": "P0 baseline, toolchain, regression, and supervisor-route phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P0.5A"
+      ],
+      "goal_id": "G1",
+      "id": "P1.1B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P1",
+      "status": "NOT_STARTED",
+      "title": "validate every oracle schema and severity rule"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P1.1B"
+      ],
+      "goal_id": "G1",
+      "id": "P1.2B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P1",
+      "status": "NOT_STARTED",
+      "title": "reject scoring without High/Critical/blocker finding-to-scenario binding"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P1.2B"
+      ],
+      "goal_id": "G1",
+      "id": "P1.3B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P1",
+      "status": "NOT_STARTED",
+      "title": "repeat raw-free response-candidate receipt binding"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P1.3B"
+      ],
+      "goal_id": "G1",
+      "id": "P1.4C",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P1",
+      "status": "NOT_STARTED",
+      "title": "admit local execution positive and negative pairs"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P1.4C"
+      ],
+      "goal_id": "G1",
+      "id": "P1.6A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P1",
+      "status": "NOT_STARTED",
+      "title": "P1 oracle and finding-binding phase exit"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P0.5A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.1A",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "OWASP BenchmarkJava official denominator receipt"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.1A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.1B",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "OWASP BenchmarkJava independent clean-worktree repeat"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.1B"
+      ],
+      "goal_id": "G1",
+      "id": "P2.2A",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "OWASP BenchmarkPython official denominator receipt"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.2A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.2B",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "OWASP BenchmarkPython independent clean-worktree repeat"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P0.5A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3A",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "six local-app source, license, revision, and runtime provenance"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.1",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "WebGoat execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.1"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.2",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Juice Shop execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.2"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "NodeGoat execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.3"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "PyGoat execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.4"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "crAPI execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.5"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "WrongSecrets execution positive and negative oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.3B.6"
+      ],
+      "goal_id": "G1",
+      "id": "P2.3B.7",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "six-local-app execution aggregate and repeat provenance"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P0.5A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4A",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "generated-pair sixty-case blueprint freeze"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.1",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "generated-pair staging, reserve, path, and raw-free contract"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.1"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.2",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "source-flow nineteen source-triplet identity aggregate"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.2"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.01",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 01"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.01"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.02",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 02"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.02"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.03",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 03"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.03"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.04",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 04"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.04"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.05",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 05"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.05"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.06",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 06"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.06"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.07",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 07"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.07"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.08",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 08"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.08"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.09",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 09"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.09"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.10",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 10"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.10"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.11",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 11"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P2.4B.3.11"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.12",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "FIX_NARROW",
+      "title": "auth/RLS/DB source-tree identity slot 12"
+    },
+    {
+      "completed_gates": [
+        "A"
+      ],
+      "depends_on": [
+        "P8.2A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.13",
+      "next_gate": "B",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "ACTIVE",
+      "title": "api-13 Ktor resource-owner source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.13"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.14",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Go chi handler BOLA source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.14"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.15",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Go gin middleware authentication source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.15"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.16",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Supabase PostgreSQL RLS-disabled source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.16"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.17",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Prisma broad-grant source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.17"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.18",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Spring tenant-policy source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.18"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.19",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "Ktor row-filter source-tree identity"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.19"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.3.20",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "auth/RLS/DB nineteen-slot aggregate with zero exclusions"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.3.20"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "dependency and SCA seven source-triplet materialization"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.4"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "GitHub Actions, Docker, and IaC eight source-triplet materialization"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.5"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "policy and Korean-privacy seven source-triplet materialization"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.6"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.7",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "sixty vulnerable, fixed, and negative execution pairs with patch admission"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.7"
+      ],
+      "goal_id": "G1",
+      "id": "P2.4B.8",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "sixty-slot aggregate with zero exclusions and repeat materialization"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.4B.8"
+      ],
+      "goal_id": "G1",
+      "id": "P2.5A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "public stress-app hundred-source provenance and strata"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.5A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.5B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "public stress-sample duplicate, scope, and exclusion admission"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.5B"
+      ],
+      "goal_id": "G1",
+      "id": "P2.6A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "H100 membership and four twenty-five-case planes preregistration"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.6A"
+      ],
+      "goal_id": "G1",
+      "id": "P2.6B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "H100 severity, exclusions, and blinded-label boundary"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.6B"
+      ],
+      "goal_id": "G1",
+      "id": "P2.7A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P2",
+      "status": "NOT_STARTED",
+      "title": "P2 provenance and exclusion phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.7A"
+      ],
+      "goal_id": "G2",
+      "id": "P3.1A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "baseline scanner input, timeout, and supported-file coverage repeat"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.1A"
+      ],
+      "goal_id": "G2",
+      "id": "P3.1B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "Guardian HOLD on incomplete supported-file coverage"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.1B"
+      ],
+      "goal_id": "G2",
+      "id": "P3.2A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "reject TP/FP/FN/TN and Wilson calculation without an oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.2A"
+      ],
+      "goal_id": "G2",
+      "id": "P3.2B",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "calculate actionability, recall, specificity, and app-complete metrics by plane"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.2B"
+      ],
+      "goal_id": "G2",
+      "id": "P3.3A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "calculate candidate concentration by rule, subtype, language, and plane"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.3A"
+      ],
+      "goal_id": "G2",
+      "id": "P3.4A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "aggregate timeout, unsupported, and control errors as coverage HOLD"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.4A"
+      ],
+      "goal_id": "G2",
+      "id": "P3.5A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P3",
+      "status": "NOT_STARTED",
+      "title": "P3 baseline error-cluster and claim-boundary phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P3.5A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.0A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "preregister the largest measured error cluster, labels, and target metrics"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.0A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.1A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "implement the selected error cluster in observe-only mode"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.1A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.2A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "measure paired A/B recall, specificity, speed, and repeatability"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.2A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.3A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "promote the selected error cluster to warn only after independent oracle evidence"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.3A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.4A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "promote the selected error cluster to block only after holdout and all gates"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.4A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.5A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "bind observe, warn, block rollback, suppression, and regressions"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.5A"
+      ],
+      "goal_id": "G3",
+      "id": "P4.selected.6A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P4",
+      "status": "NOT_STARTED",
+      "title": "P4 selected-error-cluster phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P4.selected.6A"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.1",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "site static/XSS/injection oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.1"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.2",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "authorized local web execution"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.2"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "site largest-error-cluster paired A/B"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.3"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "site crawl/timeout/unsupported fail-closed coverage"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.4"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "site finding, remediation, and recheck UX"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.5"
+      ],
+      "goal_id": "G4",
+      "id": "P5.S.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "P5 site plane exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.6"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.1",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "API auth/IDOR/BOLA oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.1"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.2",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "API route-to-service execution"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.2"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "API largest-error-cluster paired A/B"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.3"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "API auth and coverage fail-closed contract"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.4"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "API route, authorization, and remediation UX"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.5"
+      ],
+      "goal_id": "G4",
+      "id": "P5.A.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "P5 API plane exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.A.6"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.1",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "data SQL/RLS/PII/retention oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.1"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.2",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "read-only database and storage connector execution"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.2"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "data largest-error-cluster paired A/B"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.3"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "data connector and control-error fail-closed coverage"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.4"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "Korean privacy explanation and next-action UX"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.5"
+      ],
+      "goal_id": "G4",
+      "id": "P5.D.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "P5 data plane exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.D.6"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.1",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "secret/SCA/CI-IaC/MCP oracle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.O.1"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.2",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "runtime proxy and protocol execution"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.O.2"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "operations largest-error-cluster paired A/B"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.O.3"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "runtime and protocol fail-closed coverage"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.O.4"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.5",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "suppression and CI policy UX"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.O.5"
+      ],
+      "goal_id": "G4",
+      "id": "P5.O.6",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "P5 operations plane exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.S.6",
+        "P5.A.6",
+        "P5.D.6",
+        "P5.O.6"
+      ],
+      "goal_id": "G4",
+      "id": "P5.5A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P5",
+      "status": "NOT_STARTED",
+      "title": "P5 four-plane aggregate phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P2.6B",
+        "P5.5A"
+      ],
+      "goal_id": "G6",
+      "id": "P6.1A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P6",
+      "status": "NOT_STARTED",
+      "title": "one-way freeze of analyzer, rule pack, toolchain, H100, and labels"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P6.1A"
+      ],
+      "goal_id": "G6",
+      "id": "P6.2A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P6",
+      "status": "NOT_STARTED",
+      "title": "separate H100 blind run from oracle scoring"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P6.2A"
+      ],
+      "goal_id": "G6",
+      "id": "P6.3A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P6",
+      "status": "NOT_STARTED",
+      "title": "calculate fixed overall, plane, Critical, specificity, concentration, and speed gates"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P6.3A"
+      ],
+      "goal_id": "G6",
+      "id": "P6.4A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P6",
+      "status": "NOT_STARTED",
+      "title": "prove semantic equality on an unchanged second H100 run"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P6.4A"
+      ],
+      "goal_id": "G6",
+      "id": "P6.5A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P6",
+      "status": "NOT_STARTED",
+      "title": "P6 release-disposition phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P5.5A"
+      ],
+      "goal_id": "G5",
+      "id": "P7.1A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P7",
+      "status": "NOT_STARTED",
+      "title": "fresh wheel installation, CLI, stdio MCP, and evidence-binding repeat"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P7.1A"
+      ],
+      "goal_id": "G5",
+      "id": "P7.2A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P7",
+      "status": "NOT_STARTED",
+      "title": "GPT, Grok, Codex, and Antigravity installation and Guardian-call repeat"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P7.2A"
+      ],
+      "goal_id": "G5",
+      "id": "P7.3A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P7",
+      "status": "NOT_STARTED",
+      "title": "license, SBOM, known limits, and raw-free release bundle"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P7.3A"
+      ],
+      "goal_id": "G5",
+      "id": "P7.4A",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P7",
+      "status": "NOT_STARTED",
+      "title": "canonical Guardian GO/HOLD disposition across every phase exit"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P6.5A",
+        "P7.4A"
+      ],
+      "goal_id": "G5",
+      "id": "P7.5A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P7",
+      "status": "NOT_STARTED",
+      "title": "P7 installation and compatibility phase exit"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [],
+      "goal_id": "G7",
+      "id": "P8.1",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "canonical goal-state validator"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P8.1"
+      ],
+      "goal_id": "G7",
+      "id": "P8.1B",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "canonical state and human-status-board synchronization"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P8.1B"
+      ],
+      "goal_id": "G7",
+      "id": "P8.2B",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "Windows native supervisor long-packet transport"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P8.2B"
+      ],
+      "goal_id": "G7",
+      "id": "P8.2D",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "GLM source-free health terminal contract"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P8.2D"
+      ],
+      "goal_id": "G7",
+      "id": "P8.2E",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "product work-card registry binding"
+    },
+    {
+      "completed_gates": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F1",
+        "F2",
+        "G"
+      ],
+      "depends_on": [
+        "P8.2E"
+      ],
+      "goal_id": "G7",
+      "id": "P8.2A",
+      "next_gate": null,
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "FIX_NARROW",
+      "title": "Windows supervisor command resolution"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P8.2A"
+      ],
+      "goal_id": "G7",
+      "id": "P8.2C",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "NOT_STARTED",
+      "title": "bind card and phase status to machine and supervisor receipt hashes"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P8.2C"
+      ],
+      "goal_id": "G7",
+      "id": "P8.3",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "NOT_STARTED",
+      "title": "validate phase children, exclusions, F1/F2, and phase packets"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P8.3"
+      ],
+      "goal_id": "G7",
+      "id": "P8.4",
+      "next_gate": "A",
+      "phase_exit": false,
+      "phase_id": "P8",
+      "status": "NOT_STARTED",
+      "title": "reject GO_RELEASE when any G1-G7 or P0-P8 gate is missing"
+    },
+    {
+      "completed_gates": [],
+      "depends_on": [
+        "P8.4"
+      ],
+      "goal_id": "G7",
+      "id": "P8.5A",
+      "next_gate": "A",
+      "phase_exit": true,
+      "phase_id": "P8",
+      "status": "NOT_STARTED",
+      "title": "P8 control and independent-review phase exit"
+    }
+  ],
+  "catalog_reference": "docs/release-program-product-card-catalog-ko.md",
+  "catalog_sha256": "fe1a9f8fc83f7928254b9d065adede75c2ba1fcf5c1f6693551d8d30c3c9066b",
+  "default_claim_boundary": "Card status proves only the stated narrow contract. It does not prove detector quality, oracle labels, H100 performance, or release readiness unless a later card explicitly supplies that evidence.",
+  "review_profile": {
+    "card_gates": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F1",
+      "F2",
+      "G"
+    ],
+    "comparator_required_status": "FIX",
+    "models": {
+      "claude": "claude-opus-5",
+      "grok": "grok-4.6"
+    },
+    "phase_review_required": true,
+    "review_runs": 2
+  },
+  "schema": "k_guard_product_work_card_registry.v1"
+}

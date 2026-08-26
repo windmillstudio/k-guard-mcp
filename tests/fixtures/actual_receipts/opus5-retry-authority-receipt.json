@@ -1,0 +1,24 @@
+{
+  "phase_id": "phase-0",
+  "provider_envelope_path": "phase-0-freeze/retry-authority/opus5-retry-authority-envelope-redacted.json",
+  "provider_envelope_sha256": "5ecd2c1feff9d12d2e8725968d3b356e2562b1d060181ddf7ad5d7d285316178",
+  "recorded_at_kst": "2026-07-26T03:22:57.821214+09:00",
+  "requested_model_id": "claude-opus-5",
+  "review_result_sha256": "57999355eeae088d4dca2a432eb7f4b05fb3bedde1456c5d6028c12cc3825c08",
+  "reviewer": "Claude Opus 5",
+  "runtime_model_id": "claude-opus-5",
+  "schema": "k_guard_retry_authority_supervisor_receipt.v1",
+  "scope": "phase-0-third-candidate-authority-only",
+  "session_id": "404bf9bf-1ad9-4273-9b13-df8ab9968b05",
+  "status": "FIX",
+  "validation": {
+    "canonical_raw_free": true,
+    "completed_result": true,
+    "frozen_schema_valid": true,
+    "peer_verdict_supplied": false,
+    "positive_usage": true,
+    "product_approval": false,
+    "requested_primary_model_observed": true
+  },
+  "verdict": "DENY_PHASE0_RETRY"
+}

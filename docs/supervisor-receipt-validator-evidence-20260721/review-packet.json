@@ -1,0 +1,27 @@
+{
+  "claim_boundary": {
+    "oracle_label_or_threshold_change": false,
+    "product_performance_or_release_claim": false,
+    "purpose": "fail-closed supervisor receipt promotion control"
+  },
+  "evidence_manifest_sha256": "5eab658a3eeebe95e218da254f9bf1a20d23eb9d5307244c0df1353260f7f9be",
+  "expected_controls": [
+    "exact pinned model identity",
+    "identical head_git_oid binding in every receipt",
+    "identical dirty_path_set_sha256 binding in every receipt",
+    "identical evidence manifest binding in every receipt",
+    "identical sanitized review packet binding in every receipt",
+    "Claude direct-files GO required for FIX",
+    "BLOCKED only allows temporary non-promoting measurement",
+    "HOLD forbids temporary advance",
+    "HEALTHY cannot be parsed as review approval"
+  ],
+  "raw_returned": false,
+  "required_models": {
+    "claude": "claude-opus-4-8",
+    "glm": "cline-pass/glm-5.2",
+    "grok": "grok-4.5"
+  },
+  "schema": "k_guard_supervisor_governance_review_packet.v1",
+  "target_binding": "The three receipt records, rather than this artifact, bind the shared head_git_oid and dirty_path_set_sha256. This avoids a self-referential worktree hash while preserving exact receipt-level target equality."
+}

@@ -1,0 +1,4 @@
+target_id,rule_id,verdict,notes
+vibe-01,DYN_RESPONSE_PII_LEAK,needs_review,confirm whether this is real user/customer data or public/sample data
+general-01,DYN_SECURITY_HEADERS_MISSING,needs_review,confirm accepted risk or missing baseline hardening
+*,DYN_SOURCE_MAP_ACCESSIBLE,needs_review,review whether public source maps are intentional

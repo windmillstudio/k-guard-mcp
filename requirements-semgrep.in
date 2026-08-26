@@ -1,0 +1,5 @@
+semgrep==1.174.0
+pyjwt>=2.13.0
+click>=8.3.3
+cryptography>=50.0.0
+mcp>=1.28.1

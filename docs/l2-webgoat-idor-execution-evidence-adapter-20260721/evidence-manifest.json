@@ -1,0 +1,84 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/l2-webgoat-idor-execution-evidence-adapter-20260721.md",
+      "sha256": "5c3fe98c103039c11305d0cbfd4f26ce76045b00ff5dc55f019290a5466a0c5e"
+    },
+    {
+      "path": "docs/oracle-program-operating-contract-ko.md",
+      "sha256": "1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"
+    },
+    {
+      "path": "scripts/derive_l2_webgoat_idor_execution_evidence.py",
+      "sha256": "a9be7dba085a5c1b5bafcd5ee3a310ee7d8792f4ba33c9def42d3edd99bfa5bf"
+    },
+    {
+      "path": "scripts/materialize_l2_oracles.py",
+      "sha256": "5ffe40ee8d4709f055719c1a77d1f27bec68b9257668d0389734772b47307dc9"
+    },
+    {
+      "path": "scripts/replay_l2_webgoat_idor.py",
+      "sha256": "d9f52d4fca410fe4c27cd9c4e8aa0e9ea7e696e80df34f67f5b04ef69bd1ce29"
+    },
+    {
+      "path": "scripts/validate_supervisor_review_receipts.py",
+      "sha256": "2600e1efdc14829959476ff37ef6fe3ea0d46ab7c8f1b9b8129fbd7472af1846"
+    },
+    {
+      "path": "src/k_guard_mcp/supervisor_reviews.py",
+      "sha256": "793ae76d11a4d4b5e7d84584af402802a7a90402fada951f1f18963c0599310b"
+    },
+    {
+      "path": "tests/test_derive_l2_webgoat_idor_execution_evidence.py",
+      "sha256": "2f1dbb724354a7fe890f6db06c9b79d7434a82f02e25fdd59473257ea8db7681"
+    },
+    {
+      "path": "tests/test_materialize_l2_oracles.py",
+      "sha256": "15952061e94695d942665103f25a31c57b4295b405c5b7bc775e9faa5e161f33"
+    },
+    {
+      "path": "tests/test_replay_l2_webgoat_idor.py",
+      "sha256": "f8f9cfa68e8c3513006bac3f7091962bffbe4cb31d76eedd647a244defd3aeb2"
+    },
+    {
+      "path": "tests/test_supervisor_reviews.py",
+      "sha256": "c15e21f29ba00756c33e0ebd51a30474a29e12cabf64b70d43d6d103c90602ac"
+    }
+  ],
+  "claim_boundary": {
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "registry_scenario_admission_claim": false,
+    "scanner_accuracy_or_tp_fp_fn_claim": false,
+    "webgoat_execution_evidence_adapter_subfield_only": true
+  },
+  "field_id": "l2.webgoat-idor.execution-evidence-adapter",
+  "live_evidence": {
+    "negative_control_receipt_sha256": "baee6c365c87526a5a7b00717c14616e7497eb55f804a9a0fdf9fe36160bddaa",
+    "negative_result_sha256": "e07e779759f7c27da53419d8a78b852c26730cd7609c45ef682dca7cec102c69",
+    "positive_execution_receipt_sha256": "3d1e162931ec875f1b9de8564ff08733677e7125347eb559c91318c67e86a874",
+    "positive_result_sha256": "148c53f8f020ff6213746b781b2f0ee3f842e0f10cef43f51cb392155a44c655",
+    "repeat_evidence_sha256": "38a4468071f51f0408bbe08713068522f86645de7f1988b66f07c9f92226bb4e",
+    "repeat_run_count": 2,
+    "source_receipt_sha256": "7755ce29a5450b9803f46effb6f42fe7624e39b317c99546eb74624a3380b83b",
+    "status": "EXECUTION_EVIDENCE_PASS"
+  },
+  "raw_returned": false,
+  "schema": "k_guard_l2_webgoat_idor_execution_evidence_adapter_manifest.v1",
+  "test_evidence": {
+    "focused": {
+      "command": "python -m pytest -q tests/test_replay_l2_webgoat_idor.py tests/test_derive_l2_webgoat_idor_execution_evidence.py tests/test_materialize_l2_oracles.py tests/test_supervisor_reviews.py",
+      "passed": 76,
+      "repeat_exact": true,
+      "run_count": 2,
+      "skipped": 0
+    },
+    "full_regression": {
+      "command": "python -m pytest -q",
+      "passed": 2207,
+      "requirement": "zero failures on the immutable review target; configured skips are reported rather than treated as passes",
+      "skipped": 5
+    },
+    "raw_returned": false
+  }
+}

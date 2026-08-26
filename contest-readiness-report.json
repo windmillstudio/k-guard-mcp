@@ -1,0 +1,151 @@
+{
+  "schema": "k_guard_contest_readiness.v3",
+  "official_program": {
+    "name": "2026 오픈소스 개발자대회",
+    "track": "자유과제 / 보안·안전 / 인공지능 개발자 도구",
+    "source": "https://www.oss.kr/pages/2",
+    "required_submission": [
+      "결과보고서",
+      "3분 시연영상",
+      "소스코드"
+    ],
+    "second_stage": [
+      "기능테스트",
+      "라이선스 검증",
+      "발표평가"
+    ]
+  },
+  "package_ready": false,
+  "submission_ready": false,
+  "submission_ready_meaning": "Deprecated compatibility alias for package_ready; it does not mean field effectiveness or award readiness.",
+  "award_evidence_ready": false,
+  "status": "package_verification_blocked",
+  "internal_checks": {
+    "submission_documented": true,
+    "submission_claims_current": true,
+    "three_minute_demo_video_valid": true,
+    "submission_video_attestation_valid": true,
+    "submission_report_bound_and_verified": false,
+    "submission_artifact_manifest_valid": true,
+    "submission_rights_documented": true,
+    "fresh_wheel_stdio_current_source_passed": true,
+    "submission_release_archives_match_current_source": true,
+    "current_source_public_replay_passed": true,
+    "current_language_validation_pack_complete": true,
+    "brand_consistent": true,
+    "demo_contract_passed": true,
+    "license_policy_passed": true,
+    "sbom_present": true,
+    "declared_sbom_component_count_matches_live_artifacts": true,
+    "evidence_integrity_passed": true,
+    "historical_client_evidence_contract_valid": true,
+    "historical_public_effectiveness_evidence_contract_valid": true,
+    "release_workflow_static_contract_valid": true,
+    "community_files_present": true
+  },
+  "external_checks": {
+    "owned_partner_field_apps_at_least_12": false,
+    "historical_client_recordings_at_least_3": true,
+    "historical_public_app_effectiveness_qualified": true
+  },
+  "metrics": {
+    "owned_partner_app_count": 0,
+    "verified_client_count": 3,
+    "evidence_error_count": 0,
+    "client_evidence_error_count": 0,
+    "public_effectiveness_error_count": 0,
+    "public_app_count": 12,
+    "public_candidate_count": 31,
+    "public_reviewer_count": 3,
+    "public_true_positive_probe_count": 11,
+    "public_true_positive_probe_detected": 11,
+    "public_candidate_actionable_rate": 1.0,
+    "public_reference_probe_detection_rate": 1.0,
+    "juliet_first_true_positive": 180,
+    "juliet_first_false_negative": 30,
+    "juliet_replay_true_positive": 210,
+    "juliet_replay_false_negative": 0,
+    "submission_video_duration_seconds": 108.0,
+    "current_public_app_count": 12,
+    "current_public_candidate_count": 14,
+    "current_public_true_positive_probe_count": 11,
+    "current_public_true_positive_probe_detected": 11,
+    "current_public_benign_probe_count": 1,
+    "current_public_benign_probe_detected": 1,
+    "current_package_tree_sha256": "e0f2728ace9b46a454d1eff250868b02defbb5321edfb186711f87a10667c9eb",
+    "current_language_validation_pack_sha256": "1550c04d2566b69b72b598e4fcaf6306a44fef27df4cfb77b29ad13e79a03f75",
+    "submission_claim_error_count": 0,
+    "legacy_brand_hit_count": 0,
+    "r2_current_source_failed_gate_count": 0
+  },
+  "blockers": [
+    "submission_report_bound_and_verified",
+    "owned_partner_field_apps_at_least_12"
+  ],
+  "diagnostics": {
+    "evidence_errors": [],
+    "client_evidence_errors": [],
+    "public_effectiveness_errors": [],
+    "public_effectiveness_blockers": [],
+    "submission_claim_errors": [],
+    "submission_video": {
+      "schema": "k_guard_submission_video_verification.v1",
+      "video_sha256": "b46e80f0fa244b18bf737bcaeec2eab20a166e722f1b44e00d69584b3a12922e",
+      "byte_count": 7615629,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "codec_name": "h264",
+      "duration_seconds": 108.0,
+      "width": 1920,
+      "height": 1080,
+      "frame_count": 3240,
+      "video_stream_count": 1,
+      "audio_stream_count": 0,
+      "fully_decoded": true,
+      "valid": true,
+      "verification_tools": [
+        "ffprobe",
+        "ffmpeg full-stream decode"
+      ],
+      "raw_returned": false,
+      "path": "submission/demo/k-guard-contest-demo.mp4",
+      "exists": true,
+      "live_reverified": false
+    },
+    "submission_video_errors": [],
+    "submission_report_errors": [
+      "submission_report_external_urls_incomplete"
+    ],
+    "submission_manifest_errors": [],
+    "submission_rights_errors": [],
+    "release_workflow_errors": [],
+    "field_evidence_errors": [
+      "field_campaign_app_count_invalid",
+      "field_campaign_blockers_present",
+      "field_campaign_not_ready",
+      "field_campaign_strata_invalid",
+      "field_evidence_source_missing:candidate_review",
+      "field_evidence_source_missing:external_attestation",
+      "field_evidence_source_missing:ground_truth",
+      "field_evidence_source_missing:preregistration",
+      "field_evidence_source_missing:primary_guardian",
+      "field_evidence_source_missing:repeat_guardian",
+      "field_evidence_source_missing:roster",
+      "field_evidence_source_missing:validation_report"
+    ],
+    "fresh_wheel_smoke_errors": [],
+    "declared_sbom_component_count_errors": [],
+    "submission_release_archive_errors": [],
+    "current_public_replay_errors": [],
+    "language_validation_errors": [],
+    "legacy_brand_hits": [],
+    "r2_current_source_evidence_succession_contract": {
+      "path": null,
+      "schema": null,
+      "errors": [],
+      "gate_status": {}
+    },
+    "raw_returned": false
+  },
+  "claim_boundary": "Package readiness proves that the current analyzer package was replayed deterministically on the pinned public-app corpus, that a freshly installed wheel completed the real stdio workflow, and that the bound report, media, manifest, and rights records verify. The release-workflow check validates committed static policy only; it does not assert that a hosted release run succeeded. The three client UI recordings and AI-reviewed public-app labels are historical process evidence. Public source-oracle probes and the preregistered Juliet first result support bounded detector claims only; the post-tuning replay is regression evidence. None substitutes for independent human adjudication on owned/partner field apps or grants release authority. Field evidence remains pending at 0 contract-verified apps.",
+  "raw_returned": false
+}

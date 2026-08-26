@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible K-Guard defect without secrets or personal data.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security vulnerabilities and raw-data leaks must use the private route in SECURITY.md, never this public form.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong, and which command or MCP tool was involved?
+      placeholder: A concise description of the defect.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest sanitized inputs and exact steps that reproduce the issue.
+      placeholder: |
+        1. Install from ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+      description: State the expected result, actual result, and exit code or MCP status.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Give the exact wheel version or full source commit used.
+      placeholder: 0.1.0 or a 40-character commit
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, Python version, and MCP client when relevant.
+      placeholder: Windows 11, Python 3.12, Codex
+    validations:
+      required: true
+  - type: textarea
+    id: sanitized_evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add raw-free logs, report fields, or screenshots. Remove credentials, personal data, customer code, and private paths.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed secrets, personal data, customer code, and private vulnerability details.
+          required: true
+        - label: Any dynamic target in this report was localhost, owned, or explicitly authorized.
+          required: true
+        - label: This is not a security vulnerability; I will use SECURITY.md if that changes.
+          required: true

@@ -1,0 +1,1129 @@
+# K-Guard Semgrep Community Edition profile.
+# All taint analysis is intrafile. These rules do not claim interfile data flow,
+# and authorization-adjacent matches require ownership and policy review.
+rules:
+  - id: k-guard.javascript.http-to-sql
+    languages: [javascript, typescript]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use a parameterized query or a query builder that binds values separately from SQL text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQ.query
+          - pattern: $REQ.query.$KEY
+          - pattern: $REQ.query[$KEY]
+          - pattern: $REQ.body
+          - pattern: $REQ.body.$KEY
+          - pattern: $REQ.body[$KEY]
+          - pattern: $REQ.params.$KEY
+          - pattern: $REQ.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.query($VALUE, ...)
+              - pattern: $DB.execute($VALUE, ...)
+              - pattern: $DB.raw($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.javascript.http-to-command
+    languages: [javascript, typescript]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Avoid shell execution; use a fixed executable and an allowlisted argument vector."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQ.query.$KEY
+          - pattern: $REQ.query[$KEY]
+          - pattern: $REQ.body.$KEY
+          - pattern: $REQ.body[$KEY]
+          - pattern: $REQ.params.$KEY
+          - pattern: $REQ.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CP.exec($VALUE, ...)
+              - pattern: $CP.execSync($VALUE, ...)
+              - pattern: '$CP.spawn($VALUE, ..., {shell: true, ...})'
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.javascript.http-to-file-path
+    languages: [javascript, typescript]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve against a fixed base directory and reject absolute paths, traversal segments, and containment escapes."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQ.query.$KEY
+          - pattern: $REQ.query[$KEY]
+          - pattern: $REQ.body.$KEY
+          - pattern: $REQ.body[$KEY]
+          - pattern: $REQ.params.$KEY
+          - pattern: $REQ.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $FS.readFile($VALUE, ...)
+              - pattern: $FS.readFileSync($VALUE, ...)
+              - pattern: $FS.createReadStream($VALUE, ...)
+              - pattern: $RES.sendFile($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.javascript.http-to-ssrf
+    languages: [javascript, typescript]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist schemes and destinations, resolve and verify addresses, and block private or link-local networks."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQ.query.$KEY
+          - pattern: $REQ.query[$KEY]
+          - pattern: $REQ.body.$KEY
+          - pattern: $REQ.body[$KEY]
+          - pattern: $REQ.params.$KEY
+          - pattern: $REQ.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: fetch($VALUE, ...)
+              - pattern: $AXIOS.get($VALUE, ...)
+              - pattern: '$AXIOS.request({url: $VALUE, ...})'
+              - pattern: $HTTP.get($VALUE, ...)
+              - pattern: $HTTP.request($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.javascript.direct-object-lookup-from-route-id
+    languages: [javascript, typescript]
+    message: "A route-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A route-controlled identifier is used for a direct object lookup."
+      recommendation: "Enforce object ownership or tenant policy in the lookup predicate and test denied cross-user access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $MODEL.findById($REQ.params.$KEY)
+      - pattern: $MODEL.findByPk($REQ.params.$KEY)
+      - pattern: '$MODEL.findOne({id: $REQ.params.$KEY, ...})'
+      - pattern: '$MODEL.findOne({_id: $REQ.params.$KEY, ...})'
+
+  - id: k-guard.python.http-to-sql
+    languages: [python]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use driver placeholders or ORM parameters and keep untrusted values out of SQL text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: request.args.get(...)
+          - pattern: request.args[$KEY]
+          - pattern: request.form.get(...)
+          - pattern: request.form[$KEY]
+          - pattern: request.json.get(...)
+          - pattern: $REQUEST.GET.get(...)
+          - pattern: $REQUEST.GET[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CURSOR.execute($VALUE, ...)
+              - pattern: $CURSOR.executemany($VALUE, ...)
+              - pattern: $SESSION.execute($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.python.http-to-command
+    languages: [python]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Avoid a shell; execute a fixed program with an allowlisted argument list."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: request.args.get(...)
+          - pattern: request.args[$KEY]
+          - pattern: request.form.get(...)
+          - pattern: request.json.get(...)
+          - pattern: $REQUEST.GET.get(...)
+          - pattern: $REQUEST.GET[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: os.system($VALUE)
+              - pattern: os.popen($VALUE, ...)
+              - pattern: subprocess.getoutput($VALUE)
+              - pattern: subprocess.run($VALUE, ..., shell=True, ...)
+              - pattern: subprocess.Popen($VALUE, ..., shell=True, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.python.http-to-file-path
+    languages: [python]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve beneath a fixed root and reject traversal, absolute paths, and post-resolution containment escapes."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: request.args.get(...)
+          - pattern: request.args[$KEY]
+          - pattern: request.form.get(...)
+          - pattern: request.json.get(...)
+          - pattern: $REQUEST.GET.get(...)
+          - pattern: $REQUEST.GET[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: open($VALUE, ...)
+              - pattern: pathlib.Path($VALUE)
+              - pattern: send_file($VALUE, ...)
+              - pattern: os.remove($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.python.http-to-ssrf
+    languages: [python]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist outbound destinations and block private, loopback, link-local, and metadata-service addresses."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: request.args.get(...)
+          - pattern: request.args[$KEY]
+          - pattern: request.form.get(...)
+          - pattern: request.json.get(...)
+          - pattern: $REQUEST.GET.get(...)
+          - pattern: $REQUEST.GET[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: requests.get($VALUE, ...)
+              - pattern: requests.request($METHOD, $VALUE, ...)
+              - pattern: httpx.get($VALUE, ...)
+              - pattern: urllib.request.urlopen($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.python.direct-object-lookup-from-request-id
+    languages: [python]
+    message: "A request-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A request-controlled identifier is used for a direct object lookup."
+      recommendation: "Constrain the query by the authenticated principal or tenant and test cross-account denial."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $MODEL.objects.get(pk=request.args.get(...))
+      - pattern: $MODEL.objects.get(id=request.args.get(...))
+      - pattern: $MODEL.objects.get(pk=$REQUEST.GET.get(...))
+      - pattern: $MODEL.query.get(request.args.get(...))
+
+  - id: k-guard.java.http-to-sql
+    languages: [java]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use PreparedStatement placeholders and bind all request-derived values."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.getParameter(...)
+          - pattern: $REQUEST.getHeader(...)
+          - pattern: $REQUEST.getPathInfo()
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $STATEMENT.executeQuery($VALUE)
+              - pattern: $STATEMENT.executeUpdate($VALUE)
+              - pattern: $STATEMENT.execute($VALUE)
+              - pattern: $CONNECTION.prepareStatement($VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.java.http-to-command
+    languages: [java]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Use a fixed executable and separately validated arguments; do not invoke a command shell."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.getParameter(...)
+          - pattern: $REQUEST.getHeader(...)
+          - pattern: $REQUEST.getPathInfo()
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Runtime.getRuntime().exec($VALUE)
+              - pattern: Runtime.getRuntime().exec($VALUE, ...)
+              - pattern: new ProcessBuilder($VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.java.http-to-file-path
+    languages: [java]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve and normalize beneath an approved root, then verify containment before access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.getParameter(...)
+          - pattern: $REQUEST.getHeader(...)
+          - pattern: $REQUEST.getPathInfo()
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new File($VALUE)
+              - pattern: new FileInputStream($VALUE)
+              - pattern: Paths.get($VALUE, ...)
+              - pattern: Files.readString($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.java.http-to-ssrf
+    languages: [java]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist destinations and reject private, loopback, link-local, and metadata-service addresses after resolution."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.getParameter(...)
+          - pattern: $REQUEST.getHeader(...)
+          - pattern: $REQUEST.getPathInfo()
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new URL($VALUE)
+              - pattern: URI.create($VALUE)
+              - pattern: HttpRequest.newBuilder(URI.create($VALUE))
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.java.direct-object-lookup-from-request-id
+    languages: [java]
+    message: "A request-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A request-controlled identifier is used for a direct object lookup."
+      recommendation: "Apply principal or tenant constraints in the repository query and test denied cross-user access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $REPOSITORY.findById($REQUEST.getParameter(...))
+      - pattern: $REPOSITORY.getById($REQUEST.getParameter(...))
+      - pattern: $ENTITY_MANAGER.find($TYPE, $REQUEST.getParameter(...))
+
+  - id: k-guard.kotlin.http-to-sql
+    languages: [kotlin]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use placeholders or typed query APIs and bind request values separately from SQL text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $CALL.parameters[$KEY]
+          - pattern: $CALL.request.queryParameters[$KEY]
+          - pattern: $REQUEST.getParameter(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $STATEMENT.executeQuery($VALUE)
+              - pattern: $STATEMENT.executeUpdate($VALUE)
+              - pattern: $CONNECTION.prepareStatement($VALUE)
+              - pattern: $DATABASE.exec($VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.kotlin.http-to-command
+    languages: [kotlin]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Use a fixed executable and separately validated arguments; do not invoke a command shell."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $CALL.parameters[$KEY]
+          - pattern: $CALL.request.queryParameters[$KEY]
+          - pattern: $REQUEST.getParameter(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Runtime.getRuntime().exec($VALUE)
+              - pattern: ProcessBuilder($VALUE).start()
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.kotlin.http-to-file-path
+    languages: [kotlin]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve and normalize beneath an approved root and reject any containment escape."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $CALL.parameters[$KEY]
+          - pattern: $CALL.request.queryParameters[$KEY]
+          - pattern: $REQUEST.getParameter(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: File($VALUE)
+              - pattern: Paths.get($VALUE, ...)
+              - pattern: Files.readString($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.kotlin.http-to-ssrf
+    languages: [kotlin]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist destinations and reject private, loopback, link-local, and metadata-service addresses after resolution."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $CALL.parameters[$KEY]
+          - pattern: $CALL.request.queryParameters[$KEY]
+          - pattern: $REQUEST.getParameter(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: URL($VALUE)
+              - pattern: URI.create($VALUE)
+              - pattern: $CLIENT.get($VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.kotlin.direct-object-lookup-from-request-id
+    languages: [kotlin]
+    message: "A request-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A request-controlled identifier is used for a direct object lookup."
+      recommendation: "Constrain the lookup by authenticated principal or tenant and test denied cross-account access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $REPOSITORY.findById($CALL.parameters[$KEY])
+      - pattern: $REPOSITORY.getById($CALL.parameters[$KEY])
+      - pattern: $REPOSITORY.findById($REQUEST.getParameter(...))
+
+  - id: k-guard.go.http-to-sql
+    languages: [go]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use query placeholders and pass request values only as separate arguments."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.URL.Query().Get(...)
+          - pattern: $REQUEST.FormValue(...)
+          - pattern: mux.Vars($REQUEST)[$KEY]
+          - pattern: $CONTEXT.Query(...)
+          - pattern: $CONTEXT.Param(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.Query($VALUE, ...)
+              - pattern: $DB.QueryContext($CTX, $VALUE, ...)
+              - pattern: $DB.Exec($VALUE, ...)
+              - pattern: $DB.ExecContext($CTX, $VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.go.http-to-command
+    languages: [go]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Use a fixed executable with validated arguments and never pass request input through a shell."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.URL.Query().Get(...)
+          - pattern: $REQUEST.FormValue(...)
+          - pattern: mux.Vars($REQUEST)[$KEY]
+          - pattern: $CONTEXT.Query(...)
+          - pattern: $CONTEXT.Param(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: exec.Command("sh", "-c", $VALUE)
+              - pattern: exec.Command("bash", "-c", $VALUE)
+              - pattern: exec.Command($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.go.http-to-file-path
+    languages: [go]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Clean and resolve beneath a fixed root, then verify containment before opening or serving the path."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.URL.Query().Get(...)
+          - pattern: $REQUEST.FormValue(...)
+          - pattern: mux.Vars($REQUEST)[$KEY]
+          - pattern: $CONTEXT.Query(...)
+          - pattern: $CONTEXT.Param(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: os.Open($VALUE)
+              - pattern: os.ReadFile($VALUE)
+              - pattern: ioutil.ReadFile($VALUE)
+              - pattern: http.ServeFile($WRITER, $REQUEST, $VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.go.http-to-ssrf
+    languages: [go]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist schemes and destinations and block private, loopback, link-local, and metadata-service addresses."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.URL.Query().Get(...)
+          - pattern: $REQUEST.FormValue(...)
+          - pattern: mux.Vars($REQUEST)[$KEY]
+          - pattern: $CONTEXT.Query(...)
+          - pattern: $CONTEXT.Param(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: http.Get($VALUE)
+              - pattern: $CLIENT.Get($VALUE)
+              - pattern: http.NewRequest($METHOD, $VALUE, ...)
+              - pattern: http.NewRequestWithContext($CTX, $METHOD, $VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.go.direct-object-lookup-from-route-id
+    languages: [go]
+    message: "A route-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A route-controlled identifier is used for a direct object lookup."
+      recommendation: "Include principal or tenant ownership in the lookup and test denied cross-user access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $STORE.Get($CONTEXT.Param(...))
+      - pattern: $STORE.FindByID(mux.Vars($REQUEST)[$KEY])
+      - pattern: $DB.QueryRow($QUERY, mux.Vars($REQUEST)[$KEY])
+
+  - id: k-guard.php.http-to-sql
+    languages: [php]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use prepared statements and bind request-derived values separately from SQL text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET[$KEY]
+          - pattern: $_POST[$KEY]
+          - pattern: $_REQUEST[$KEY]
+          - pattern: $REQUEST->input(...)
+          - pattern: $REQUEST->query(...)
+          - pattern: $REQUEST->route(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DATABASE->query($VALUE, ...)
+              - pattern: $DATABASE->exec($VALUE, ...)
+              - pattern: mysqli_query($DATABASE, $VALUE, ...)
+              - pattern: $DATABASE->select($VALUE, ...)
+              - pattern: $DATABASE->statement($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.php.http-to-command
+    languages: [php]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Avoid a command shell and execute a fixed program with separately validated arguments."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET[$KEY]
+          - pattern: $_POST[$KEY]
+          - pattern: $_REQUEST[$KEY]
+          - pattern: $REQUEST->input(...)
+          - pattern: $REQUEST->query(...)
+          - pattern: $REQUEST->route(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: exec($VALUE, ...)
+              - pattern: shell_exec($VALUE)
+              - pattern: system($VALUE, ...)
+              - pattern: passthru($VALUE, ...)
+              - pattern: popen($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.php.http-to-file-path
+    languages: [php]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve beneath a fixed root and reject traversal, absolute paths, and containment escapes."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET[$KEY]
+          - pattern: $_POST[$KEY]
+          - pattern: $_REQUEST[$KEY]
+          - pattern: $REQUEST->input(...)
+          - pattern: $REQUEST->query(...)
+          - pattern: $REQUEST->route(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: file_get_contents($VALUE, ...)
+              - pattern: fopen($VALUE, ...)
+              - pattern: readfile($VALUE, ...)
+              - pattern: unlink($VALUE, ...)
+              - pattern: $RESPONSE->download($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.php.http-to-ssrf
+    languages: [php]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist schemes and destinations and reject private, loopback, link-local, and metadata addresses."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET[$KEY]
+          - pattern: $_POST[$KEY]
+          - pattern: $_REQUEST[$KEY]
+          - pattern: $REQUEST->input(...)
+          - pattern: $REQUEST->query(...)
+          - pattern: $REQUEST->route(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: curl_init($VALUE)
+              - pattern: $CLIENT->get($VALUE, ...)
+              - pattern: $CLIENT->request($METHOD, $VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.php.direct-object-lookup-from-request-id
+    languages: [php]
+    message: "A request-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A request-controlled identifier is used for a direct object lookup."
+      recommendation: "Constrain the lookup by authenticated principal or tenant and test denied cross-account access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $MODEL::find($_GET[$KEY])
+      - pattern: $MODEL::find($_POST[$KEY])
+      - pattern: $MODEL::find($REQUEST->route(...))
+      - pattern: $REPOSITORY->find($REQUEST->input(...))
+
+  - id: k-guard.ruby.http-to-sql
+    languages: [ruby]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use query placeholders or ORM predicates and keep request data out of SQL text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: params[$KEY]
+          - pattern: request.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DATABASE.execute($VALUE, ...)
+              - pattern: ActiveRecord::Base.connection.execute($VALUE, ...)
+              - pattern: $MODEL.find_by_sql($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.ruby.http-to-command
+    languages: [ruby]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Avoid a shell and execute a fixed binary with separately validated arguments."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: params[$KEY]
+          - pattern: request.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: system($VALUE, ...)
+              - pattern: Kernel.system($VALUE, ...)
+              - pattern: IO.popen($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.ruby.http-to-file-path
+    languages: [ruby]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve beneath a fixed root and verify containment before opening or serving the path."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: params[$KEY]
+          - pattern: request.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: File.read($VALUE, ...)
+              - pattern: File.open($VALUE, ...)
+              - pattern: File.delete($VALUE, ...)
+              - pattern: send_file($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.ruby.http-to-ssrf
+    languages: [ruby]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist destinations and reject private, loopback, link-local, and metadata-service addresses."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: params[$KEY]
+          - pattern: request.params[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Faraday.get($VALUE, ...)
+              - pattern: HTTP.get($VALUE, ...)
+              - pattern: Net::HTTP.get(URI($VALUE))
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.ruby.direct-object-lookup-from-request-id
+    languages: [ruby]
+    message: "A request-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A request-controlled identifier is used for a direct object lookup."
+      recommendation: "Scope the lookup to the authenticated principal or tenant and test denied cross-account access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    patterns:
+      - pattern-either:
+          - pattern: $MODEL.find(params[$KEY])
+          - pattern: $MODEL.find(request.params[$KEY])
+      - metavariable-regex:
+          metavariable: $MODEL
+          regex: '^[A-Z][A-Za-z0-9_:]*$'
+
+  - id: k-guard.csharp.http-to-sql
+    languages: [csharp]
+    mode: taint
+    message: "Untrusted HTTP input reaches a SQL execution API."
+    severity: ERROR
+    metadata:
+      category: sql-injection
+      cwe: ["CWE-89"]
+      confidence: high
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a SQL execution API."
+      recommendation: "Use command parameters and keep request-derived values out of SQL command text."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.Query[$KEY]
+          - pattern: $REQUEST.Form[$KEY]
+          - pattern: $REQUEST.RouteValues[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new SqlCommand($VALUE, ...)
+              - pattern: $COMMAND.CommandText = $VALUE
+              - pattern: $DATABASE.Execute($VALUE, ...)
+              - pattern: $DATABASE.Query($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.csharp.http-to-command
+    languages: [csharp]
+    mode: taint
+    message: "Untrusted HTTP input reaches an operating-system command API."
+    severity: ERROR
+    metadata:
+      category: command-injection
+      cwe: ["CWE-78"]
+      confidence: high
+      k_guard_severity: critical
+      summary: "Untrusted HTTP input reaches an operating-system command API."
+      recommendation: "Use a fixed executable, disable shell execution, and validate each argument separately."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.Query[$KEY]
+          - pattern: $REQUEST.Form[$KEY]
+          - pattern: $REQUEST.RouteValues[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Process.Start($VALUE)
+              - pattern: Process.Start($FILE, $VALUE)
+              - pattern: $PROCESS.Start($VALUE)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.csharp.http-to-file-path
+    languages: [csharp]
+    mode: taint
+    message: "Untrusted HTTP input reaches a filesystem path API."
+    severity: ERROR
+    metadata:
+      category: path-traversal
+      cwe: ["CWE-22"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input reaches a filesystem path API."
+      recommendation: "Resolve beneath a fixed root and verify canonical containment before reading or serving the file."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.Query[$KEY]
+          - pattern: $REQUEST.Form[$KEY]
+          - pattern: $REQUEST.RouteValues[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: File.ReadAllText($VALUE, ...)
+              - pattern: File.OpenRead($VALUE)
+              - pattern: File.Delete($VALUE)
+              - pattern: $CONTROLLER.PhysicalFile($VALUE, ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.csharp.http-to-ssrf
+    languages: [csharp]
+    mode: taint
+    message: "Untrusted HTTP input controls an outbound request destination."
+    severity: ERROR
+    metadata:
+      category: ssrf
+      cwe: ["CWE-918"]
+      confidence: medium
+      k_guard_severity: high
+      summary: "Untrusted HTTP input controls an outbound request destination."
+      recommendation: "Allowlist schemes and destinations and reject private, loopback, link-local, and metadata addresses."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile
+      ce_interfile: false
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQUEST.Query[$KEY]
+          - pattern: $REQUEST.Form[$KEY]
+          - pattern: $REQUEST.RouteValues[$KEY]
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CLIENT.GetAsync($VALUE, ...)
+              - pattern: $CLIENT.GetStringAsync($VALUE, ...)
+              - pattern: $CLIENT.SendAsync(new HttpRequestMessage($METHOD, $VALUE), ...)
+          - focus-metavariable: $VALUE
+
+  - id: k-guard.csharp.direct-object-lookup-from-route-id
+    languages: [csharp]
+    message: "A route-controlled identifier is used for a direct object lookup."
+    severity: WARNING
+    metadata:
+      category: authorization-review
+      cwe: ["CWE-639"]
+      confidence: low
+      k_guard_severity: medium
+      summary: "A route-controlled identifier is used for a direct object lookup."
+      recommendation: "Include principal or tenant ownership in the lookup and test denied cross-user access."
+      analyzer_subtype: semgrep-ce-intrafile
+      analysis_scope: intrafile-idor-adjacent
+      authorization_proof: false
+      ce_interfile: false
+    pattern-either:
+      - pattern: $REPOSITORY.FindById($REQUEST.RouteValues[$KEY])
+      - pattern: $REPOSITORY.Find($REQUEST.RouteValues[$KEY])
+      - pattern: $DATABASE.Find($REQUEST.Query[$KEY])

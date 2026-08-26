@@ -1,0 +1,24 @@
+{
+  "phase_id": "phase-0",
+  "provider_envelope_path": "phase-0-freeze/retry-authority/grok45-retry-authority-envelope-redacted.json",
+  "provider_envelope_sha256": "dc8c82a5ad3febd2912bfe05b145da9aca506408088430e1c125d66ba59554aa",
+  "recorded_at_kst": "2026-07-26T03:22:57.821214+09:00",
+  "requested_model_id": "grok-4.5",
+  "review_result_sha256": "bc86709efb9e67914e9fbafc1b3eeb88c231fa5e6ea78bc178008d52aa1d8ef0",
+  "reviewer": "Grok 4.5",
+  "runtime_model_id": "grok-4.5-build",
+  "schema": "k_guard_retry_authority_supervisor_receipt.v1",
+  "scope": "phase-0-third-candidate-authority-only",
+  "session_id": "019f9a76-91d2-7dc0-9426-0b54b511d46c",
+  "status": "FIX",
+  "validation": {
+    "canonical_raw_free": true,
+    "completed_result": true,
+    "frozen_schema_valid": true,
+    "peer_verdict_supplied": false,
+    "positive_usage": true,
+    "product_approval": false,
+    "requested_primary_model_observed": true
+  },
+  "verdict": "DENY_PHASE0_RETRY"
+}

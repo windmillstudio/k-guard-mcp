@@ -1,0 +1,117 @@
+{
+  "method": "local_blackbox_http_calibration",
+  "external_network_used": false,
+  "passed": true,
+  "cases": [
+    {
+      "name": "large_general_html_numeric_noise",
+      "size": "large",
+      "passed": true,
+      "expected_present": [],
+      "expected_absent": [
+        "DYN_RESPONSE_PII_LEAK",
+        "DYN_RESPONSE_PII_REVIEW"
+      ],
+      "missing": [],
+      "unexpected": [],
+      "rule_ids": [
+        "DYN_SECURITY_HEADERS_MISSING"
+      ],
+      "summary": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "info": 0
+      }
+    },
+    {
+      "name": "medium_public_contact_page",
+      "size": "medium",
+      "passed": true,
+      "expected_present": [],
+      "expected_absent": [
+        "DYN_RESPONSE_PII_LEAK",
+        "DYN_RESPONSE_PII_REVIEW"
+      ],
+      "missing": [],
+      "unexpected": [],
+      "rule_ids": [
+        "DYN_SECURITY_HEADERS_MISSING"
+      ],
+      "summary": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "info": 0
+      }
+    },
+    {
+      "name": "small_vibecoded_bulk_user_json",
+      "size": "small",
+      "passed": true,
+      "expected_present": [
+        "DYN_RESPONSE_PII_LEAK"
+      ],
+      "expected_absent": [],
+      "missing": [],
+      "unexpected": [],
+      "rule_ids": [
+        "DYN_RESPONSE_PII_LEAK",
+        "DYN_UNAUTH_API_JSON"
+      ],
+      "summary": {
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      }
+    },
+    {
+      "name": "small_valid_strong_identifier_html",
+      "size": "small",
+      "passed": true,
+      "expected_present": [
+        "DYN_RESPONSE_PII_LEAK"
+      ],
+      "expected_absent": [],
+      "missing": [],
+      "unexpected": [],
+      "rule_ids": [
+        "DYN_RESPONSE_PII_LEAK",
+        "DYN_SECURITY_HEADERS_MISSING"
+      ],
+      "summary": {
+        "critical": 0,
+        "high": 1,
+        "medium": 1,
+        "low": 0,
+        "info": 0
+      }
+    },
+    {
+      "name": "medium_bank_account_json",
+      "size": "medium",
+      "passed": true,
+      "expected_present": [
+        "DYN_RESPONSE_PII_LEAK"
+      ],
+      "expected_absent": [],
+      "missing": [],
+      "unexpected": [],
+      "rule_ids": [
+        "DYN_RESPONSE_PII_LEAK",
+        "DYN_UNAUTH_API_JSON"
+      ],
+      "summary": {
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      }
+    }
+  ]
+}

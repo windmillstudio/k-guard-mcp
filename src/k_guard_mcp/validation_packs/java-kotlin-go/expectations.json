@@ -1,0 +1,818 @@
+{
+  "schema": "k_guard_language_validation_expectations.v1",
+  "pack_id": "nine-language-intrafile-development-v3",
+  "immutable": true,
+  "raw_free": true,
+  "cases": [
+    {
+      "case_id": "python-sql-vulnerable",
+      "language": "python",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.python.http-to-sql",
+      "file": "python/python_sql_vulnerable.py",
+      "source_sha256": "b6de247588552911ea011aa378b39358fccc3b5ad2ff0cd7e185f53239662ec3"
+    },
+    {
+      "case_id": "python-sql-clean",
+      "language": "python",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.python.http-to-sql",
+      "file": "python/python_sql_clean.py",
+      "source_sha256": "4f47af9ed3058f5cebb7c74228f0e714810cda76289315cfc1df93d0b512060b"
+    },
+    {
+      "case_id": "python-command-vulnerable",
+      "language": "python",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.python.http-to-command",
+      "file": "python/python_command_vulnerable.py",
+      "source_sha256": "f071609593192ead150b7190d73774c150746a419197c9bd4a15869a3957dd72"
+    },
+    {
+      "case_id": "python-command-clean",
+      "language": "python",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.python.http-to-command",
+      "file": "python/python_command_clean.py",
+      "source_sha256": "11aa026957e0a89984e37634506da4ff8a8ad9ada3b964fef8f3272aab966faa"
+    },
+    {
+      "case_id": "python-path-vulnerable",
+      "language": "python",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.python.http-to-file-path",
+      "file": "python/python_path_vulnerable.py",
+      "source_sha256": "6512d14f94b9a13389d73457a808e5b9bd48f1b6b73cbf02f9091a132bafde60"
+    },
+    {
+      "case_id": "python-path-clean",
+      "language": "python",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.python.http-to-file-path",
+      "file": "python/python_path_clean.py",
+      "source_sha256": "7a9765b9f6bc6c77d53bb6420cf1e2ac986e18f7fbafa52dca12e8bab39670c6"
+    },
+    {
+      "case_id": "python-ssrf-vulnerable",
+      "language": "python",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.python.http-to-ssrf",
+      "file": "python/python_ssrf_vulnerable.py",
+      "source_sha256": "9d9a9af6a5fb4a3e69956aef38f2c6d9818390383d66d0f35ce5029d4038b2ce"
+    },
+    {
+      "case_id": "python-ssrf-clean",
+      "language": "python",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.python.http-to-ssrf",
+      "file": "python/python_ssrf_clean.py",
+      "source_sha256": "d795b4de3da4f8592b9fd459e23318197e8d9cddedba4dd2f3bf24a6840bf29e"
+    },
+    {
+      "case_id": "python-lookup-vulnerable",
+      "language": "python",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.python.direct-object-lookup-from-request-id",
+      "file": "python/python_lookup_vulnerable.py",
+      "source_sha256": "7d150e48ea659d881225fb21fdc22a72af69181b204ea5d703a3205750b5f844"
+    },
+    {
+      "case_id": "python-lookup-clean",
+      "language": "python",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.python.direct-object-lookup-from-request-id",
+      "file": "python/python_lookup_clean.py",
+      "source_sha256": "79be31c9c9f56b90d58688c1209314120c3b7a257a328c9f06e2f0c946655102"
+    },
+    {
+      "case_id": "javascript-sql-vulnerable",
+      "language": "javascript",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-sql",
+      "file": "javascript/javascript_sql_vulnerable.js",
+      "source_sha256": "31012d833716ec67982b526a696e8c73551fcf6861189a4ffab4d2943ac8d7a5"
+    },
+    {
+      "case_id": "javascript-sql-clean",
+      "language": "javascript",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-sql",
+      "file": "javascript/javascript_sql_clean.js",
+      "source_sha256": "fef24feea4121de949cbab46ea8170efaed6fe032162f9857c38eafee1c0d39c"
+    },
+    {
+      "case_id": "javascript-command-vulnerable",
+      "language": "javascript",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-command",
+      "file": "javascript/javascript_command_vulnerable.js",
+      "source_sha256": "70e8e7ff520a31184b809d87618cd11ed3c0e2c5c222235c2968bf58e0d729c9"
+    },
+    {
+      "case_id": "javascript-command-clean",
+      "language": "javascript",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-command",
+      "file": "javascript/javascript_command_clean.js",
+      "source_sha256": "c38603080fd5c9390e6787276586c68bc61bf31cd7356958796bf01318446e90"
+    },
+    {
+      "case_id": "javascript-path-vulnerable",
+      "language": "javascript",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-file-path",
+      "file": "javascript/javascript_path_vulnerable.js",
+      "source_sha256": "2b88df9f8aa314cef885ceae3ee3e3a6e3597d99d03ff755fb1c6584a26dddf5"
+    },
+    {
+      "case_id": "javascript-path-clean",
+      "language": "javascript",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-file-path",
+      "file": "javascript/javascript_path_clean.js",
+      "source_sha256": "59bdb74e80a5bd0e6e1047441841195bf5c96f26854953b68019a71be0450c66"
+    },
+    {
+      "case_id": "javascript-ssrf-vulnerable",
+      "language": "javascript",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-ssrf",
+      "file": "javascript/javascript_ssrf_vulnerable.js",
+      "source_sha256": "5029e405537c4f4b3473e50b183fd1de897393fa1f6a1b231f09940ae5f221aa"
+    },
+    {
+      "case_id": "javascript-ssrf-clean",
+      "language": "javascript",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-ssrf",
+      "file": "javascript/javascript_ssrf_clean.js",
+      "source_sha256": "72e0b649ff75db5e2ad2e98e00282bd5d18490ac9b5ea7ce5b0692a7ce18dbf5"
+    },
+    {
+      "case_id": "javascript-lookup-vulnerable",
+      "language": "javascript",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.direct-object-lookup-from-route-id",
+      "file": "javascript/javascript_lookup_vulnerable.js",
+      "source_sha256": "abab9d22f4b76e89c9634a96fcbb36a44125860c081790560508b3642c83a4d0"
+    },
+    {
+      "case_id": "javascript-lookup-clean",
+      "language": "javascript",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.direct-object-lookup-from-route-id",
+      "file": "javascript/javascript_lookup_clean.js",
+      "source_sha256": "196b58edef660f63e896dec4001e1784c2dafd0d11d66fe9b720416d81a903f2"
+    },
+    {
+      "case_id": "typescript-sql-vulnerable",
+      "language": "typescript",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-sql",
+      "file": "typescript/typescript_sql_vulnerable.ts",
+      "source_sha256": "97ad83b8f4439f468bf5c736824bd6f6b731520169ffd8c57b47f4bfafa5ebe2"
+    },
+    {
+      "case_id": "typescript-sql-clean",
+      "language": "typescript",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-sql",
+      "file": "typescript/typescript_sql_clean.ts",
+      "source_sha256": "fac00b86b62942012d22d900add3402bc5360f767d453a543f1dffc89af8c72c"
+    },
+    {
+      "case_id": "typescript-command-vulnerable",
+      "language": "typescript",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-command",
+      "file": "typescript/typescript_command_vulnerable.ts",
+      "source_sha256": "0e0ab3fd9a2763f01be2dc9bbd60018f0ea49b6f3e384181bd0e30703331b4ab"
+    },
+    {
+      "case_id": "typescript-command-clean",
+      "language": "typescript",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-command",
+      "file": "typescript/typescript_command_clean.ts",
+      "source_sha256": "3632cdd8faddcc57ee134c2162b6549006cda83efeeab5a1bd8f695a04324156"
+    },
+    {
+      "case_id": "typescript-path-vulnerable",
+      "language": "typescript",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-file-path",
+      "file": "typescript/typescript_path_vulnerable.ts",
+      "source_sha256": "c5beb82e5efe917b0cf45aee38616e56b6ae6992fe5fbcd711f4dbdd54fae3ce"
+    },
+    {
+      "case_id": "typescript-path-clean",
+      "language": "typescript",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-file-path",
+      "file": "typescript/typescript_path_clean.ts",
+      "source_sha256": "1399415d229e915728ba835350c1a27330d751cd9c9588363bf9794f36a5a35c"
+    },
+    {
+      "case_id": "typescript-ssrf-vulnerable",
+      "language": "typescript",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.http-to-ssrf",
+      "file": "typescript/typescript_ssrf_vulnerable.ts",
+      "source_sha256": "dd2887d62faafe71f3fcad6b36896c02068f18dfd0bb5082fba6716c08ee2e76"
+    },
+    {
+      "case_id": "typescript-ssrf-clean",
+      "language": "typescript",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.http-to-ssrf",
+      "file": "typescript/typescript_ssrf_clean.ts",
+      "source_sha256": "72e0b649ff75db5e2ad2e98e00282bd5d18490ac9b5ea7ce5b0692a7ce18dbf5"
+    },
+    {
+      "case_id": "typescript-lookup-vulnerable",
+      "language": "typescript",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.javascript.direct-object-lookup-from-route-id",
+      "file": "typescript/typescript_lookup_vulnerable.ts",
+      "source_sha256": "740d1a573c4274829a452d31e1f4db8c5d93c2ae73b1af36e9f4c7e21c3e4cbd"
+    },
+    {
+      "case_id": "typescript-lookup-clean",
+      "language": "typescript",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.javascript.direct-object-lookup-from-route-id",
+      "file": "typescript/typescript_lookup_clean.ts",
+      "source_sha256": "63510f71249ec29e20419730eb932bc3ff786119ef99ed411a3822c7bc3c63aa"
+    },
+    {
+      "case_id": "java-sql-vulnerable",
+      "language": "java",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.java.http-to-sql",
+      "file": "java/JavaSqlVulnerable.java",
+      "source_sha256": "3bb2c6f7ae11e67fafeeccd6d81aca30289226741b52fff46e737bfdbcab7ecf"
+    },
+    {
+      "case_id": "java-sql-clean",
+      "language": "java",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.java.http-to-sql",
+      "file": "java/JavaSqlClean.java",
+      "source_sha256": "0a7d88e4d202f99c37867370a7dc0d0f801056c650fe4fb8de8c7a0297efcdd4"
+    },
+    {
+      "case_id": "java-command-vulnerable",
+      "language": "java",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.java.http-to-command",
+      "file": "java/JavaCommandVulnerable.java",
+      "source_sha256": "21b2834923b95d4b07fdede283e13cd29893583566cc1663aa2763f11be36647"
+    },
+    {
+      "case_id": "java-command-clean",
+      "language": "java",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.java.http-to-command",
+      "file": "java/JavaCommandClean.java",
+      "source_sha256": "f36f08ab6d5133396aceabc1175a45fa4491f24afb4e21cb8cc232d2fd88aa00"
+    },
+    {
+      "case_id": "java-path-vulnerable",
+      "language": "java",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.java.http-to-file-path",
+      "file": "java/JavaPathVulnerable.java",
+      "source_sha256": "634f368a7d7f98aa85428b678f52bbd88fddf505fc2a43a0581223336ae87329"
+    },
+    {
+      "case_id": "java-path-clean",
+      "language": "java",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.java.http-to-file-path",
+      "file": "java/JavaPathClean.java",
+      "source_sha256": "371539375d0d7d117d09863e10230d280e3388794ecd89956c8ce0ad0919571c"
+    },
+    {
+      "case_id": "java-ssrf-vulnerable",
+      "language": "java",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.java.http-to-ssrf",
+      "file": "java/JavaSsrfVulnerable.java",
+      "source_sha256": "bf416d23cc802be9255dee44918fe7a1a5f2739981d914751209ed4daf039053"
+    },
+    {
+      "case_id": "java-ssrf-clean",
+      "language": "java",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.java.http-to-ssrf",
+      "file": "java/JavaSsrfClean.java",
+      "source_sha256": "dbf239f65aaf0b4239d8eac6251ec8e594d68bd481646a0f6bafff7d233f1137"
+    },
+    {
+      "case_id": "java-lookup-vulnerable",
+      "language": "java",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.java.direct-object-lookup-from-request-id",
+      "file": "java/JavaLookupVulnerable.java",
+      "source_sha256": "6d852338b74c3270daf905004ad35fb813ebc50d41f54fee8ff756a09529f6d6"
+    },
+    {
+      "case_id": "java-lookup-clean",
+      "language": "java",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.java.direct-object-lookup-from-request-id",
+      "file": "java/JavaLookupClean.java",
+      "source_sha256": "158996eefd3ee9c1d33529944beb91d1362eb4d767e16457e904913be3391f7a"
+    },
+    {
+      "case_id": "kotlin-sql-vulnerable",
+      "language": "kotlin",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.kotlin.http-to-sql",
+      "file": "kotlin/KotlinSqlVulnerable.kt",
+      "source_sha256": "1d7283ab3cf803789af312a395a88cbf0c70e8990faf8221881a1f38d9170a03"
+    },
+    {
+      "case_id": "kotlin-sql-clean",
+      "language": "kotlin",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.kotlin.http-to-sql",
+      "file": "kotlin/KotlinSqlClean.kt",
+      "source_sha256": "6a58df5f6b0669fac4931fa7d55ef5e013e91f8b2cdababa926eedcdff92b9bb"
+    },
+    {
+      "case_id": "kotlin-command-vulnerable",
+      "language": "kotlin",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.kotlin.http-to-command",
+      "file": "kotlin/KotlinCommandVulnerable.kt",
+      "source_sha256": "ed7407682c527e4f48b975ea86ad9211ce95f827f0d81aaf8b1ff616b6d05654"
+    },
+    {
+      "case_id": "kotlin-command-clean",
+      "language": "kotlin",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.kotlin.http-to-command",
+      "file": "kotlin/KotlinCommandClean.kt",
+      "source_sha256": "d08e0453c73b1925ec2986e10cccfff2ea57ae96496132d866f51687935ebb39"
+    },
+    {
+      "case_id": "kotlin-path-vulnerable",
+      "language": "kotlin",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.kotlin.http-to-file-path",
+      "file": "kotlin/KotlinPathVulnerable.kt",
+      "source_sha256": "4546157918fd7eb566e54923237ef462e74cd70020f30d0bbf13790a2ba9d27a"
+    },
+    {
+      "case_id": "kotlin-path-clean",
+      "language": "kotlin",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.kotlin.http-to-file-path",
+      "file": "kotlin/KotlinPathClean.kt",
+      "source_sha256": "d40be244f4bc38ac20aae50c8d39cc16b63d0c6cb8bf890876cd5153a60dea71"
+    },
+    {
+      "case_id": "kotlin-ssrf-vulnerable",
+      "language": "kotlin",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.kotlin.http-to-ssrf",
+      "file": "kotlin/KotlinSsrfVulnerable.kt",
+      "source_sha256": "e56df583aa5fb1c5c4c9fdc68e43522c88cdeafc1885d72b4b6ab81dac9fb760"
+    },
+    {
+      "case_id": "kotlin-ssrf-clean",
+      "language": "kotlin",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.kotlin.http-to-ssrf",
+      "file": "kotlin/KotlinSsrfClean.kt",
+      "source_sha256": "943b0c6102b3ab86664d3990752d4102df9efb163bdee5bc410120fab8631149"
+    },
+    {
+      "case_id": "kotlin-lookup-vulnerable",
+      "language": "kotlin",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.kotlin.direct-object-lookup-from-request-id",
+      "file": "kotlin/KotlinLookupVulnerable.kt",
+      "source_sha256": "af54c8f8cb9503174fcd8ddaf6f7c6b4be038a7606d177682890f7b23abdda19"
+    },
+    {
+      "case_id": "kotlin-lookup-clean",
+      "language": "kotlin",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.kotlin.direct-object-lookup-from-request-id",
+      "file": "kotlin/KotlinLookupClean.kt",
+      "source_sha256": "849f35f6f094ca1214c22f4d2e470ff1dc3962e63c03201c1210f7b021441a91"
+    },
+    {
+      "case_id": "go-sql-vulnerable",
+      "language": "go",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.go.http-to-sql",
+      "file": "go/go_sql_vulnerable.go",
+      "source_sha256": "5337e017514974cc5a3ffd675ee0e7344741d6552ebebe31ddd2ae4aa104dbe7"
+    },
+    {
+      "case_id": "go-sql-clean",
+      "language": "go",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.go.http-to-sql",
+      "file": "go/go_sql_clean.go",
+      "source_sha256": "48d4f61fb5a2eefd732a3bdeb522cca99069aee181d1709e72d5409f74fe6962"
+    },
+    {
+      "case_id": "go-command-vulnerable",
+      "language": "go",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.go.http-to-command",
+      "file": "go/go_command_vulnerable.go",
+      "source_sha256": "ea396ddbbe71639da6e6e49eb397e1db2576a437576d1adc5037ee196b64be2a"
+    },
+    {
+      "case_id": "go-command-clean",
+      "language": "go",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.go.http-to-command",
+      "file": "go/go_command_clean.go",
+      "source_sha256": "7245056c2f695e4a2d3745cf1b56b6ce7915f777aa5c3e27ef46f4af08df0ace"
+    },
+    {
+      "case_id": "go-path-vulnerable",
+      "language": "go",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.go.http-to-file-path",
+      "file": "go/go_path_vulnerable.go",
+      "source_sha256": "478ff345938ed69b29f0fe9e32743a28c73ccd8d86298b13f5a0b8da6a865508"
+    },
+    {
+      "case_id": "go-path-clean",
+      "language": "go",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.go.http-to-file-path",
+      "file": "go/go_path_clean.go",
+      "source_sha256": "bc14b9d8090e0fadb3cf48c6ce94cd3f05f1da721fcdc5e784fcc861a265eecf"
+    },
+    {
+      "case_id": "go-ssrf-vulnerable",
+      "language": "go",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.go.http-to-ssrf",
+      "file": "go/go_ssrf_vulnerable.go",
+      "source_sha256": "bcb405cc9b5ebc499c9d994a630e0a943aa80010c1ae412797d9f2ae05f89dcc"
+    },
+    {
+      "case_id": "go-ssrf-clean",
+      "language": "go",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.go.http-to-ssrf",
+      "file": "go/go_ssrf_clean.go",
+      "source_sha256": "1e0557d02c839529bd30ea5f3cb0bf4d1aae24f00652edd3424c8d7e81c8f266"
+    },
+    {
+      "case_id": "go-lookup-vulnerable",
+      "language": "go",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.go.direct-object-lookup-from-route-id",
+      "file": "go/go_lookup_vulnerable.go",
+      "source_sha256": "a980dc646a8559305c5b9c846d506321b284ee7089bd767cb7301aead2f24814"
+    },
+    {
+      "case_id": "go-lookup-clean",
+      "language": "go",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.go.direct-object-lookup-from-route-id",
+      "file": "go/go_lookup_clean.go",
+      "source_sha256": "97289b12dde070dca88e6375f499bf7a84bec818b159c53f11de0975c872eb15"
+    },
+    {
+      "case_id": "php-sql-vulnerable",
+      "language": "php",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.php.http-to-sql",
+      "file": "php/php_sql_vulnerable.php",
+      "source_sha256": "8d5db869d9c005c7016de0d94b481376c304493caa44fe2aaf529a0f2e2b4aca"
+    },
+    {
+      "case_id": "php-sql-clean",
+      "language": "php",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.php.http-to-sql",
+      "file": "php/php_sql_clean.php",
+      "source_sha256": "7f04e5ac589f3143e7c8e6591531ab4b6e0fd25e98207a0343160e7780c9ac3d"
+    },
+    {
+      "case_id": "php-command-vulnerable",
+      "language": "php",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.php.http-to-command",
+      "file": "php/php_command_vulnerable.php",
+      "source_sha256": "b9f28b9608745c78b7c9c9d512b3ceca6afffa0797e1592243146380d72392bb"
+    },
+    {
+      "case_id": "php-command-clean",
+      "language": "php",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.php.http-to-command",
+      "file": "php/php_command_clean.php",
+      "source_sha256": "9d34698264d817fdbac4b17fdeac71da8adfeee1dabc26c212d86d1b571ad404"
+    },
+    {
+      "case_id": "php-path-vulnerable",
+      "language": "php",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.php.http-to-file-path",
+      "file": "php/php_path_vulnerable.php",
+      "source_sha256": "de98f89aa269bfb5b8cfbf5b3948c9b2d36040453ced8dc15411758e73c0946b"
+    },
+    {
+      "case_id": "php-path-clean",
+      "language": "php",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.php.http-to-file-path",
+      "file": "php/php_path_clean.php",
+      "source_sha256": "5b03685bdd8faa549a2238f835db546c9f655f9bcf2bda4d085ff597ad647646"
+    },
+    {
+      "case_id": "php-ssrf-vulnerable",
+      "language": "php",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.php.http-to-ssrf",
+      "file": "php/php_ssrf_vulnerable.php",
+      "source_sha256": "8a05c183f691bf33c9a4458db215104c7f0429150866fd0bc7e4463c393cb846"
+    },
+    {
+      "case_id": "php-ssrf-clean",
+      "language": "php",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.php.http-to-ssrf",
+      "file": "php/php_ssrf_clean.php",
+      "source_sha256": "7d969078b82891e301642e75eee76587772707762d59d3e922daaaf9ccaa0156"
+    },
+    {
+      "case_id": "php-lookup-vulnerable",
+      "language": "php",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.php.direct-object-lookup-from-request-id",
+      "file": "php/php_lookup_vulnerable.php",
+      "source_sha256": "81a84f14c0674995f4d1068107d844d0bdf77ba7462e42584eeb32a5f61a3fbc"
+    },
+    {
+      "case_id": "php-lookup-clean",
+      "language": "php",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.php.direct-object-lookup-from-request-id",
+      "file": "php/php_lookup_clean.php",
+      "source_sha256": "17c8bf889067c4b55c6f72e3b551bf78ca9d90ea71bde47bee8b21be29fd3469"
+    },
+    {
+      "case_id": "ruby-sql-vulnerable",
+      "language": "ruby",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.ruby.http-to-sql",
+      "file": "ruby/ruby_sql_vulnerable.rb",
+      "source_sha256": "032d81698b6c6d099557d2271bc1cbc83f33ed3fd00b3fe16c3ae00b868877b6"
+    },
+    {
+      "case_id": "ruby-sql-clean",
+      "language": "ruby",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.ruby.http-to-sql",
+      "file": "ruby/ruby_sql_clean.rb",
+      "source_sha256": "3db55153d82d8c161ad86aa49f6256c9ea37474365c783471358df1233bc36dd"
+    },
+    {
+      "case_id": "ruby-command-vulnerable",
+      "language": "ruby",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.ruby.http-to-command",
+      "file": "ruby/ruby_command_vulnerable.rb",
+      "source_sha256": "baf5230f5af5f472bee1a7ed839d32c362c4e5f59831e18987d5e0f47493f515"
+    },
+    {
+      "case_id": "ruby-command-clean",
+      "language": "ruby",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.ruby.http-to-command",
+      "file": "ruby/ruby_command_clean.rb",
+      "source_sha256": "a535661fcaa7ddd2e5f0913383af27d5ce67ab2d285f083caa1cea4ae908ab17"
+    },
+    {
+      "case_id": "ruby-path-vulnerable",
+      "language": "ruby",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.ruby.http-to-file-path",
+      "file": "ruby/ruby_path_vulnerable.rb",
+      "source_sha256": "4147890f3169719fcdb7efa6f00c7c072d47572cbe22a8438b579950758d29e2"
+    },
+    {
+      "case_id": "ruby-path-clean",
+      "language": "ruby",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.ruby.http-to-file-path",
+      "file": "ruby/ruby_path_clean.rb",
+      "source_sha256": "55a64488f2833a44de7f5f137025f63d5c5d2fecd5c456b6dec066454786b6db"
+    },
+    {
+      "case_id": "ruby-ssrf-vulnerable",
+      "language": "ruby",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.ruby.http-to-ssrf",
+      "file": "ruby/ruby_ssrf_vulnerable.rb",
+      "source_sha256": "78d5c234e46e889d96612ad7227eefb64e4c8575b6d771a17147af76b06a9fb1"
+    },
+    {
+      "case_id": "ruby-ssrf-clean",
+      "language": "ruby",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.ruby.http-to-ssrf",
+      "file": "ruby/ruby_ssrf_clean.rb",
+      "source_sha256": "69591b647d4ec013a2c644e124d6b114cd5bbbc1f74a99e817cb1eb42f1d9d9e"
+    },
+    {
+      "case_id": "ruby-lookup-vulnerable",
+      "language": "ruby",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.ruby.direct-object-lookup-from-request-id",
+      "file": "ruby/ruby_lookup_vulnerable.rb",
+      "source_sha256": "3d2a8ac7d7c3391d73186bb3c6ea4604c9c459d7d6ca1fa1d06548f45ef4391c"
+    },
+    {
+      "case_id": "ruby-lookup-clean",
+      "language": "ruby",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.ruby.direct-object-lookup-from-request-id",
+      "file": "ruby/ruby_lookup_clean.rb",
+      "source_sha256": "85904c53e8ac8d63a93b6652c38611985e9c510c4a47f46a4e4dfd6ae5ea3890"
+    },
+    {
+      "case_id": "csharp-sql-vulnerable",
+      "language": "csharp",
+      "category": "sql-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.csharp.http-to-sql",
+      "file": "csharp/CSharpSqlVulnerable.cs",
+      "source_sha256": "fc3798fd7abccf8487d3adc13e36b802376688efd1ca7ddc8176d345af2bb0c3"
+    },
+    {
+      "case_id": "csharp-sql-clean",
+      "language": "csharp",
+      "category": "sql-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.csharp.http-to-sql",
+      "file": "csharp/CSharpSqlClean.cs",
+      "source_sha256": "c4e49db3e125682c1aa58808d587823dac29e363b0054f777f20b284e8ce57f8"
+    },
+    {
+      "case_id": "csharp-command-vulnerable",
+      "language": "csharp",
+      "category": "command-injection",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.csharp.http-to-command",
+      "file": "csharp/CSharpCommandVulnerable.cs",
+      "source_sha256": "0a1097ecb979b9f08cd92c4465edb6cf961f91cccbca20a6bc8d431c491952ce"
+    },
+    {
+      "case_id": "csharp-command-clean",
+      "language": "csharp",
+      "category": "command-injection",
+      "expected": "clean",
+      "rule_id": "k-guard.csharp.http-to-command",
+      "file": "csharp/CSharpCommandClean.cs",
+      "source_sha256": "4c78f4254ba2148a7076aa85a296ecb55ec8b3265d4eb69b1fd86f188ed364ee"
+    },
+    {
+      "case_id": "csharp-path-vulnerable",
+      "language": "csharp",
+      "category": "path-traversal",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.csharp.http-to-file-path",
+      "file": "csharp/CSharpPathVulnerable.cs",
+      "source_sha256": "0a8a723c694c2334d54889fc3ae27a32002919b4ee07fe2e9c1dd9371d172231"
+    },
+    {
+      "case_id": "csharp-path-clean",
+      "language": "csharp",
+      "category": "path-traversal",
+      "expected": "clean",
+      "rule_id": "k-guard.csharp.http-to-file-path",
+      "file": "csharp/CSharpPathClean.cs",
+      "source_sha256": "b3326c62a940910a31de0db5e7c2f05183d6b7836fbff8e570500aeaaffac0cc"
+    },
+    {
+      "case_id": "csharp-ssrf-vulnerable",
+      "language": "csharp",
+      "category": "ssrf",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.csharp.http-to-ssrf",
+      "file": "csharp/CSharpSsrfVulnerable.cs",
+      "source_sha256": "34459c34d11cd1a121adaa1fa1f454c1b67ff4f6e7148e0e9812364640ef9730"
+    },
+    {
+      "case_id": "csharp-ssrf-clean",
+      "language": "csharp",
+      "category": "ssrf",
+      "expected": "clean",
+      "rule_id": "k-guard.csharp.http-to-ssrf",
+      "file": "csharp/CSharpSsrfClean.cs",
+      "source_sha256": "d4568e93b74858c24f6c5f01ef91f75eba570694f8dd9aa7bf503ebe9616845f"
+    },
+    {
+      "case_id": "csharp-lookup-vulnerable",
+      "language": "csharp",
+      "category": "authorization-review",
+      "expected": "vulnerable",
+      "rule_id": "k-guard.csharp.direct-object-lookup-from-route-id",
+      "file": "csharp/CSharpLookupVulnerable.cs",
+      "source_sha256": "e652d4505860e56010a8d9ffe2a44e3815ce5545c3c13c2828b872d0de31d041"
+    },
+    {
+      "case_id": "csharp-lookup-clean",
+      "language": "csharp",
+      "category": "authorization-review",
+      "expected": "clean",
+      "rule_id": "k-guard.csharp.direct-object-lookup-from-route-id",
+      "file": "csharp/CSharpLookupClean.cs",
+      "source_sha256": "39ec2ccf0fa42766b65a569f1cdc0321b0c9b9bb6252951d9af2a98dbeeeace9"
+    }
+  ]
+}

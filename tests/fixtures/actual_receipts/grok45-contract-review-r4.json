@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "recorded_at": "2026-07-25T23:56:37.2584124+09:00",
+  "reviewer": "Grok 4.5",
+  "requested_model": "grok-4.5",
+  "runtime_model": "grok-4.5-build",
+  "scope": "execution_contract_only",
+  "contract_sha256": "ba5f7e6e8184dd6aa64e890fea44eed5bbae0d8499be6d9ae181dde29ed68729",
+  "verdict": "HOLD",
+  "product_approval": false,
+  "direct_file_read": true,
+  "peer_verdict_supplied": false,
+  "session_id": "019f99c2-ee76-7bc1-98f1-8d37e087e427",
+  "request_id": "c3961865-14b0-4504-8177-b20397875045",
+  "provider_envelope_sha256": "7dc728f6e60546bea89dcec8ec118607d35cfea54363f1cd31a4570c45d38048",
+  "usage": {
+    "input_tokens": 46804,
+    "cache_read_input_tokens": 82944,
+    "output_tokens": 9938,
+    "reasoning_tokens": 8370,
+    "total_tokens": 139686
+  },
+  "blockers": [
+    "B22-ENTRY-FREEZE-AGREEMENT-FIELD-BINDING"
+  ],
+  "disposition": "SUPERVISOR_HOLD_RECORDED_AND_CONTRACT_REVISION_REQUIRED"
+}

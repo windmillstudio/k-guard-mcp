@@ -1,0 +1,18 @@
+include requirements-evidence.lock
+include requirements-evidence.in
+include requirements-build.lock
+include requirements-semgrep.lock
+include requirements-semgrep.in
+include requirements-pip-audit.lock
+include requirements-pip-audit.in
+include THIRD_PARTY_NOTICES.md
+recursive-include LICENSES *
+recursive-include src/k_guard_mcp/assets *.png
+recursive-include src/k_guard_mcp/analyzer_profiles *.yml
+recursive-include src/k_guard_mcp/validation_packs *.json *.py *.js *.ts *.java *.kt *.go *.php *.rb *.cs
+recursive-include docs *.md *.yml
+recursive-include examples *.md *.py *.json *.csv
+recursive-include scripts *.py
+recursive-include evidence/regression *.json
+recursive-include benchmarks *.csv
+recursive-include tests/fixtures *.json

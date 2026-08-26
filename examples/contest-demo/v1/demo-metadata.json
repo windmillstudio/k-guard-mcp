@@ -1,0 +1,33 @@
+{
+  "schema": "k_guard_contest_demo.v2",
+  "demo_version": "2.0.0",
+  "evidence_scope": "local_synthetic_only",
+  "real_app_validation": false,
+  "app_id": "contest-demo-v1",
+  "states": [
+    "hold",
+    "fixed"
+  ],
+  "expected_transition": [
+    "hold_fix",
+    "hold_qualification"
+  ],
+  "application_transition": [
+    "risk_blocked",
+    "clear_in_reviewed_scope"
+  ],
+  "canonical_ship_expected": false,
+  "runtime_budget_seconds": 180,
+  "execution_surface": "local_cli",
+  "mcp_client_exercised": false,
+  "award_evidence_claimed": false,
+  "public_targets_allowed": false,
+  "journey_stage_order": [
+    "vulnerable_fixture",
+    "first_review_hold",
+    "first_actionable_blocker",
+    "visible_safe_patch",
+    "guardian_rerun",
+    "bounded_result"
+  ]
+}

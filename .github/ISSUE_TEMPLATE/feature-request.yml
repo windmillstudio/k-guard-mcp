@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose a concrete K-Guard workflow or product improvement.
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user, release decision, or MCP workflow that is currently difficult.
+    validations:
+      required: true
+  - type: textarea
+    id: current_workflow
+    attributes:
+      label: Current workflow
+      description: Show the sanitized steps, commands, or MCP calls used today.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe observable behavior and how it could be verified.
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Primary surface
+      options:
+        - MCP tool or server
+        - Guardian release gate
+        - CLI or report
+        - Detector or policy
+        - Packaging or documentation
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Safety and claim boundaries
+      description: Note authorization, raw-data handling, false-positive risk, or claims the feature must not make.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Briefly list workarounds or narrower approaches already considered.

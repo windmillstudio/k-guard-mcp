@@ -1,0 +1,61 @@
+{
+  "$id": "https://k-guard.local/schemas/k-guard-runtime-mediation-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "sequence",
+    "recorded_at",
+    "transaction_id",
+    "transport",
+    "direction",
+    "message_kind",
+    "message_ref",
+    "action",
+    "finding_refs",
+    "rule_ids",
+    "access_reason",
+    "policy_ref",
+    "toolchain_ref",
+    "original_forwarded",
+    "safe_replacement_forwarded",
+    "previous_sha256",
+    "entry_sha256",
+    "chain_hmac_sha256",
+    "raw_free",
+    "raw_returned"
+  ],
+  "properties": {
+    "schema": { "const": "k_guard_runtime_mediation_receipt.v1" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "recorded_at": { "type": "string", "minLength": 1 },
+    "transaction_id": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "transport": { "enum": ["jsonl", "streamable_http"] },
+    "direction": { "enum": ["client_to_upstream", "upstream_to_client"] },
+    "message_kind": { "enum": ["request", "response", "notification"] },
+    "message_ref": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "action": { "enum": ["allow", "redact", "block", "deny"] },
+    "finding_refs": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$" }
+    },
+    "access_reason": {
+      "type": "string",
+      "pattern": "^$|^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "policy_ref": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "toolchain_ref": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "original_forwarded": { "type": "boolean" },
+    "safe_replacement_forwarded": { "type": "boolean" },
+    "previous_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "entry_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "chain_hmac_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "raw_free": { "const": true },
+    "raw_returned": { "const": false }
+  },
+  "type": "object"
+}

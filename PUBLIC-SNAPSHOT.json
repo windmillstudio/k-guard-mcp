@@ -1,0 +1,38 @@
+{
+  "schema": "k_guard_public_source_snapshot.v1",
+  "project": "k-guard-mcp",
+  "version": "0.1.0",
+  "snapshot_kind": "sanitized_current_working_tree",
+  "base_commit": "aa22f9061bda89b4080cc3cb521959ad6776f0a5",
+  "included": [
+    ".github",
+    "benchmarks",
+    "datasets",
+    "docs",
+    "examples",
+    "scripts",
+    "src",
+    "tests",
+    "tracking",
+    "LICENSES",
+    "root project files",
+    "curated root reports"
+  ],
+  "excluded": [
+    "evidence/",
+    "submission/",
+    "runtime/",
+    "tmp/ and local caches",
+    "videos, narration sources, binaries, archives, and local credentials"
+  ],
+  "video_distribution": "separate release asset",
+  "sanitization": [
+    "host-specific user-home paths replaced with <LOCAL_USER_HOME>",
+    "host-specific workspace slugs replaced with local-user-workspace"
+  ],
+  "public_ci": "python scripts/public_source_tests.py",
+  "public_ci_coverage_gates": {
+    "combined_statement_branch_percent": 88,
+    "redaction_module_percent": 85
+  }
+}

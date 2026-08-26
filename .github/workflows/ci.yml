@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test dependencies
+        run: |
+          python -m pip install --require-hashes -r requirements-build.lock
+          python -m pip install --require-hashes -r requirements-evidence.lock
+          python -m pip install --no-build-isolation --no-deps -e .
+      - name: Run tests
+        run: python -m coverage run scripts/public_source_tests.py
+      - name: Enforce coverage
+        run: python -m coverage report --fail-under=88
+      - name: Enforce redaction coverage
+        run: python -m coverage report --include="*/redaction.py" --fail-under=85
+      - name: Generate SBOM
+        run: python scripts/generate_sbom.py
+      - name: Generate license report
+        run: python scripts/license_report.py
+      - name: Run corpus governance gate
+        run: python scripts/corpus_governance.py
+      - name: Run synthetic Korean corpus gate
+        run: python scripts/synthetic_korean_corpus.py
+      - name: Run authorized dynamic MCP harness
+        run: python scripts/authorized_dynamic_harness.py
+      - name: Run benchmark gate
+        run: python scripts/benchmark.py
+      - name: Run inner-core product gate
+        run: python scripts/inner_core_product_gate.py --targets 24 --output tmp/inner-core-product-gate-ci.json --markdown tmp/inner-core-product-gate-ci.md --html tmp/inner-core-product-gate-ci.html
+      - name: Upload inner-core gate artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: inner-core-gate-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            tmp/inner-core-product-gate-ci.json
+            tmp/inner-core-product-gate-ci.md
+            tmp/inner-core-product-gate-ci.html
+
+  release-control-evidence:
+    runs-on: ubuntu-latest
+    env:
+      K_GUARD_EVIDENCE_HMAC_KEY: ci-validation-key-publicly-known-not-release-authority-2026
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: "1.26.5"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned release analyzers
+        run: |
+          python -m pip install --require-hashes -r requirements-build.lock
+          python -m pip install --require-hashes -r requirements-evidence.lock
+          python -m pip install --no-build-isolation --no-deps -e .
+          python -m venv "$RUNNER_TEMP/pip-audit-tool"
+          "$RUNNER_TEMP/pip-audit-tool/bin/python" -m pip install --require-hashes -r requirements-pip-audit.lock
+          python -m venv "$RUNNER_TEMP/semgrep-tool"
+          "$RUNNER_TEMP/semgrep-tool/bin/python" -m pip install --require-hashes -r requirements-semgrep.lock
+          echo "$RUNNER_TEMP/pip-audit-tool/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/semgrep-tool/bin" >> "$GITHUB_PATH"
+          go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+      - name: Audit locked Python dependency evidence
+        run: python scripts/dependency_audit.py
+      - name: Run nine-language Semgrep validation twice
+        run: k-guard language-validate --output tmp/language-validation-ci.json
+      - name: Run bounded software composition analysis
+        run: k-guard sca . --output tmp/sca-ci.json
+      - name: Require Python npm and Go SCA engines
+        run: python -c "import json; p=json.load(open('tmp/sca-ci.json')); assert p['complete'] is True; assert p['requested_ecosystems'] == ['python', 'npm', 'go']; assert p['audited_ecosystems'] == ['python', 'npm', 'go']; assert len(p['adapters']) == 3"
+      - name: Run JIT/JEA and database controls twice
+        run: k-guard control-validate --output tmp/control-validation-ci.json
+      - name: Run Streamable HTTP mediation matrix twice
+        run: k-guard runtime-validate --output tmp/runtime-validation-ci.json
+      - name: Upload release-control evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: release-control-evidence
+          if-no-files-found: error
+          path: |
+            tmp/language-validation-ci.json
+            tmp/sca-ci.json
+            tmp/control-validation-ci.json
+            tmp/runtime-validation-ci.json

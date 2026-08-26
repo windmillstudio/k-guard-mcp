@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/l2-process-oracle-contract-evidence-20260721.md",
+      "sha256": "5a8bafcc42edb1defd68b1eb9fdd5061776faecb631de2f7aa60b8dbc7acf067"
+    },
+    {
+      "path": "scripts/materialize_l2_oracles.py",
+      "sha256": "5ffe40ee8d4709f055719c1a77d1f27bec68b9257668d0389734772b47307dc9"
+    },
+    {
+      "path": "tests/test_materialize_l2_oracles.py",
+      "sha256": "15952061e94695d942665103f25a31c57b4295b405c5b7bc775e9faa5e161f33"
+    },
+    {
+      "path": "docs/oracle-program-operating-contract-ko.md",
+      "sha256": "1761cbff2e7ff1f95265bf9fd66219662f350204c28f62b318774d52faa8af5e"
+    }
+  ],
+  "claim_boundary": {
+    "l2_overall_pass": false,
+    "product_performance_or_release_claim": false,
+    "scenario_admission_or_label_claim": false,
+    "schema_contract_subfield_only": true
+  },
+  "field_id": "l2.process-oracle-contract",
+  "live_evidence": {
+    "candidate_count": 414,
+    "registry_repeat_sha256": "235d65b57b91a0db032a2b2e5f3e93cb48a03f04ad381ab5ae6b980ea6e29ef3",
+    "repeat_count": 2,
+    "status": "HOLD"
+  },
+  "raw_returned": false,
+  "schema": "k_guard_l2_process_oracle_contract_evidence_manifest.v1",
+  "verification_contract": {
+    "focused_command": "python -m pytest -q tests/test_materialize_l2_oracles.py",
+    "full_command": "python -m pytest -q",
+    "materialize_status": "HOLD exit 2 is required until missing evidence is supplied",
+    "repeat_required": true
+  }
+}

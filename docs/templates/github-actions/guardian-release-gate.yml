@@ -1,0 +1,88 @@
+name: Guardian Release Gate
+
+# Source-checkout template: no public package index release is assumed.
+# In this repository, "." is the exact event commit checked out below. If this
+# workflow is copied into an app repository before a K-Guard release exists,
+# vendor K-Guard at a commit-pinned path and change K_GUARD_SOURCE_PATH.
+
+env:
+  K_GUARD_SOURCE_PATH: "."
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  guardian-release-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify checked-out K-Guard source
+        run: |
+          python -c "import pathlib, tomllib; path = pathlib.Path('${{ env.K_GUARD_SOURCE_PATH }}') / 'pyproject.toml'; data = tomllib.loads(path.read_text(encoding='utf-8')); assert data['project']['name'] == 'k-guard-mcp', f'K_GUARD_SOURCE_PATH is not K-Guard source: {path}'"
+
+      - name: Install K-Guard from checked-out source
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "${{ env.K_GUARD_SOURCE_PATH }}"
+          python -m pip install "semgrep==1.174.0"
+
+      - name: Build operator-signed multilanguage evidence
+        env:
+          K_GUARD_EVIDENCE_HMAC_KEY: ${{ secrets.K_GUARD_EVIDENCE_HMAC_KEY }}
+        run: |
+          mkdir -p tmp
+          python -m k_guard_mcp.cli language-validate --output tmp/language-validation.json
+
+      # Replace these repository paths with download-artifact steps when the
+      # runtime and field evidence are produced in separate trusted jobs.
+      - name: Require runtime and field evidence from prior jobs
+        run: |
+          test -s .k-guard/evidence/mcp-http-proxy.json
+          test -s .k-guard/evidence/field-validation.json
+
+      - name: Run Guardian release gate
+        env:
+          K_GUARD_EVIDENCE_HMAC_KEY: ${{ secrets.K_GUARD_EVIDENCE_HMAC_KEY }}
+        run: |
+          mkdir -p tmp
+          SUPPRESSION_ARGS=""
+          if [ -f .k-guard/suppressions.csv ]; then
+            SUPPRESSION_ARGS="--suppressions .k-guard/suppressions.csv"
+          fi
+          python -m k_guard_mcp.cli guardian \
+            --manifest .k-guard/guardian-targets.csv \
+            --previous .k-guard/guardian-previous.json \
+            --run-probes \
+            --fail-on high \
+            --language-validation-report tmp/language-validation.json \
+            --mcp-http-proxy-report .k-guard/evidence/mcp-http-proxy.json \
+            --field-validation-report .k-guard/evidence/field-validation.json \
+            --output tmp/guardian-report.json \
+            --markdown tmp/guardian-report.md \
+            --html tmp/guardian-report.html \
+            $SUPPRESSION_ARGS
+
+      - name: Upload Guardian evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guardian-release-gate
+          path: |
+            tmp/guardian-report.json
+            tmp/guardian-report.md
+            tmp/guardian-report.html
+            tmp/language-validation.json
