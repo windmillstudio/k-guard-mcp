@@ -432,6 +432,13 @@ class _RunningUvicorn:
         if self.socket.fileno() != -1:
             self.socket.close()
         if self.thread.is_alive():
+            # Python 3.14's Windows proactor can keep a reset transport alive
+            # after the graceful deadline.  Once the listener is closed, skip
+            # Uvicorn's remaining graceful wait and give the loop one final
+            # bounded chance to terminate before reporting a hard failure.
+            self.server.force_exit = True
+            self.thread.join(timeout=10)
+        if self.thread.is_alive():
             raise RuntimeError("runtime_validation_server_stop_failed")
 
 

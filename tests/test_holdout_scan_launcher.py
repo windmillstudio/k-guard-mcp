@@ -39,24 +39,36 @@ def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     class FakeFrame:
-        def __init__(self, filename: str, function: str, back: "FakeFrame | None" = None) -> None:
-            self.f_code = type(
+        def __init__(
+            self,
+            filename: str,
+            function: str,
+            back: "FakeFrame | None" = None,
+            *,
+            code: object | None = None,
+        ) -> None:
+            self.f_code = code or type(
                 "FakeCode",
                 (),
                 {"co_filename": filename, "co_name": function},
             )()
             self.f_back = back
 
+    trusted_loader_code = launcher.importlib._bootstrap_external._compile_bytecode.__code__
     loader = FakeFrame(
         "<frozen importlib._bootstrap_external>",
         "_compile_bytecode",
+        code=trusted_loader_code,
     )
-    shifted = FakeFrame("<frozen marshal>", "loads", loader)
+    shifted = loader
+    for index in range(10):
+        shifted = FakeFrame("<frozen marshal>", f"loads_{index}", shifted)
     audit = object.__new__(launcher._ExecutionAudit)
     audit._errors = set()
     audit._code_object_events = {}
     audit._dynamic = set()
     audit._last_violation = "unknown"
+    audit._importlib_compile_bytecode_code = trusted_loader_code
     audit._caller_frames = lambda: []
 
     with monkeypatch.context() as patch:
@@ -67,12 +79,45 @@ def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
         "frozen_importlib_bytecode_loader"
     )
 
-    untrusted = FakeFrame("<dynamic>", "loads")
+    untrusted = FakeFrame(
+        "<frozen importlib._bootstrap_external>",
+        "_compile_bytecode",
+    )
     with monkeypatch.context() as patch:
         patch.setattr(sys, "_getframe", lambda _depth: untrusted)
         allowed = audit._record_code_object_control("marshal.loads", (b"dynamic-code",))
     assert allowed is False
     assert audit._dynamic
+
+
+def test_execution_audit_uses_precomputed_frozen_code_cache(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    prefix = tmp_path / "prefix"
+    base_prefix = tmp_path / "base"
+    windows_root = tmp_path / "windows"
+    for root in (prefix, base_prefix, windows_root):
+        root.mkdir()
+
+    audit = launcher._ExecutionAudit(
+        prefix,
+        base_prefix,
+        set(),
+        windows_root,
+        None,
+        None,
+    )
+    frozen_code = launcher._imp.get_frozen_object("_frozen_importlib_external")
+    assert frozen_code.co_filename == "<frozen importlib._bootstrap_external>"
+
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            launcher._imp,
+            "get_frozen_object",
+            lambda _name: pytest.fail("audit hook re-read a frozen object"),
+        )
+        assert audit._record_dynamic(frozen_code) is True
 
 
 def test_mutation_filter_covers_writes_and_metadata_without_last_access_noise() -> None:

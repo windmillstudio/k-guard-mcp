@@ -1923,6 +1923,31 @@ class _ExecutionAudit:
         self.windows_root = windows_root.resolve(strict=True)
         self._get_module_filename = get_module_filename
         self._get_current_process = get_current_process
+        # Resolve every trusted frozen-code digest before this instance is
+        # installed with sys.addaudithook().  Calling _imp.get_frozen_object()
+        # from inside the hook can itself emit marshal audit events on newer
+        # CPython releases and re-enter the hook while its lock is held.
+        self._trusted_frozen_code_sha256: dict[str, str] = {}
+        for module_name in _imp._frozen_module_names():
+            try:
+                frozen_code = _imp.get_frozen_object(module_name)
+                frozen_digest = _code_object_sha256(frozen_code)
+            except (ImportError, TypeError, ValueError):
+                # Missing/unsupported entries remain fail-closed when observed.
+                continue
+            self._trusted_frozen_code_sha256[module_name] = frozen_digest
+            frozen_label = re.fullmatch(
+                r"<frozen ([A-Za-z0-9_.]+)>",
+                str(frozen_code.co_filename or ""),
+            )
+            if frozen_label is not None:
+                # CPython exposes bootstrap objects under implementation names
+                # such as _frozen_importlib_external while their code filename
+                # uses the public importlib._bootstrap_external alias.
+                self._trusted_frozen_code_sha256[frozen_label.group(1)] = frozen_digest
+        self._importlib_compile_bytecode_code = (
+            importlib._bootstrap_external._compile_bytecode.__code__
+        )
         self._lock = threading.Lock()
         self._event_count = 0
         self._files: dict[str, dict[str, Any]] = {}
@@ -1973,16 +1998,7 @@ class _ExecutionAudit:
         frozen_match = re.fullmatch(r"<frozen ([A-Za-z0-9_.]+)>", label)
         if frozen_match is not None:
             module_name = frozen_match.group(1)
-            try:
-                trusted_code = _imp.get_frozen_object(module_name) if _imp.is_frozen(module_name) else None
-                trusted_digest = (
-                    _code_object_sha256(trusted_code)
-                    if trusted_code is not None
-                    else None
-                )
-            except (ImportError, TypeError, ValueError) as exc:
-                self._errors.add(type(exc).__name__)
-                trusted_digest = None
+            trusted_digest = self._trusted_frozen_code_sha256.get(module_name)
             if trusted_digest == digest:
                 allowed_reason = "cpython_frozen_code_hash"
         elif allow_standard_generator and label == "<string>":
@@ -2021,14 +2037,8 @@ class _ExecutionAudit:
             immediate = None
         bytecode_loader_frame = immediate
         bytecode_loader_observed = False
-        for _ in range(8):
-            if bytecode_loader_frame is None:
-                break
-            if (
-                bytecode_loader_frame.f_code.co_filename
-                == "<frozen importlib._bootstrap_external>"
-                and bytecode_loader_frame.f_code.co_name == "_compile_bytecode"
-            ):
+        while bytecode_loader_frame is not None:
+            if bytecode_loader_frame.f_code is self._importlib_compile_bytecode_code:
                 bytecode_loader_observed = True
                 break
             bytecode_loader_frame = bytecode_loader_frame.f_back

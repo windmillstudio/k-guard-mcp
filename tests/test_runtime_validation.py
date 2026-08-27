@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from k_guard_mcp import cli
+from k_guard_mcp import runtime_validation as runtime_validation_module
 from k_guard_mcp.runtime_validation import (
     RUNTIME_VALIDATION_SCHEMA,
     run_mcp_http_runtime_validation,
@@ -60,3 +61,42 @@ def test_runtime_validate_cli_writes_report(tmp_path: Path, capsys) -> None:
     assert summary["run_count"] == 2
     assert summary["repeat_exact"] is True
     assert report["runtime_validation"]["matrix"] == summary["matrix"]
+
+
+def test_running_uvicorn_close_forces_exit_after_graceful_deadline() -> None:
+    class FakeServer:
+        should_exit = False
+        force_exit = False
+
+    class FakeSocket:
+        closed = False
+
+        def fileno(self) -> int:
+            return -1 if self.closed else 1
+
+        def close(self) -> None:
+            self.closed = True
+
+    class FakeThread:
+        def __init__(self, server: FakeServer) -> None:
+            self.server = server
+            self.join_count = 0
+
+        def join(self, *, timeout: int) -> None:
+            assert timeout == 10
+            self.join_count += 1
+
+        def is_alive(self) -> bool:
+            return not self.server.force_exit
+
+    running = object.__new__(runtime_validation_module._RunningUvicorn)
+    running.server = FakeServer()
+    running.socket = FakeSocket()
+    running.thread = FakeThread(running.server)
+
+    running.close()
+
+    assert running.server.should_exit is True
+    assert running.server.force_exit is True
+    assert running.socket.closed is True
+    assert running.thread.join_count == 2
