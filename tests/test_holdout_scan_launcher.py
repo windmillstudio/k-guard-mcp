@@ -122,6 +122,48 @@ def test_code_object_control_accepts_structurally_identical_frozen_loader_copy(
         "frozen_importlib_bytecode_loader"
     )
 
+    altered_loader_code = trusted_loader_code.replace(
+        co_consts=trusted_loader_code.co_consts + ("untrusted-structural-change",)
+    )
+
+    class AlteredFrame:
+        f_code = altered_loader_code
+        f_back = None
+
+    with monkeypatch.context() as patch:
+        patch.setattr(sys, "_getframe", lambda _depth: AlteredFrame())
+        allowed = audit._record_code_object_control("marshal.loads", (b"dynamic-code",))
+
+    assert allowed is False
+    assert audit._dynamic
+
+
+def test_execution_audit_seeds_live_importlib_loader_without_frozen_walk(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    prefix = tmp_path / "prefix"
+    base_prefix = tmp_path / "base"
+    windows_root = tmp_path / "windows"
+    for root in (prefix, base_prefix, windows_root):
+        root.mkdir()
+
+    with monkeypatch.context() as patch:
+        patch.setattr(launcher._imp, "_frozen_module_names", lambda: ())
+        audit = launcher._ExecutionAudit(
+            prefix,
+            base_prefix,
+            set(),
+            windows_root,
+            None,
+            None,
+        )
+
+    live_loader_code = launcher.importlib._bootstrap_external._compile_bytecode.__code__
+    assert audit._trusted_importlib_compile_bytecode_sha256 == {
+        launcher._code_object_sha256(live_loader_code)
+    }
+
 
 def test_execution_audit_uses_precomputed_frozen_code_cache(
     monkeypatch: pytest.MonkeyPatch,
@@ -140,6 +182,10 @@ def test_execution_audit_uses_precomputed_frozen_code_cache(
         windows_root,
         None,
         None,
+    )
+    live_loader_code = launcher.importlib._bootstrap_external._compile_bytecode.__code__
+    assert launcher._code_object_sha256(live_loader_code) in (
+        audit._trusted_importlib_compile_bytecode_sha256
     )
     frozen_code = launcher._imp.get_frozen_object("_frozen_importlib_external")
     assert frozen_code.co_filename == "<frozen importlib._bootstrap_external>"

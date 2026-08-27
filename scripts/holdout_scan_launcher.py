@@ -1936,6 +1936,19 @@ class _ExecutionAudit:
         # CPython releases and re-enter the hook while its lock is held.
         self._trusted_frozen_code_sha256: dict[str, str] = {}
         self._trusted_importlib_compile_bytecode_sha256: set[str] = set()
+        # Seed the code object used by this interpreter directly.  On some
+        # CPython builds (notably Windows 3.13), the live bootstrap function's
+        # structural digest is not identical to the copy returned by walking
+        # _imp.get_frozen_object(), even though both carry the same frozen
+        # filename.  This is resolved before the audit hook is installed.
+        live_compile_bytecode = importlib._bootstrap_external._compile_bytecode.__code__
+        if (
+            live_compile_bytecode.co_filename == "<frozen importlib._bootstrap_external>"
+            and live_compile_bytecode.co_name == "_compile_bytecode"
+        ):
+            self._trusted_importlib_compile_bytecode_sha256.add(
+                _code_object_sha256(live_compile_bytecode)
+            )
         for module_name in _imp._frozen_module_names():
             try:
                 frozen_code = _imp.get_frozen_object(module_name)
@@ -1956,7 +1969,10 @@ class _ExecutionAudit:
             pending_code_objects = [frozen_code]
             while pending_code_objects:
                 candidate = pending_code_objects.pop()
-                if candidate.co_name == "_compile_bytecode":
+                if (
+                    candidate.co_filename == "<frozen importlib._bootstrap_external>"
+                    and candidate.co_name == "_compile_bytecode"
+                ):
                     self._trusted_importlib_compile_bytecode_sha256.add(
                         _code_object_sha256(candidate)
                     )
@@ -2056,7 +2072,10 @@ class _ExecutionAudit:
         bytecode_loader_observed = False
         while bytecode_loader_frame is not None:
             frame_code = bytecode_loader_frame.f_code
-            if frame_code.co_name == "_compile_bytecode":
+            if (
+                frame_code.co_filename == "<frozen importlib._bootstrap_external>"
+                and frame_code.co_name == "_compile_bytecode"
+            ):
                 try:
                     frame_digest = _code_object_sha256(frame_code)
                 except (TypeError, ValueError) as exc:
