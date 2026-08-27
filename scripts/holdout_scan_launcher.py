@@ -1935,6 +1935,7 @@ class _ExecutionAudit:
         # from inside the hook can itself emit marshal audit events on newer
         # CPython releases and re-enter the hook while its lock is held.
         self._trusted_frozen_code_sha256: dict[str, str] = {}
+        self._trusted_importlib_compile_bytecode_sha256: set[str] = set()
         for module_name in _imp._frozen_module_names():
             try:
                 frozen_code = _imp.get_frozen_object(module_name)
@@ -1952,9 +1953,18 @@ class _ExecutionAudit:
                 # such as _frozen_importlib_external while their code filename
                 # uses the public importlib._bootstrap_external alias.
                 self._trusted_frozen_code_sha256[frozen_label.group(1)] = frozen_digest
-        self._importlib_compile_bytecode_code = (
-            importlib._bootstrap_external._compile_bytecode.__code__
-        )
+            pending_code_objects = [frozen_code]
+            while pending_code_objects:
+                candidate = pending_code_objects.pop()
+                if candidate.co_name == "_compile_bytecode":
+                    self._trusted_importlib_compile_bytecode_sha256.add(
+                        _code_object_sha256(candidate)
+                    )
+                pending_code_objects.extend(
+                    constant
+                    for constant in candidate.co_consts
+                    if isinstance(constant, CodeType)
+                )
         self._lock = threading.Lock()
         self._event_count = 0
         self._files: dict[str, dict[str, Any]] = {}
@@ -2045,9 +2055,16 @@ class _ExecutionAudit:
         bytecode_loader_frame = immediate
         bytecode_loader_observed = False
         while bytecode_loader_frame is not None:
-            if bytecode_loader_frame.f_code is self._importlib_compile_bytecode_code:
-                bytecode_loader_observed = True
-                break
+            frame_code = bytecode_loader_frame.f_code
+            if frame_code.co_name == "_compile_bytecode":
+                try:
+                    frame_digest = _code_object_sha256(frame_code)
+                except (TypeError, ValueError) as exc:
+                    self._errors.add(type(exc).__name__)
+                else:
+                    if frame_digest in self._trusted_importlib_compile_bytecode_sha256:
+                        bytecode_loader_observed = True
+                        break
             bytecode_loader_frame = bytecode_loader_frame.f_back
         immediate_label = str(immediate.f_code.co_filename or "") if immediate is not None else ""
         immediate_function = immediate.f_code.co_name if immediate is not None else ""

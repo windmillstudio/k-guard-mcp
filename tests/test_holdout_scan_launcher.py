@@ -68,7 +68,9 @@ def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
     audit._code_object_events = {}
     audit._dynamic = set()
     audit._last_violation = "unknown"
-    audit._importlib_compile_bytecode_code = trusted_loader_code
+    audit._trusted_importlib_compile_bytecode_sha256 = {
+        launcher._code_object_sha256(trusted_loader_code)
+    }
     audit._caller_frames = lambda: []
 
     with monkeypatch.context() as patch:
@@ -88,6 +90,37 @@ def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
         allowed = audit._record_code_object_control("marshal.loads", (b"dynamic-code",))
     assert allowed is False
     assert audit._dynamic
+
+
+def test_code_object_control_accepts_structurally_identical_frozen_loader_copy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    trusted_loader_code = launcher.importlib._bootstrap_external._compile_bytecode.__code__
+    copied_loader_code = trusted_loader_code.replace()
+    assert copied_loader_code is not trusted_loader_code
+
+    class FakeFrame:
+        f_code = copied_loader_code
+        f_back = None
+
+    audit = object.__new__(launcher._ExecutionAudit)
+    audit._errors = set()
+    audit._code_object_events = {}
+    audit._dynamic = set()
+    audit._last_violation = "unknown"
+    audit._trusted_importlib_compile_bytecode_sha256 = {
+        launcher._code_object_sha256(trusted_loader_code)
+    }
+    audit._caller_frames = lambda: []
+
+    with monkeypatch.context() as patch:
+        patch.setattr(sys, "_getframe", lambda _depth: FakeFrame())
+        allowed = audit._record_code_object_control("marshal.loads", (b"attested-pyc",))
+
+    assert allowed is True
+    assert next(iter(audit._code_object_events.values()))["allowed_reason"] == (
+        "frozen_importlib_bytecode_loader"
+    )
 
 
 def test_execution_audit_uses_precomputed_frozen_code_cache(
