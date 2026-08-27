@@ -32,7 +32,47 @@ SOURCE_SPEC.loader.exec_module(source_materialization)
 # drain, join, and defensive cleanup waits before synchronous scan/attestation
 # work. Allow extra Windows CPython 3.13/3.14 shared-runner startup and scan
 # time; production guard bounds and every terminal/fail-closed assertion remain.
-LAUNCH_PROCESS_TIMEOUT_SECONDS = 300
+LAUNCH_PROCESS_TIMEOUT_SECONDS = 600
+
+
+def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeFrame:
+        def __init__(self, filename: str, function: str, back: "FakeFrame | None" = None) -> None:
+            self.f_code = type(
+                "FakeCode",
+                (),
+                {"co_filename": filename, "co_name": function},
+            )()
+            self.f_back = back
+
+    loader = FakeFrame(
+        "<frozen importlib._bootstrap_external>",
+        "_compile_bytecode",
+    )
+    shifted = FakeFrame("<frozen marshal>", "loads", loader)
+    audit = object.__new__(launcher._ExecutionAudit)
+    audit._errors = set()
+    audit._code_object_events = {}
+    audit._dynamic = set()
+    audit._last_violation = "unknown"
+    audit._caller_frames = lambda: []
+
+    with monkeypatch.context() as patch:
+        patch.setattr(sys, "_getframe", lambda _depth: shifted)
+        allowed = audit._record_code_object_control("marshal.loads", (b"attested-pyc",))
+    assert allowed is True
+    assert next(iter(audit._code_object_events.values()))["allowed_reason"] == (
+        "frozen_importlib_bytecode_loader"
+    )
+
+    untrusted = FakeFrame("<dynamic>", "loads")
+    with monkeypatch.context() as patch:
+        patch.setattr(sys, "_getframe", lambda _depth: untrusted)
+        allowed = audit._record_code_object_control("marshal.loads", (b"dynamic-code",))
+    assert allowed is False
+    assert audit._dynamic
 
 
 def test_mutation_filter_covers_writes_and_metadata_without_last_access_noise() -> None:

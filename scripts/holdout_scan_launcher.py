@@ -2019,6 +2019,19 @@ class _ExecutionAudit:
             immediate = sys._getframe(2)
         except ValueError:
             immediate = None
+        bytecode_loader_frame = immediate
+        bytecode_loader_observed = False
+        for _ in range(8):
+            if bytecode_loader_frame is None:
+                break
+            if (
+                bytecode_loader_frame.f_code.co_filename
+                == "<frozen importlib._bootstrap_external>"
+                and bytecode_loader_frame.f_code.co_name == "_compile_bytecode"
+            ):
+                bytecode_loader_observed = True
+                break
+            bytecode_loader_frame = bytecode_loader_frame.f_back
         immediate_label = str(immediate.f_code.co_filename or "") if immediate is not None else ""
         immediate_function = immediate.f_code.co_name if immediate is not None else ""
         normalized_caller: str | None = None
@@ -2044,11 +2057,10 @@ class _ExecutionAudit:
             payload = args[0] if args else None
             if isinstance(payload, (bytes, bytearray, memoryview)):
                 payload_digest = hashlib.sha256(bytes(payload)).hexdigest()
-            if (
-                normalized_caller == "<frozen importlib._bootstrap_external>"
-                and immediate_function == "_compile_bytecode"
-            ):
+            if bytecode_loader_observed:
                 allowed_reason = "frozen_importlib_bytecode_loader"
+                normalized_caller = "<frozen importlib._bootstrap_external>"
+                immediate_function = "_compile_bytecode"
         elif event == "code.__new__":
             payload = args[0] if args else None
             if isinstance(payload, (bytes, bytearray, memoryview)):

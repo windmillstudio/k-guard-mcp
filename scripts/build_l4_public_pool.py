@@ -89,8 +89,16 @@ def load_source_verifier(
         after = os.fstat(descriptor)
     finally:
         os.close(descriptor)
-    stable = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
-    if any(getattr(metadata, field, None) != getattr(before, field, None) for field in stable):
+    # Windows is transitioning st_ctime from creation time to metadata-change
+    # time.  Do not compare that evolving value across the path and descriptor
+    # stat implementations; descriptor identity, size, and mtime still bind the
+    # opened object, and the same-descriptor check below retains ctime coverage.
+    opened_stable = ("st_dev", "st_ino", "st_size", "st_mtime_ns")
+    stable = (*opened_stable, "st_ctime_ns")
+    if any(
+        getattr(metadata, field, None) != getattr(before, field, None)
+        for field in opened_stable
+    ):
         raise PublicPoolContractError("source verifier changed before read")
     if any(getattr(before, field, None) != getattr(after, field, None) for field in stable):
         raise PublicPoolContractError("source verifier changed during read")
