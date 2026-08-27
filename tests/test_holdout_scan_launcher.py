@@ -120,6 +120,15 @@ def test_execution_audit_uses_precomputed_frozen_code_cache(
         assert audit._record_dynamic(frozen_code) is True
 
 
+def test_code_constant_contract_supports_python_314_slice_constants() -> None:
+    assert launcher._code_constant_contract(slice(1, None, -1)) == {
+        "type": "slice",
+        "start": {"type": "int", "value": "1"},
+        "stop": {"type": "none"},
+        "step": {"type": "int", "value": "-1"},
+    }
+
+
 def test_mutation_filter_covers_writes_and_metadata_without_last_access_noise() -> None:
     assert launcher.MUTATION_NOTIFY_FILTER & launcher.FILE_NOTIFY_CHANGE_LAST_WRITE
     assert launcher.MUTATION_NOTIFY_FILTER & launcher.FILE_NOTIFY_CHANGE_ATTRIBUTES

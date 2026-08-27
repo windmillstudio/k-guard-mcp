@@ -1267,6 +1267,13 @@ def _code_constant_contract(value: Any) -> dict[str, Any]:
         items = [_code_constant_contract(item) for item in value]
         items.sort(key=lambda item: json.dumps(item, sort_keys=True, separators=(",", ":")))
         return {"type": "frozenset", "items": items}
+    if isinstance(value, slice):
+        return {
+            "type": "slice",
+            "start": _code_constant_contract(value.start),
+            "stop": _code_constant_contract(value.stop),
+            "step": _code_constant_contract(value.step),
+        }
     if isinstance(value, CodeType):
         return {"type": "code", "value": _code_object_contract(value)}
     raise TypeError(f"unsupported code constant type: {type(value).__name__}")
