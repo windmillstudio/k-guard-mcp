@@ -30,9 +30,9 @@ SOURCE_SPEC.loader.exec_module(source_materialization)
 
 # One launcher run contains up to 112 seconds of independent bounded watcher,
 # drain, join, and defensive cleanup waits before synchronous scan/attestation
-# work. Add a shared-runner margin and round up; production guard bounds remain
-# unchanged and every terminal/fail-closed assertion still runs.
-LAUNCH_PROCESS_TIMEOUT_SECONDS = 180
+# work. Allow extra Windows CPython 3.13/3.14 shared-runner startup and scan
+# time; production guard bounds and every terminal/fail-closed assertion remain.
+LAUNCH_PROCESS_TIMEOUT_SECONDS = 300
 
 
 def test_mutation_filter_covers_writes_and_metadata_without_last_access_noise() -> None:
@@ -958,7 +958,11 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
         return completed, json.loads(receipt_path.read_text(encoding="utf-8"))
 
     stable, stable_receipt = launch("stable")
-    assert stable.returncode == 0, stable.stderr
+    assert stable.returncode == 0, (
+        stable.stderr
+        + "\n"
+        + json.dumps(stable_receipt, ensure_ascii=False, sort_keys=True)
+    )
     assert stable_receipt["schema"] == launcher.RECEIPT_SCHEMA
     assert stable_receipt["passed"] is True
     assert stable_receipt["runtime_mutation_observed"] is False
