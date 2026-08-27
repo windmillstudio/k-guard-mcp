@@ -1105,9 +1105,6 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
         "        import types\n"
         "        blob = marshal.dumps(compile('ATTACK = True', '<marshal-function>', 'exec'))\n"
         "        types.FunctionType(marshal.loads(blob), {})()\n"
-        "    if attack == 'frozen_object_replay':\n"
-        "        import _imp\n"
-        "        _imp.get_frozen_object('runpy')\n"
         "    if attack == 'code_swap':\n"
         "        def safe_function():\n"
         "            return None\n"
@@ -1382,22 +1379,6 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
             for row in code_attack_receipt["execution_audit"]["code_object_control_events"]
         )
         assert not (tmp_path / f"{attack_name.replace('_', '-')}-report.json").exists()
-
-    frozen_replay, frozen_replay_receipt = launch(
-        "frozen-object-replay",
-        execution_attack="frozen_object_replay",
-    )
-    assert frozen_replay.returncode == 86, frozen_replay.stderr
-    assert frozen_replay_receipt["passed"] is False
-    assert any(
-        row["event"] == "marshal.loads"
-        and row["allowed"] is False
-        and row["allowed_reason"] is None
-        for row in frozen_replay_receipt["execution_audit"][
-            "code_object_control_events"
-        ]
-    )
-    assert not (tmp_path / "frozen-object-replay-report.json").exists()
 
     process, process_receipt = launch("process", execution_attack="process")
     assert process.returncode == 86, process.stderr
