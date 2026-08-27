@@ -28,6 +28,12 @@ assert SOURCE_SPEC and SOURCE_SPEC.loader
 source_materialization = importlib.util.module_from_spec(SOURCE_SPEC)
 SOURCE_SPEC.loader.exec_module(source_materialization)
 
+# One launcher run contains up to 112 seconds of independent bounded watcher,
+# drain, join, and defensive cleanup waits before synchronous scan/attestation
+# work. Add a shared-runner margin and round up; production guard bounds remain
+# unchanged and every terminal/fail-closed assertion still runs.
+LAUNCH_PROCESS_TIMEOUT_SECONDS = 180
+
 
 def test_mutation_filter_covers_writes_and_metadata_without_last_access_noise() -> None:
     assert launcher.MUTATION_NOTIFY_FILTER & launcher.FILE_NOTIFY_CHANGE_LAST_WRITE
@@ -947,10 +953,7 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
             capture_output=True,
             text=True,
             check=False,
-            # Full Windows CI runs can spend more than 30 seconds starting the
-            # ETW/USN guards under shared-runner load.  This is only the outer
-            # test watchdog; the launcher's fail-closed controls are unchanged.
-            timeout=90,
+            timeout=LAUNCH_PROCESS_TIMEOUT_SECONDS,
         )
         return completed, json.loads(receipt_path.read_text(encoding="utf-8"))
 
