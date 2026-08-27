@@ -992,6 +992,44 @@ def test_run_scan_uses_bound_python_in_isolated_no_bytecode_mode(
     assert "PYTHONPATH" not in observed["env"]
     assert "PYTHONHOME" not in observed["env"]
 
+    attested_pyc_receipt = json.loads(json.dumps(observed["receipt"]))
+    attested_pyc_receipt["execution_audit"]["event_count"] = 2
+    attested_pyc_receipt["execution_audit"]["code_object_control_events"] = [
+        {
+            "event": "marshal.loads",
+            "payload_sha256": "c" * 64,
+            "previous_code_sha256": None,
+            "caller_path": "<attested_pyc_payload>",
+            "caller_function": "<precomputed>",
+            "caller_frames": [
+                {
+                    "path": "<prefix>/Lib/site-packages/k_guard_mcp/cli.py",
+                    "function": "<module>",
+                }
+            ],
+            "allowed": True,
+            "allowed_reason": "attested_preexisting_pyc_payload",
+            "event_count": 1,
+        }
+    ]
+    assert campaign_runner._runtime_execution_contract_valid(
+        attested_pyc_receipt,
+        expected_runtime=json.loads(expected_runtime.read_text(encoding="utf-8")),
+        launcher_sha256=hashlib.sha256(launcher.read_bytes()).hexdigest(),
+        probe_sha256=hashlib.sha256(probe.read_bytes()).hexdigest(),
+    )
+
+    forged_pyc_receipt = json.loads(json.dumps(attested_pyc_receipt))
+    forged_pyc_receipt["execution_audit"]["code_object_control_events"][0][
+        "caller_path"
+    ] = "<prefix>/Lib/site-packages/k_guard_mcp/cli.py"
+    assert not campaign_runner._runtime_execution_contract_valid(
+        forged_pyc_receipt,
+        expected_runtime=json.loads(expected_runtime.read_text(encoding="utf-8")),
+        launcher_sha256=hashlib.sha256(launcher.read_bytes()).hexdigest(),
+        probe_sha256=hashlib.sha256(probe.read_bytes()).hexdigest(),
+    )
+
     for allowed, reason in ((False, None), (True, "unregistered_code_path")):
         forged_receipt = json.loads(json.dumps(observed["receipt"]))
         forged_receipt["execution_audit"]["event_count"] = 2

@@ -1376,6 +1376,14 @@ def _runtime_execution_contract_valid(
                 or previous_digest is not None
             ):
                 return False
+        elif reason == "attested_preexisting_pyc_payload":
+            if (
+                row.get("event") != "marshal.loads"
+                or row.get("caller_path") != "<attested_pyc_payload>"
+                or row.get("caller_function") != "<precomputed>"
+                or previous_digest is not None
+            ):
+                return False
         elif reason == "stdlib_types_coroutine_code_replace":
             if (
                 row.get("event") != "code.__new__"

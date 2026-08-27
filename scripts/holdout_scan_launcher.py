@@ -1919,6 +1919,7 @@ class _ExecutionAudit:
         self,
         prefix: Path,
         base_prefix: Path,
+        expected_runtime: dict[str, Any],
         allowed_external_files: set[Path],
         windows_root: Path,
         get_module_filename: Any,
@@ -1936,6 +1937,7 @@ class _ExecutionAudit:
         # CPython releases and re-enter the hook while its lock is held.
         self._trusted_frozen_code_sha256: dict[str, str] = {}
         self._trusted_importlib_compile_bytecode_sha256: set[str] = set()
+        self._trusted_marshaled_pyc_sha256: set[str] = set()
         # Seed the code object used by this interpreter directly.  On some
         # CPython builds (notably Windows 3.13), the live bootstrap function's
         # structural digest is not identical to the copy returned by walking
@@ -1949,6 +1951,26 @@ class _ExecutionAudit:
             self._trusted_importlib_compile_bytecode_sha256.add(
                 _code_object_sha256(live_compile_bytecode)
             )
+        # CPython 3.13 can emit the marshal.loads audit event after its frozen
+        # loader frame has already left the Python-visible stack.  Bind that
+        # case to bytecode payloads that physically existed inside the
+        # attested interpreter roots before the hook was installed.  A pyc
+        # header is 16 bytes on every supported CPython release.
+        for attested_file in _attested_runtime_files(
+            expected_runtime,
+            self.prefix,
+            self.base_prefix,
+        ):
+            resolved_bytecode = attested_file["absolute_path"]
+            if resolved_bytecode.suffix.casefold() != ".pyc":
+                continue
+            bytecode = resolved_bytecode.read_bytes()
+            if hashlib.sha256(bytecode).hexdigest() != attested_file["sha256"]:
+                raise ValueError("attested runtime bytecode changed before audit activation")
+            if len(bytecode) >= 16 and bytecode[:4] == importlib.util.MAGIC_NUMBER:
+                self._trusted_marshaled_pyc_sha256.add(
+                    hashlib.sha256(bytecode[16:]).hexdigest()
+                )
         for module_name in _imp._frozen_module_names():
             try:
                 frozen_code = _imp.get_frozen_object(module_name)
@@ -2114,6 +2136,13 @@ class _ExecutionAudit:
                 allowed_reason = "frozen_importlib_bytecode_loader"
                 normalized_caller = "<frozen importlib._bootstrap_external>"
                 immediate_function = "_compile_bytecode"
+            elif (
+                event == "marshal.loads"
+                and payload_digest in self._trusted_marshaled_pyc_sha256
+            ):
+                allowed_reason = "attested_preexisting_pyc_payload"
+                normalized_caller = "<attested_pyc_payload>"
+                immediate_function = "<precomputed>"
         elif event == "code.__new__":
             payload = args[0] if args else None
             if isinstance(payload, (bytes, bytearray, memoryview)):
@@ -2971,6 +3000,7 @@ def run(args: argparse.Namespace) -> int:
         execution_audit = _ExecutionAudit(
             prefix,
             base_prefix,
+            expected_runtime,
             {Path(__file__).resolve(), probe_path, source_probe_path},
             windows_root,
             native_api[1],

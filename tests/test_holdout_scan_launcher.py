@@ -71,6 +71,7 @@ def test_code_object_control_accepts_shifted_importlib_loader_frame_only(
     audit._trusted_importlib_compile_bytecode_sha256 = {
         launcher._code_object_sha256(trusted_loader_code)
     }
+    audit._trusted_marshaled_pyc_sha256 = set()
     audit._caller_frames = lambda: []
 
     with monkeypatch.context() as patch:
@@ -111,6 +112,7 @@ def test_code_object_control_accepts_structurally_identical_frozen_loader_copy(
     audit._trusted_importlib_compile_bytecode_sha256 = {
         launcher._code_object_sha256(trusted_loader_code)
     }
+    audit._trusted_marshaled_pyc_sha256 = set()
     audit._caller_frames = lambda: []
 
     with monkeypatch.context() as patch:
@@ -148,11 +150,39 @@ def test_execution_audit_seeds_live_importlib_loader_without_frozen_walk(
     for root in (prefix, base_prefix, windows_root):
         root.mkdir()
 
+    marshalled_payload = b"preexisting-attested-pyc-payload"
+    pycache = prefix / "Lib" / "site-packages" / "example" / "__pycache__"
+    pycache.mkdir(parents=True)
+    (pycache / "module.cpython-test.pyc").write_bytes(
+        launcher.importlib.util.MAGIC_NUMBER + b"\0" * 12 + marshalled_payload
+    )
+    unlisted_payload = b"unlisted-pyc-payload"
+    (pycache / "unlisted.cpython-test.pyc").write_bytes(
+        launcher.importlib.util.MAGIC_NUMBER + b"\0" * 12 + unlisted_payload
+    )
+
     with monkeypatch.context() as patch:
         patch.setattr(launcher._imp, "_frozen_module_names", lambda: ())
         audit = launcher._ExecutionAudit(
             prefix,
             base_prefix,
+            {
+                "prefix_tree": {
+                    "files": [
+                        {
+                            "path": pycache.joinpath(
+                                "module.cpython-test.pyc"
+                            ).relative_to(prefix).as_posix(),
+                            "sha256": hashlib.sha256(
+                                launcher.importlib.util.MAGIC_NUMBER
+                                + b"\0" * 12
+                                + marshalled_payload
+                            ).hexdigest(),
+                        }
+                    ]
+                },
+                "base_runtime_tree": {"files": []},
+            },
             set(),
             windows_root,
             None,
@@ -163,6 +193,47 @@ def test_execution_audit_seeds_live_importlib_loader_without_frozen_walk(
     assert audit._trusted_importlib_compile_bytecode_sha256 == {
         launcher._code_object_sha256(live_loader_code)
     }
+    assert hashlib.sha256(marshalled_payload).hexdigest() in (
+        audit._trusted_marshaled_pyc_sha256
+    )
+    assert hashlib.sha256(unlisted_payload).hexdigest() not in (
+        audit._trusted_marshaled_pyc_sha256
+    )
+
+
+def test_code_object_control_allows_only_preexisting_attested_pyc_payload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    trusted_payload = b"preexisting-attested-pyc-payload"
+    audit = object.__new__(launcher._ExecutionAudit)
+    audit._errors = set()
+    audit._code_object_events = {}
+    audit._dynamic = set()
+    audit._last_violation = "unknown"
+    audit._trusted_importlib_compile_bytecode_sha256 = set()
+    audit._trusted_marshaled_pyc_sha256 = {hashlib.sha256(trusted_payload).hexdigest()}
+    audit._caller_frames = lambda: []
+
+    class FakeCode:
+        co_filename = "<redacted loader>"
+        co_name = "<module>"
+
+    class FakeFrame:
+        f_code = FakeCode()
+        f_back = None
+
+    with monkeypatch.context() as patch:
+        patch.setattr(sys, "_getframe", lambda _depth: FakeFrame())
+        allowed = audit._record_code_object_control("marshal.loads", (trusted_payload,))
+        blocked = audit._record_code_object_control("marshal.loads", (b"dynamic-code",))
+
+    assert allowed is True
+    allowed_row = next(
+        row for row in audit._code_object_events.values() if row["allowed"] is True
+    )
+    assert allowed_row["allowed_reason"] == "attested_preexisting_pyc_payload"
+    assert blocked is False
+    assert hashlib.sha256(b"dynamic-code").hexdigest() in audit._dynamic
 
 
 def test_execution_audit_uses_precomputed_frozen_code_cache(
@@ -178,6 +249,7 @@ def test_execution_audit_uses_precomputed_frozen_code_cache(
     audit = launcher._ExecutionAudit(
         prefix,
         base_prefix,
+        {"prefix_tree": {"files": []}, "base_runtime_tree": {"files": []}},
         set(),
         windows_root,
         None,
@@ -895,6 +967,27 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
     native_canary.write_bytes((system32 / "version.dll").read_bytes())
     native_canary_hash = hashlib.sha256(native_canary.read_bytes()).hexdigest()
     probe_path = scripts_root / "probe.py"
+    base_prefix = Path(sys.base_prefix).resolve()
+    base_runtime_pyc_files = []
+    for base_pyc in base_prefix.rglob("*.pyc"):
+        try:
+            resolved_base_pyc = base_pyc.resolve(strict=True)
+            if (
+                not resolved_base_pyc.is_file()
+                or launcher._is_base_site_package(resolved_base_pyc, base_prefix)
+            ):
+                continue
+            base_pyc_bytes = resolved_base_pyc.read_bytes()
+        except OSError:
+            continue
+        base_runtime_pyc_files.append(
+            {
+                "path": resolved_base_pyc.relative_to(base_prefix).as_posix(),
+                "byte_count": len(base_pyc_bytes),
+                "sha256": hashlib.sha256(base_pyc_bytes).hexdigest(),
+            }
+        )
+    base_runtime_pyc_files.sort(key=lambda row: row["path"])
     expected_runtime = {
         "schema": launcher.RUNTIME_SCHEMA,
         "test_runtime": "stable",
@@ -922,7 +1015,7 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
                 },
             ]
         },
-        "base_runtime_tree": {"files": []},
+        "base_runtime_tree": {"files": base_runtime_pyc_files},
     }
     probe_path.write_text(
         "import sys\n"
