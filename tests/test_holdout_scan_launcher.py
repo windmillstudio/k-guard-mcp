@@ -1051,7 +1051,6 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
     (package_root / "cli.py").write_text(
         "import ctypes\n"
         "import os\n"
-        "import runpy\n"
         "from pathlib import Path\n\n"
         "def main(argv):\n"
         "    workspace = Path(argv[1])\n"
@@ -1091,7 +1090,12 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
         "        exec(compile('ATTACK = True', __file__, 'exec'), {})\n"
         "    if attack == 'dataclass_direct':\n"
         "        import dataclasses\n"
-        "        dataclasses._create_fn('attack', '', ['return 7'])\n"
+        "        if hasattr(dataclasses, '_create_fn'):\n"
+        "            dataclasses._create_fn('attack', '', ['return 7'])\n"
+        "        else:\n"
+        "            builder = dataclasses._FuncBuilder({})\n"
+        "            builder.add_fn('attack', ['self'], ['  return 7'])\n"
+        "            builder.add_fns_to_class(type('Attack', (), {}))\n"
         "    if attack == 'function_type':\n"
         "        import types\n"
         "        code = compile('ATTACK = True', '<function-type>', 'exec')\n"
@@ -1101,12 +1105,16 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
         "        import types\n"
         "        blob = marshal.dumps(compile('ATTACK = True', '<marshal-function>', 'exec'))\n"
         "        types.FunctionType(marshal.loads(blob), {})()\n"
+        "    if attack == 'frozen_object_replay':\n"
+        "        import _imp\n"
+        "        _imp.get_frozen_object('runpy')\n"
         "    if attack == 'code_swap':\n"
         "        def safe_function():\n"
         "            return None\n"
         "        safe_function.__code__ = compile('ATTACK = True', '<code-swap>', 'exec')\n"
         "        safe_function()\n"
         "    if attack == 'outside':\n"
+        "        import runpy\n"
         "        runpy.run_path(str(workspace / 'outside_payload.py'))\n"
         "    if attack == 'process':\n"
         "        marker = os.environ['K_GUARD_CHILD_MARKER']\n"
@@ -1374,6 +1382,22 @@ def test_launcher_allows_stable_scan_and_rejects_restored_runtime_mutation(tmp_p
             for row in code_attack_receipt["execution_audit"]["code_object_control_events"]
         )
         assert not (tmp_path / f"{attack_name.replace('_', '-')}-report.json").exists()
+
+    frozen_replay, frozen_replay_receipt = launch(
+        "frozen-object-replay",
+        execution_attack="frozen_object_replay",
+    )
+    assert frozen_replay.returncode == 86, frozen_replay.stderr
+    assert frozen_replay_receipt["passed"] is False
+    assert any(
+        row["event"] == "marshal.loads"
+        and row["allowed"] is False
+        and row["allowed_reason"] is None
+        for row in frozen_replay_receipt["execution_audit"][
+            "code_object_control_events"
+        ]
+    )
+    assert not (tmp_path / "frozen-object-replay-report.json").exists()
 
     process, process_receipt = launch("process", execution_attack="process")
     assert process.returncode == 86, process.stderr
