@@ -175,8 +175,10 @@ Keep the file inside the invoked workspace, or beside the Guardian manifest. Fil
 
 아래 `scripts/**`와 pytest는 wheel에 포함되는 사용자 명령이 아닙니다.
 
+이 공개 소스 스냅샷에서 재현 가능한 제품 회귀는 `python scripts/public_source_tests.py`입니다. 내부 전체 저장소의 `python -m pytest -q` full suite는 별도 배포되는 evidence, 공모전 문서, 릴리스 바이너리, 커밋된 Git 경계가 필요하므로 이 공개 체크아웃에서 실행 가능하다고 주장하지 않습니다.
+
 ```bash
-python -m pytest -q
+python scripts/public_source_tests.py
 python scripts/site_scale_calibration.py
 python scripts/deep_probe_synthetic_calibration.py --targets 500 --output tmp/deep-probe-synthetic-500.json --markdown tmp/deep-probe-synthetic-500.md --html tmp/deep-probe-synthetic-500.html
 python scripts/inner_core_product_gate.py --targets 500 --output tmp/inner-core-product-gate-500.json --markdown tmp/inner-core-product-gate-500.md --html tmp/inner-core-product-gate-500.html
@@ -342,7 +344,7 @@ Unauthenticated JSON is split by risk. Sensitive/private-record structure remain
 
 `scripts/inner_core_product_gate.py` runs the broader local synthetic product gate for the "inner-core" audit claim. It combines the 500-target loopback deep-probe calibration with static code/config/MCP text checks, Python AST taint, MCP runtime JSONL observation, read-only SQLite/log/storage connectors, retention/deletion review, cross-plane PII-to-agentic/external verdicts, and raw-free evidence graph checks. This gate must have zero missing required rules, zero unexpected deep-probe rules, passing negative controls, non-empty flow graph nodes/edges, and no forbidden raw markers in the serialized report. It is a product-depth gate, not proof of third-party site vulnerability discovery.
 
-The CI workflow runs the full pytest suite plus a 24-target inner-core gate on push/pull request, which covers every synthetic scenario once. The scheduled/manual audit workflow runs the 500-target inner-core gate and uploads its JSON/Markdown/HTML evidence pack. The repository self-SARIF scan is uploaded as non-gating evidence because this scanner repository intentionally contains detector rules, fixtures, and documentation examples that should trigger K-Guard findings; use `--fail-on` against the product being audited, not against K-Guard's own fixture-heavy source tree unless a project-specific baseline exists.
+The public CI workflow runs `python scripts/public_source_tests.py` plus a 24-target inner-core gate on push/pull request. That selector is the sanitized-snapshot regression surface; it does not run the internal full pytest suite. The scheduled/manual audit workflow uses the same public-source selector, runs the 500-target inner-core gate, and uploads its JSON/Markdown/HTML evidence pack. The internal full pytest suite remains a private-source boundary. The repository self-SARIF scan is uploaded after a successful scan as non-gating evidence because this scanner repository intentionally contains detector rules, fixtures, and documentation examples that should trigger K-Guard findings; use `--fail-on` against the product being audited, not against K-Guard's own fixture-heavy source tree unless a project-specific baseline exists.
 
 `scripts/passive_homepage_calibration.py` runs GET `/` only homepage calibration from a CSV manifest. It supports `--max-targets`, `--delay-ms`, `--checkpoint-jsonl`, and `--resume` for 10k-scale sharded runs. It reports cohort, rank-bucket, outcome, and hygiene-tier aggregates such as `well_managed_quiet`, `hardening_gap`, `boundary_redirect`, and `messy_or_risky_signal`, so noisy well-managed sites and messy long-tail sites can be calibrated separately. It also emits a `release_gate` with pass/warn/fail checks for measurement yield, high/critical rate, strong-identifier rate, and boundary redirect rate. It does not request `/admin`, `/api`, `.env`, `.git`, OPTIONS, or recursive paths.
 

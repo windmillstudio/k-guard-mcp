@@ -397,6 +397,58 @@ def verify_zip(snapshot: Path, archive_path: Path) -> dict[str, object]:
     return {"passed": True, "member_count": len(observed)}
 
 
+def _converge_unique_anchor(text: str, internal: str, public: str, error: str) -> str:
+    if not internal or not public or internal == public:
+        raise RuntimeError(error)
+    internal_count = text.count(internal)
+    public_count = text.count(public)
+    if public in internal:
+        internal_only = internal_count
+        public_only = public_count - internal_count
+    elif internal in public:
+        public_only = public_count
+        internal_only = internal_count - public_count
+    else:
+        internal_only = internal_count
+        public_only = public_count
+    if internal_only < 0 or public_only < 0:
+        raise RuntimeError(error)
+    if internal_only == 1 and public_only == 0:
+        return text.replace(internal, public, 1)
+    if internal_only == 0 and public_only == 1:
+        return text
+    raise RuntimeError(error)
+
+
+def rewrite_public_audit_workflow(text: str) -> str:
+    """Point the public audit job at the source-only selector and least privilege."""
+    text = _converge_unique_anchor(
+        text,
+        "run: python -m pytest -q",
+        "run: python scripts/public_source_tests.py",
+        "public audit regression command patch did not match exactly once",
+    )
+    text = _converge_unique_anchor(
+        text,
+        "  k-guard-audit:\n    runs-on: ubuntu-latest\n    steps:\n",
+        (
+            "  k-guard-audit:\n"
+            "    runs-on: ubuntu-latest\n"
+            "    permissions:\n"
+            "      contents: read\n"
+            "      security-events: write\n"
+            "    steps:\n"
+        ),
+        "public audit job permissions patch did not match exactly once",
+    )
+    return _converge_unique_anchor(
+        text,
+        "        if: always()\n        with:\n          sarif_file: k-guard.sarif\n",
+        "        with:\n          sarif_file: k-guard.sarif\n",
+        "public audit SARIF upload gate patch did not match exactly once",
+    )
+
+
 def write_sha256sums(output_root: Path, names: list[str]) -> None:
     lines = [f"{sha256(output_root / name)}  {name}" for name in names]
     (output_root / "SHA256SUMS").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
@@ -439,6 +491,12 @@ def main() -> int:
         workflow_text = workflow_text.replace(original_global_gate, public_global_gate)
         workflow.write_text(
             workflow_text,
+            encoding="utf-8",
+            newline="\n",
+        )
+        audit_workflow = snapshot / ".github" / "workflows" / "k-guard-audit.yml"
+        audit_workflow.write_text(
+            rewrite_public_audit_workflow(audit_workflow.read_text(encoding="utf-8")),
             encoding="utf-8",
             newline="\n",
         )

@@ -123,3 +123,43 @@ def test_public_export_marks_performance_as_historical_and_rebinds_fingerprint(t
         "scope": "historical_private_source_revision",
     }
     assert report["report_fingerprint_sha256"] != "0" * 64
+
+
+def test_public_audit_workflow_uses_source_only_selector_and_least_privilege() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "k-guard-audit.yml").read_text(encoding="utf-8")
+    assert "run: python scripts/public_source_tests.py" in workflow
+    assert "run: python -m pytest -q" not in workflow
+    assert "      contents: read\n" in workflow
+    assert "      security-events: write\n" in workflow
+    assert "sarif_file: k-guard.sarif" in workflow
+    assert "        if: always()\n        with:\n          sarif_file: k-guard.sarif" not in workflow
+    assert prepare_public_release.rewrite_public_audit_workflow(workflow) == workflow
+
+
+def test_public_audit_workflow_rewrite_helper_sanitizes_internal_audit_job() -> None:
+    internal = (
+        "name: K-Guard Audit\n"
+        "jobs:\n"
+        "  k-guard-audit:\n"
+        "    runs-on: ubuntu-latest\n"
+        "    steps:\n"
+        "      - name: Run regression tests\n"
+        "        run: python -m pytest -q\n"
+        "      - name: Upload self-scan JSON\n"
+        "        if: always()\n"
+        "        with:\n"
+        "          name: k-guard-self-scan\n"
+        "      - name: Upload SARIF\n"
+        "        uses: github/codeql-action/upload-sarif@deadbeef\n"
+        "        if: always()\n"
+        "        with:\n"
+        "          sarif_file: k-guard.sarif\n"
+    )
+    rewritten = prepare_public_release.rewrite_public_audit_workflow(internal)
+    assert "run: python scripts/public_source_tests.py" in rewritten
+    assert "run: python -m pytest -q" not in rewritten
+    assert "      contents: read\n" in rewritten
+    assert "      security-events: write\n" in rewritten
+    assert "        if: always()\n        with:\n          sarif_file: k-guard.sarif" not in rewritten
+    assert "        if: always()\n        with:\n          name: k-guard-self-scan" in rewritten
+    assert prepare_public_release.rewrite_public_audit_workflow(rewritten) == rewritten

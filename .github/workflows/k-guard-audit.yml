@@ -8,6 +8,9 @@ on:
 jobs:
   k-guard-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -21,7 +24,7 @@ jobs:
           python -m pip install --require-hashes -r requirements-evidence.lock
           python -m pip install --no-build-isolation --no-deps -e .
       - name: Run regression tests
-        run: python -m pytest -q
+        run: python scripts/public_source_tests.py
       - name: Run 500-target inner-core product gate
         run: python scripts/inner_core_product_gate.py --targets 500 --output tmp/inner-core-product-gate-500.json --markdown tmp/inner-core-product-gate-500.md --html tmp/inner-core-product-gate-500.html
       - name: Generate K-Guard SARIF self-scan
@@ -45,6 +48,5 @@ jobs:
             tmp/inner-core-product-gate-500.html
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3
-        if: always()
         with:
           sarif_file: k-guard.sarif
