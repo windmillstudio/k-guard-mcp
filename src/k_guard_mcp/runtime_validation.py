@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import importlib.metadata
 import json
 import secrets
 import socket
+import sys
 import tempfile
 import threading
 import time
@@ -413,8 +415,7 @@ class _RunningUvicorn:
             )
         )
         self.thread = threading.Thread(
-            target=self.server.run,
-            kwargs={"sockets": [self.socket]},
+            target=self._run_server,
             name=f"k-guard-runtime-validation-{self.port}",
             daemon=True,
         )
@@ -426,18 +427,27 @@ class _RunningUvicorn:
             self.close()
             raise RuntimeError("runtime_validation_server_start_failed")
 
+    def _run_server(self) -> None:
+        if sys.platform == "win32":
+            # Keep the validation-only loop local to this thread.  Windows
+            # Proactor transports can retain a reset MCP connection during
+            # Uvicorn shutdown; the selector loop avoids that transport path
+            # without changing the process-wide event-loop policy.
+            with asyncio.Runner(loop_factory=asyncio.SelectorEventLoop) as runner:
+                runner.run(self.server.serve(sockets=[self.socket]))
+            return
+        self.server.run(sockets=[self.socket])
+
     def close(self) -> None:
         self.server.should_exit = True
         self.thread.join(timeout=10)
-        if self.socket.fileno() != -1:
-            self.socket.close()
         if self.thread.is_alive():
-            # Python 3.14's Windows proactor can keep a reset transport alive
-            # after the graceful deadline.  Once the listener is closed, skip
-            # Uvicorn's remaining graceful wait and give the loop one final
-            # bounded chance to terminate before reporting a hard failure.
             self.server.force_exit = True
             self.thread.join(timeout=10)
+        # Uvicorn owns the supplied listener through shutdown and wait_closed.
+        # Only the final cleanup path closes a still-open socket from here.
+        if self.socket.fileno() != -1:
+            self.socket.close()
         if self.thread.is_alive():
             raise RuntimeError("runtime_validation_server_stop_failed")
 

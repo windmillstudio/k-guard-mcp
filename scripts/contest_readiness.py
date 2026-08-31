@@ -56,6 +56,10 @@ from k_guard_mcp.language_validation import current_language_validation_contract
 
 ACTIVE_TEXT_ROOTS = ("README.md", "docs", "src", "tests", "examples")
 ACTIVE_TEXT_SUFFIXES = {".md", ".py", ".json", ".csv", ".toml", ".yml", ".yaml"}
+PUBLIC_SNAPSHOT_METADATA = Path("PUBLIC-SNAPSHOT.json")
+PUBLIC_SNAPSHOT_SCHEMA = "k_guard_public_source_snapshot.v1"
+PUBLIC_AUDIT_REGRESSION_COMMAND = "python scripts/public_source_tests.py"
+INTERNAL_AUDIT_REGRESSION_COMMAND = "python -m pytest -q"
 LEGACY_PERSONA = "\uccb4\ud06c\ub0a8\ubc29"
 LEGACY_ASSET = "checknam" + "-hero.png"
 SUBMISSION_VIDEO = Path("submission/demo/k-guard-contest-demo.mp4")
@@ -1768,6 +1772,27 @@ def _workflow_checkout_history_errors(text: str, source_name: str) -> list[str]:
     return errors
 
 
+def _audit_regression_contract(root: Path) -> tuple[str, list[str]]:
+    """Select the audit command from a validated distribution marker."""
+    marker = root / PUBLIC_SNAPSHOT_METADATA
+    if not marker.exists():
+        return INTERNAL_AUDIT_REGRESSION_COMMAND, []
+    if not marker.is_file():
+        return INTERNAL_AUDIT_REGRESSION_COMMAND, ["public_snapshot_audit_contract_invalid"]
+    try:
+        payload = json.loads(marker.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return INTERNAL_AUDIT_REGRESSION_COMMAND, ["public_snapshot_audit_contract_invalid"]
+    if not isinstance(payload, dict):
+        return INTERNAL_AUDIT_REGRESSION_COMMAND, ["public_snapshot_audit_contract_invalid"]
+    if (
+        payload.get("schema") != PUBLIC_SNAPSHOT_SCHEMA
+        or payload.get("public_ci") != PUBLIC_AUDIT_REGRESSION_COMMAND
+    ):
+        return INTERNAL_AUDIT_REGRESSION_COMMAND, ["public_snapshot_audit_contract_invalid"]
+    return PUBLIC_AUDIT_REGRESSION_COMMAND, []
+
+
 def _release_workflow_contract_errors(root: Path) -> list[str]:
     ci_path = root / ".github" / "workflows" / "ci.yml"
     release_path = root / ".github" / "workflows" / "release.yml"
@@ -1788,6 +1813,8 @@ def _release_workflow_contract_errors(root: Path) -> list[str]:
     except (OSError, UnicodeError):
         return ["release_workflow_unreadable"]
 
+    audit_regression_command, snapshot_errors = _audit_regression_contract(root)
+    errors.extend(snapshot_errors)
     required = {
         "ci_workflow_call_missing": (ci, "workflow_call:"),
         "ci_python_314_missing": (ci, '"3.14"'),
@@ -1799,7 +1826,7 @@ def _release_workflow_contract_errors(root: Path) -> list[str]:
         "release_attestation_missing": (release, "actions/attest@"),
         "release_durable_publish_missing": (release, "gh release create"),
         "release_write_permission_missing": (release, "contents: write"),
-        "audit_regression_tests_missing": (audit, "python -m pytest -q"),
+        "audit_regression_tests_missing": (audit, audit_regression_command),
     }
     errors.extend(name for name, (text, token) in required.items() if token not in text)
     errors.extend(_workflow_checkout_history_errors(ci, "ci"))

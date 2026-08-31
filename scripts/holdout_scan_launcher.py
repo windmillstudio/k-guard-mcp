@@ -1730,7 +1730,12 @@ class _WindowsImageLoadMonitor:
             except Exception as exc:
                 self._callback_errors.append(type(exc).__name__)
 
+        self._callback_code = callback.__code__
         self._callback = callback_type(callback)
+
+    @property
+    def callback_code(self) -> CodeType:
+        return self._callback_code
 
     def start(self) -> None:
         status = int(self._register(0, self._callback, None, ctypes.byref(self._cookie)))
@@ -1924,6 +1929,10 @@ class _ExecutionAudit:
         windows_root: Path,
         get_module_filename: Any,
         get_current_process: Any,
+        trusted_call_function_codes: tuple[CodeType, ...] = (),
+        trusted_call_function_wrapper_chains: tuple[
+            tuple[CodeType, CodeType], ...
+        ] = (),
     ) -> None:
         self.prefix = prefix
         self.base_prefix = base_prefix
@@ -1931,6 +1940,19 @@ class _ExecutionAudit:
         self.windows_root = windows_root.resolve(strict=True)
         self._get_module_filename = get_module_filename
         self._get_current_process = get_current_process
+        direct_codes = tuple(trusted_call_function_codes)
+        wrapper_chains = tuple(trusted_call_function_wrapper_chains)
+        if any(not isinstance(code, CodeType) for code in direct_codes):
+            raise TypeError("trusted ctypes callers must be exact Python code objects")
+        if any(
+            not isinstance(chain, tuple)
+            or len(chain) != 2
+            or any(not isinstance(code, CodeType) for code in chain)
+            for chain in wrapper_chains
+        ):
+            raise TypeError("trusted ctypes wrapper chains must contain two code objects")
+        self._trusted_call_function_codes = direct_codes
+        self._trusted_call_function_wrapper_chains = wrapper_chains
         # Resolve every trusted frozen-code digest before this instance is
         # installed with sys.addaudithook().  Calling _imp.get_frozen_object()
         # from inside the hook can itself emit marshal audit events on newer
@@ -2361,7 +2383,30 @@ class _ExecutionAudit:
         )
         return allowed
 
+    def _trusted_call_function_caller(self) -> bool:
+        try:
+            frame = sys._getframe(2)
+        except ValueError:
+            return False
+        if any(
+            frame.f_code is trusted_code
+            for trusted_code in self._trusted_call_function_codes
+        ):
+            return True
+        if frame.f_back is None:
+            return False
+        return any(
+            frame.f_code is wrapper_code
+            and frame.f_back.f_code is callback_code
+            for wrapper_code, callback_code in self._trusted_call_function_wrapper_chains
+        )
+
     def __call__(self, event: str, args: tuple[Any, ...]) -> None:
+        # CPython 3.14 audits calls made through prebound ctypes functions.
+        # Guard-owned calls must be recognized before taking the non-reentrant
+        # audit lock, but only exact, pre-registered CodeType identities qualify.
+        if event == "ctypes.call_function" and self._trusted_call_function_caller():
+            return
         if event == "exec" and args:
             code = args[0]
             filename = getattr(code, "co_filename", None)
@@ -3005,6 +3050,24 @@ def run(args: argparse.Namespace) -> int:
             windows_root,
             native_api[1],
             native_api[2],
+            trusted_call_function_codes=(
+                _ExecutionAudit._native_handle_path.__code__,
+                _WindowsRecursiveWatcher._run.__code__,
+                _WindowsRecursiveWatcher._complete_request.__code__,
+                _WindowsRecursiveWatcher._cancel_request.__code__,
+                _WindowsRecursiveWatcher.stop.__code__,
+                _WindowsRuntimeObjectAttestation._capture.__code__,
+                _WindowsRuntimeObjectAttestation._security_descriptor_sha256.__code__,
+                _WindowsRuntimeObjectAttestation._usn_record.__code__,
+                _WindowsImageLoadMonitor.exercise_canary.__code__,
+                _WindowsImageLoadMonitor.stop.__code__,
+                _WindowsNativeRuntimeLock._close.__code__,
+                _native_module_receipt.__code__,
+                child_process_policy_query.__code__,
+            ),
+            trusted_call_function_wrapper_chains=(
+                (ctypes.wstring_at.__code__, image_load_monitor.callback_code),
+            ),
         )
         sys.addaudithook(execution_audit)
         probe = _load_probe(probe_path)

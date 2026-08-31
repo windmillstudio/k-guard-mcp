@@ -271,6 +271,85 @@ def test_execution_audit_uses_precomputed_frozen_code_cache(
         assert audit._record_dynamic(frozen_code) is True
 
 
+def test_execution_audit_allows_only_exact_registered_guard_call_function_frames(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    prefix = tmp_path / "prefix"
+    base_prefix = tmp_path / "base"
+    windows_root = tmp_path / "windows"
+    for root in (prefix, base_prefix, windows_root):
+        root.mkdir()
+
+    def trusted_direct() -> None:
+        return None
+
+    def trusted_wrapper() -> None:
+        return None
+
+    def trusted_callback() -> None:
+        return None
+
+    def scanner_code() -> None:
+        return None
+
+    audit = launcher._ExecutionAudit(
+        prefix,
+        base_prefix,
+        {"prefix_tree": {"files": []}, "base_runtime_tree": {"files": []}},
+        set(),
+        windows_root,
+        None,
+        None,
+        trusted_call_function_codes=(trusted_direct.__code__,),
+        trusted_call_function_wrapper_chains=(
+            (trusted_wrapper.__code__, trusted_callback.__code__),
+        ),
+    )
+    audit._caller_frames = lambda: []
+
+    class FakeFrame:
+        def __init__(self, code: object, back: "FakeFrame | None" = None) -> None:
+            self.f_code = code
+            self.f_back = back
+
+    def invoke(event: str, frame: FakeFrame) -> None:
+        with monkeypatch.context() as patch:
+            patch.setattr(sys, "_getframe", lambda _depth: frame)
+            audit(event, (None, "Py_GetVersion"))
+
+    invoke("ctypes.call_function", FakeFrame(trusted_direct.__code__))
+    assert audit._event_count == 0
+
+    copied_code = trusted_direct.__code__.replace()
+    assert copied_code is not trusted_direct.__code__
+    with pytest.raises(RuntimeError, match="native symbol"):
+        invoke("ctypes.call_function", FakeFrame(copied_code))
+
+    with pytest.raises(RuntimeError, match="native symbol"):
+        invoke("ctypes.call_function", FakeFrame(scanner_code.__code__))
+
+    with pytest.raises(RuntimeError, match="native symbol"):
+        invoke("ctypes.dlsym", FakeFrame(trusted_direct.__code__))
+
+    invoke(
+        "ctypes.call_function",
+        FakeFrame(
+            trusted_wrapper.__code__,
+            FakeFrame(trusted_callback.__code__),
+        ),
+    )
+
+    with pytest.raises(RuntimeError, match="native symbol"):
+        invoke(
+            "ctypes.call_function",
+            FakeFrame(
+                trusted_wrapper.__code__,
+                FakeFrame(scanner_code.__code__),
+            ),
+        )
+
+
 def test_code_constant_contract_supports_python_314_slice_constants() -> None:
     assert launcher._code_constant_contract(slice(1, None, -1)) == {
         "type": "slice",
@@ -527,12 +606,29 @@ def test_runtime_object_attestation_detects_native_acl_write(
         ctypes.POINTER(wintypes.DWORD),
     ]
     advapi32.GetFileSecurityW.restype = wintypes.BOOL
-    advapi32.SetFileSecurityW.argtypes = [
+    advapi32.GetSecurityDescriptorDacl.argtypes = [
+        wintypes.LPVOID,
+        ctypes.POINTER(wintypes.BOOL),
+        ctypes.POINTER(wintypes.LPVOID),
+        ctypes.POINTER(wintypes.BOOL),
+    ]
+    advapi32.GetSecurityDescriptorDacl.restype = wintypes.BOOL
+    advapi32.SetNamedSecurityInfoW.argtypes = [
         wintypes.LPCWSTR,
         wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.LPVOID,
+        wintypes.LPVOID,
+        wintypes.LPVOID,
         wintypes.LPVOID,
     ]
-    advapi32.SetFileSecurityW.restype = wintypes.BOOL
+    advapi32.SetNamedSecurityInfoW.restype = wintypes.DWORD
+    advapi32.GetSecurityDescriptorControl.argtypes = [
+        wintypes.LPVOID,
+        ctypes.POINTER(wintypes.WORD),
+        ctypes.POINTER(wintypes.DWORD),
+    ]
+    advapi32.GetSecurityDescriptorControl.restype = wintypes.BOOL
     security_information = (
         launcher.OWNER_SECURITY_INFORMATION
         | launcher.GROUP_SECURITY_INFORMATION
@@ -554,11 +650,40 @@ def test_runtime_object_attestation_detects_native_acl_write(
         len(descriptor),
         ctypes.byref(needed),
     )
-    assert advapi32.SetFileSecurityW(
-        str(native),
-        security_information,
+    control = wintypes.WORD()
+    revision = wintypes.DWORD()
+    assert advapi32.GetSecurityDescriptorControl(
         descriptor,
+        ctypes.byref(control),
+        ctypes.byref(revision),
     )
+    dacl_present = wintypes.BOOL()
+    dacl = wintypes.LPVOID()
+    dacl_defaulted = wintypes.BOOL()
+    assert advapi32.GetSecurityDescriptorDacl(
+        descriptor,
+        ctypes.byref(dacl_present),
+        ctypes.byref(dacl),
+        ctypes.byref(dacl_defaulted),
+    )
+    assert dacl_present.value and dacl.value
+    se_dacl_protected = 0x1000
+    protected_dacl_security_information = 0x80000000
+    unprotected_dacl_security_information = 0x20000000
+    inheritance_change = (
+        unprotected_dacl_security_information
+        if control.value & se_dacl_protected
+        else protected_dacl_security_information
+    )
+    assert advapi32.SetNamedSecurityInfoW(
+        str(native),
+        1,
+        launcher.DACL_SECURITY_INFORMATION | inheritance_change,
+        None,
+        None,
+        dacl,
+        None,
+    ) == 0
 
     for phase in (
         "post_scan",

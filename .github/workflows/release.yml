@@ -18,13 +18,14 @@ jobs:
       id-token: write
       attestations: write
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version: "1.26.7"
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+          cache: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.11"
       - name: Check clean checkout boundary
@@ -117,12 +118,12 @@ jobs:
         run: sha256sum dist/*.whl dist/*.tar.gz dist/*-source.zip dist/*.json dist/requirements-evidence.lock dist/requirements-evidence.in > dist/SHA256SUMS
       - name: Generate signed SLSA build provenance
         id: attest-release
-        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
           subject-path: dist/*
       - name: Generate signed CycloneDX SBOM attestation
         id: attest-sbom
-        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
           subject-path: dist/*.whl
           sbom-path: dist/sbom.cdx.json
@@ -131,7 +132,7 @@ jobs:
           cp "${{ steps.attest-release.outputs.bundle-path }}" dist/release-provenance.sigstore.json
           cp "${{ steps.attest-sbom.outputs.bundle-path }}" dist/release-sbom.sigstore.json
       - name: Upload release distributions
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: k-guard-mcp-distributions
           path: dist/*

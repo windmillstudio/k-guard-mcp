@@ -4,7 +4,7 @@ K-Guard MCP는 로컬 `stdio` MCP 서버다. Codex, Grok, Antigravity는 5분 �
 
 ## 1. 준비
 
-- Python 3.11~3.13
+- Python 3.11~3.14
 - 검사할 프로젝트와 이 저장소
 - Windows PowerShell, macOS Terminal, Linux shell 중 하나
 

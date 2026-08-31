@@ -446,6 +446,63 @@ def test_release_workflow_contract_requires_sha_pins_and_release_binding(tmp_pat
     assert "release_durable_publish_missing" in errors
 
 
+def test_audit_regression_contract_defaults_to_private_full_suite_without_snapshot(
+    tmp_path: Path,
+) -> None:
+    assert contest_readiness._audit_regression_contract(tmp_path) == (
+        "python -m pytest -q",
+        [],
+    )
+
+
+def test_audit_regression_contract_accepts_exact_public_snapshot_marker(tmp_path: Path) -> None:
+    (tmp_path / "PUBLIC-SNAPSHOT.json").write_text(
+        json.dumps(
+            {
+                "schema": "k_guard_public_source_snapshot.v1",
+                "public_ci": "python scripts/public_source_tests.py",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert contest_readiness._audit_regression_contract(tmp_path) == (
+        "python scripts/public_source_tests.py",
+        [],
+    )
+
+
+@pytest.mark.parametrize(
+    "payload",
+    (
+        "{not-json",
+        json.dumps([]),
+        json.dumps(
+            {
+                "schema": "k_guard_public_source_snapshot.v0",
+                "public_ci": "python scripts/public_source_tests.py",
+            }
+        ),
+        json.dumps(
+            {
+                "schema": "k_guard_public_source_snapshot.v1",
+                "public_ci": "python -m pytest -q",
+            }
+        ),
+    ),
+)
+def test_audit_regression_contract_rejects_malformed_public_marker_fail_closed(
+    tmp_path: Path,
+    payload: str,
+) -> None:
+    (tmp_path / "PUBLIC-SNAPSHOT.json").write_text(payload, encoding="utf-8")
+
+    assert contest_readiness._audit_regression_contract(tmp_path) == (
+        "python -m pytest -q",
+        ["public_snapshot_audit_contract_invalid"],
+    )
+
+
 def test_checkout_steps_require_full_history_for_evidence_bound_revisions() -> None:
     checkout_sha = "3" * 40
     shallow = f"steps:\n  - uses: actions/checkout@{checkout_sha}\n"
